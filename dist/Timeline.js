@@ -1,1 +1,2292 @@
-!function(e,n){"object"==typeof exports&&"object"==typeof module?module.exports=n(require("react")):"function"==typeof define&&define.amd?define(["react"],n):"object"==typeof exports?exports.AkfaTimeline=n(require("react")):e.AkfaTimeline=n(e.react)}(this,(e=>(()=>{"use strict";var n={27:(e,n,t)=>{t.d(n,{A:()=>i});var r=t(601),o=t.n(r),a=t(314),l=t.n(a)()(o());l.push([e.id,'/* src/components/Timeline/Timeline.css */\n\n/* \n  Temel: "sales sayfası" temasıyla uyumlu renkler, \n  light vs. dark tanımları \n*/\n\n:root {\n  /* Light Tema Varsayılan Renkler */\n  --background-color: #f5f5f2;       /* Açık tema arka plan */\n  --text-color: #666;               /* Açık tema yazı rengi */\n  --border-color: #bbb;             /* Daha yumuşak border */\n\n  /* Header */\n  --header-background-color: #f5f5f2;  /* Üst header, tablo header */\n  --header-text-color: #666;\n\n  /* Resources */\n  --resource-background-color: #f5f5f2;  \n  --resource-text-color: #666;\n  --group-header-background-color: #dadada;\n\n  /* Timeline */\n  --timeline-header-background-color: #f5f5f2;\n  --timeline-cell-border-color: #ccc;\n  --timeline-event-background-color: #fff;\n  --timeline-event-border-color: #666;\n  --timeline-event-text-color: #666;\n\n  /* Scrollbar */\n  --scrollbar-thumb-background: #aaa;\n  --scrollbar-thumb-hover-background: #888;\n\n  --resource-width: 150px;\n  --cell-height: 40px;\n  --header-height: 60px;\n  --time-slot-height: 20px;\n  --container-height: 480px;\n\n  --timeline-new-event-background-color: #ff5722;\n  --timeline-new-event-text-color: #fff;\n\n  --timeline-event-background-color: #ff7f50; \n  --timeline-event-text-color: #fff;\n  --timeline-event-border-color: #fff;\n\n  --timeline-cell-selected-bg: rgba(25,118,210,0.2);\n\n  user-select: none; /* Metin seçimini engelle */\n}\n\n/* Koyu Tema */\n.dark-mode {\n  /* Koyu tema */\n  --background-color: #16202a;               /* Koyu tema arka plan */\n  --text-color: #ddd;                        /* Koyu tema yazı rengi */\n  --border-color: #444;\n\n  --header-background-color: #16202a;\n  --header-text-color: #bbb;\n\n  --resource-background-color: #16202a;\n  --resource-text-color: #bbb;\n  --group-header-background-color: #0d141b;\n\n  --timeline-header-background-color: #16202a;\n  --timeline-cell-border-color: #444;\n  --timeline-event-background-color: #2a2a2a;\n  --timeline-event-border-color: #222;\n  --timeline-event-text-color: #ddd;\n\n  --scrollbar-thumb-background: #555;\n  --scrollbar-thumb-hover-background: #888;\n\n  --timeline-new-event-background-color: #a83e20;\n  --timeline-new-event-text-color: #eee;\n\n  --timeline-event-background-color: #a83e20;\n  --timeline-event-text-color: #fff;\n  --timeline-event-border-color: #222;\n\n  --timeline-cell-selected-bg: rgba(76,175,80,0.2);\n}\n\n/* Genel Timeline Konteyner */\n.timeline-container {\n  display: flex;\n  flex-direction: column;\n  width: 100%;\n  height: 100%;\n  border: 1px solid var(--border-color);\n  border-radius: 8px;\n  overflow: hidden;\n  box-sizing: border-box;\n  background-color: var(--background-color);\n  color: var(--text-color);\n}\n\n/* Master Header */\n.timeline-master-header {\n  width: 100%;\n  background-color: var(--header-background-color);\n  color: var(--header-text-color);\n  border-bottom: 1px solid var(--border-color);\n  z-index: 10;\n  padding: 10px;\n  box-sizing: border-box;\n}\n\n/* Timeline Body */\n.timeline-body {\n  display: flex;\n  flex: 1;\n}\n\n/* Sol Kısım: Resources */\n.timeline-resources-container {\n  width: var(--resource-width);\n  display: flex;\n  flex-direction: column;\n  border-right: 1px solid var(--border-color);\n  position: sticky;\n  left: 0;\n  top: var(--header-height);\n  z-index: 2;\n  background-color: var(--resource-background-color);\n  overflow-y: auto;\n}\n\n/* Resources Header */\n.resources-header {\n  background-color: var(--header-background-color);\n  color: var(--resource-text-color);\n  text-align: center;\n  width: var(--resource-width);\n  font-weight: bold;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  height: calc(var(--header-height) * 2); /* Üst üste iki header yüksekliği */\n  border-right: 1px solid var(--border-color);\n  box-sizing: border-box;\n}\n\n/* Grup Başlığı Hücreleri */\n.group-header-row {\n  display: flex;\n  height: var(--cell-height);\n  background-color: var(--group-header-background-color);\n  color: var(--resource-text-color);\n  font-weight: bold;\n}\n\n.group-header-cell {\n  flex: 1;\n  border: 1px solid var(--border-color);\n  text-align: center;\n  background-color: var(--group-header-background-color);\n  color: var(--resource-text-color);\n  height: var(--cell-height);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n/* Resource Grupları */\n.resource-group {\n  display: flex;\n  flex-direction: column;\n}\n\n/* Resource Grup Header */\n.resource-group-header {\n  background-color: var(--group-header-background-color);\n  color: var(--resource-text-color);\n  font-weight: bold;\n  height: var(--cell-height);\n  box-sizing: border-box;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 0 0px;\n  cursor: pointer;\n  border: 1px solid var(--border-color);\n}\n\n/* Resource Hücreleri */\n.resource-cell {\n  padding: 0;\n  text-align: left;\n  background-color: var(--resource-background-color);\n  color: var(--resource-text-color);\n  height: var(--cell-height);\n  display: flex;\n  align-items: center;\n  border: 0.3px solid var(--border-color);\n  box-sizing: border-box;\n}\n\n/* Sağ Kısım: Timeline */\n.timeline-scrollable-container {\n  flex: 1;\n  overflow-x: auto;\n  overflow-y: hidden;\n  display: flex;\n  flex-direction: column;\n  position: relative;\n}\n\n/* Header ve Content Wrapper */\n.timeline-header-content-wrapper {\n  display: flex;\n  flex-direction: column;\n}\n\n/* Timeline Header */\n.timeline-header {\n  display: flex;\n  background-color: var(--timeline-header-background-color);\n  color: var(--header-text-color);\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  height: var(--header-height);\n  overflow: hidden;\n  box-sizing: border-box;\n}\n\n/* Timeline Content */\n.timeline-content {\n  display: flex;\n  flex-direction: column;\n}\n\n/* Grup Container */\n.group-container {\n  display: flex;\n  flex-direction: column;\n}\n\n/* Resource Satırları */\n.resource-row {\n  display: flex;\n  box-sizing: border-box;\n  position: relative;\n  height: var(--cell-height);\n  border: 1px solid var(--border-color);\n  margin-top: -1px;\n  overflow: hidden;\n}\n\n/* Timeline Hücreleri */\n.timeline-cell {\n  flex: 1;\n  border: 1px solid var(--timeline-cell-border-color);\n  height: 100%;\n  box-sizing: border-box;\n}\n\n/* Hücre Seçili Durumu */\n.timeline-cell.selected {\n  background-color: rgba(25, 118, 210, 0.2); /* satır içi/hover */\n}\n\n/* Event Stilleri */\n.event {\n  position: absolute;\n  background-color: var(--timeline-event-background-color);\n  color: var(--timeline-event-text-color);\n  font-size: 12px;\n  padding: 2px 5px;\n  border-radius: 4px;\n  text-align: left;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  box-sizing: border-box;\n  z-index: 10;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  border: 1px solid var(--timeline-event-border-color);\n  cursor: pointer;\n}\n\n/* Event Time Stili */\n.event-time {\n  font-size: 10px;\n  margin-top: 2px;\n}\n\n/* Scrollbar için */\n.timeline-scrollable-container::-webkit-scrollbar {\n  height: 10px;\n}\n\n.timeline-scrollable-container::-webkit-scrollbar-thumb {\n  background: var(--scrollbar-thumb-background);\n  border-radius: 5px;\n}\n\n.timeline-scrollable-container::-webkit-scrollbar-thumb:hover {\n  background: var(--scrollbar-thumb-hover-background);\n}\n\n.resources-header {\n  background-color: var(--header-background-color);\n  color: var(--resource-text-color);\n  text-align: center;\n  width: var(--resource-width);\n  font-weight: bold;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  height: 80px;\n  border-right: 1px solid var(--border-color);\n  box-sizing: border-box;\n}\n\n/* TimelineHeader Container */\n.timeline-header-container {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n}\n\n/* Ay + Yıl satırı */\n.timeline-header-month-row {\n  display: flex;\n  background-color: var(--header-background-color);\n  color: var(--header-text-color);\n  font-weight: bold;\n  font-size: 16px;\n  height: 40px;\n  line-height: 40px;\n  border-bottom: 1px solid var(--border-color);\n}\n\n/* Ay + Yıl hücreleri */\n.timeline-header-month-cell {\n  text-align: center;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  /* border-right => dynamic, inline style if needed */\n  box-sizing: border-box;\n}\n\n/* Günlük Hücreler (tarih satırı) */\n.timeline-header-day-row {\n  display: flex;\n  background-color: var(--timeline-header-background-color);\n  color: var(--header-text-color);\n  /* border-bottom: 1px solid var(--border-color); if needed */\n}\n\n/* Günlük hücre (her gün) */\n.timeline-header-day-cell {\n  height: 40px;\n  line-height: 40px;\n  font-size: 14px;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  text-align: center;\n  box-sizing: border-box;\n}\n\n\n/* src/components/Timeline/Timeline.css */\n/* Ekleme: MasterHeader stili */\n\n/* Kapsayıcı */\n.master-header-container {\n  display: flex;\n  align-items: center;\n  padding: 10px;\n\n  background-color: var(--header-background-color);\n  color: var(--header-text-color);\n\n  /* eğer border vs. istersen\n  border-bottom: 1px solid var(--border-color);\n  */\n}\n\n/* Butonlar */\n.master-header-btn {\n  background-color: transparent;\n  color: var(--header-text-color);\n  border: 1px solid var(--border-color);\n  border-radius: 4px;\n  padding: 6px 12px;\n  margin-right: 10px;\n  cursor: pointer;\n  font-size: 14px;\n  transition: background-color 0.2s ease, color 0.2s ease;\n}\n\n.master-header-btn:hover {\n  background-color: rgba(25, 118, 210, 0.2); /* Light tema hover */\n}\n\n.dark-mode .master-header-btn:hover {\n  background-color: rgba(76, 175, 80, 0.2); /* Koyu tema hover */\n}\n\n.master-header-btn:focus {\n  outline: none;\n}\n\n/* Select */\n.master-header-select {\n  margin-left: 10px;\n  background-color: transparent;\n  color: var(--header-text-color);\n  border: 1px solid var(--border-color);\n  border-radius: 4px;\n  padding: 4px 8px;\n  font-size: 14px;\n  cursor: pointer;\n}\n\n.master-header-select:focus {\n  outline: none;\n}\n\n\n/* Container */\n.timeline-content-container {\n  position: relative;\n  width: 100%;\n  height: auto; /* or as needed */\n  display: flex;\n  flex-direction: column;\n}\n\n/* Group container */\n.timeline-group-container {\n  margin-bottom: 0px;\n  display: flex;\n  flex-direction: column;\n}\n\n/* Group header row */\n.timeline-group-header-row {\n  display: flex;\n  margin-top: -0.08rem;\n}\n\n.timeline-group-header-cell {\n  flex: 1;\n  height: 2.58rem;\n  background-color: var(--group-header-background-color);\n  border: 1px solid var(--border-color);\n  \n  box-sizing: border-box;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n/* Resource row */\n.timeline-resource-row {\n  display: flex;\n  position: relative;\n  height: var(--cell-height, 40px);\n  border: 1px solid var(--border-color);\n  box-sizing: border-box;\n}\n\n/* Each day cell */\n.timeline-cell {\n  flex: 1;\n  height: 100%;\n  position: relative;\n  border-left: 1px solid var(--border-color);\n  border-right: 1px solid var(--border-color);\n  box-sizing: border-box;\n  cursor: pointer;\n}\n\n/* "selected" day cell */\n.timeline-cell.selected {\n  background-color: var(--timeline-cell-selected-bg, rgba(25,118,210,0.2));\n}\n\n/* Event */\n.timeline-event {\n  position: absolute;\n  background-color: var(--timeline-event-background-color, #0093ce);\n  color: var(--timeline-event-text-color, #fff);\n  font-size: 14px;\n  padding: 5px;\n  border-radius: 20px;\n  box-sizing: border-box;\n  z-index: 10;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  border: 1px solid var(--timeline-event-border-color, #fff);\n  top: 5px; /* or a variable offset if you want */\n  /* "left" and "width" are inline from JS */\n}\n\n/* Extend handle */\n.timeline-event-extend-handle {\n  position: absolute;\n  right: 0;\n  top: 0;\n  width: 10px;\n  height: 100%;\n  background-color: rgba(0,0,0,0.2);\n  cursor: col-resize;\n  z-index: 20;\n}\n\n/* Temp event (while creating) */\n.timeline-temp-event {\n  position: absolute;\n  background-color: var(--timeline-new-event-background-color, #0093ce);\n  color: var(--timeline-new-event-text-color, #fff);\n  opacity: 0.7;\n  border-radius: 20px;\n  z-index: 9;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-size: 14px;\n  /* "left"/"width" from JS: " ...calculatePosition(tempEvent, dates)" */\n  top: 5px;\n}\n',""]);const i=l},314:e=>{e.exports=function(e){var n=[];return n.toString=function(){return this.map((function(n){var t="",r=void 0!==n[5];return n[4]&&(t+="@supports (".concat(n[4],") {")),n[2]&&(t+="@media ".concat(n[2]," {")),r&&(t+="@layer".concat(n[5].length>0?" ".concat(n[5]):""," {")),t+=e(n),r&&(t+="}"),n[2]&&(t+="}"),n[4]&&(t+="}"),t})).join("")},n.i=function(e,t,r,o,a){"string"==typeof e&&(e=[[null,e,void 0]]);var l={};if(r)for(var i=0;i<this.length;i++){var c=this[i][0];null!=c&&(l[c]=!0)}for(var d=0;d<e.length;d++){var s=[].concat(e[d]);r&&l[s[0]]||(void 0!==a&&(void 0===s[5]||(s[1]="@layer".concat(s[5].length>0?" ".concat(s[5]):""," {").concat(s[1],"}")),s[5]=a),t&&(s[2]?(s[1]="@media ".concat(s[2]," {").concat(s[1],"}"),s[2]=t):s[2]=t),o&&(s[4]?(s[1]="@supports (".concat(s[4],") {").concat(s[1],"}"),s[4]=o):s[4]="".concat(o)),n.push(s))}},n}},601:e=>{e.exports=function(e){return e[1]}},72:e=>{var n=[];function t(e){for(var t=-1,r=0;r<n.length;r++)if(n[r].identifier===e){t=r;break}return t}function r(e,r){for(var a={},l=[],i=0;i<e.length;i++){var c=e[i],d=r.base?c[0]+r.base:c[0],s=a[d]||0,u="".concat(d," ").concat(s);a[d]=s+1;var p=t(u),f={css:c[1],media:c[2],sourceMap:c[3],supports:c[4],layer:c[5]};if(-1!==p)n[p].references++,n[p].updater(f);else{var m=o(f,r);r.byIndex=i,n.splice(i,0,{identifier:u,updater:m,references:1})}l.push(u)}return l}function o(e,n){var t=n.domAPI(n);return t.update(e),function(n){if(n){if(n.css===e.css&&n.media===e.media&&n.sourceMap===e.sourceMap&&n.supports===e.supports&&n.layer===e.layer)return;t.update(e=n)}else t.remove()}}e.exports=function(e,o){var a=r(e=e||[],o=o||{});return function(e){e=e||[];for(var l=0;l<a.length;l++){var i=t(a[l]);n[i].references--}for(var c=r(e,o),d=0;d<a.length;d++){var s=t(a[d]);0===n[s].references&&(n[s].updater(),n.splice(s,1))}a=c}}},659:e=>{var n={};e.exports=function(e,t){var r=function(e){if(void 0===n[e]){var t=document.querySelector(e);if(window.HTMLIFrameElement&&t instanceof window.HTMLIFrameElement)try{t=t.contentDocument.head}catch(e){t=null}n[e]=t}return n[e]}(e);if(!r)throw new Error("Couldn't find a style target. This probably means that the value for the 'insert' parameter is invalid.");r.appendChild(t)}},540:e=>{e.exports=function(e){var n=document.createElement("style");return e.setAttributes(n,e.attributes),e.insert(n,e.options),n}},56:(e,n,t)=>{e.exports=function(e){var n=t.nc;n&&e.setAttribute("nonce",n)}},825:e=>{e.exports=function(e){if("undefined"==typeof document)return{update:function(){},remove:function(){}};var n=e.insertStyleElement(e);return{update:function(t){!function(e,n,t){var r="";t.supports&&(r+="@supports (".concat(t.supports,") {")),t.media&&(r+="@media ".concat(t.media," {"));var o=void 0!==t.layer;o&&(r+="@layer".concat(t.layer.length>0?" ".concat(t.layer):""," {")),r+=t.css,o&&(r+="}"),t.media&&(r+="}"),t.supports&&(r+="}");var a=t.sourceMap;a&&"undefined"!=typeof btoa&&(r+="\n/*# sourceMappingURL=data:application/json;base64,".concat(btoa(unescape(encodeURIComponent(JSON.stringify(a))))," */")),n.styleTagTransform(r,e,n.options)}(n,e,t)},remove:function(){!function(e){if(null===e.parentNode)return!1;e.parentNode.removeChild(e)}(n)}}}},113:e=>{e.exports=function(e,n){if(n.styleSheet)n.styleSheet.cssText=e;else{for(;n.firstChild;)n.removeChild(n.firstChild);n.appendChild(document.createTextNode(e))}}},155:n=>{n.exports=e}},t={};function r(e){var o=t[e];if(void 0!==o)return o.exports;var a=t[e]={id:e,exports:{}};return n[e](a,a.exports,r),a.exports}r.n=e=>{var n=e&&e.__esModule?()=>e.default:()=>e;return r.d(n,{a:n}),n},r.d=(e,n)=>{for(var t in n)r.o(n,t)&&!r.o(e,t)&&Object.defineProperty(e,t,{enumerable:!0,get:n[t]})},r.o=(e,n)=>Object.prototype.hasOwnProperty.call(e,n),r.r=e=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},r.nc=void 0;var o={};r.r(o),r.d(o,{default:()=>X});var a=r(155),l=r.n(a),i=r(72),c=r.n(i),d=r(825),s=r.n(d),u=r(659),p=r.n(u),f=r(56),m=r.n(f),g=r(540),b=r.n(g),v=r(113),h=r.n(v),x=r(27),y={};y.styleTagTransform=h(),y.setAttributes=m(),y.insert=p().bind(null,"head"),y.domAPI=s(),y.insertStyleElement=b(),c()(x.A,y),x.A&&x.A.locals&&x.A.locals;const w=e=>{let{onToday:n,onAdvance:t,onRetreat:r,onMonthAdvance:o,onMonthRetreat:a,dayRange:i,setDayRange:c,isDarkMode:d,toggleDarkMode:s}=e;return l().createElement("div",{className:"master-header-container"},l().createElement("button",{className:"master-header-btn",onClick:n},"Today"),l().createElement("button",{className:"master-header-btn",onClick:a},"1 Ay Geri"),l().createElement("button",{className:"master-header-btn",onClick:r},"5 Gün Geri"),l().createElement("button",{className:"master-header-btn",onClick:t},"5 Gün İleri"),l().createElement("button",{className:"master-header-btn",onClick:o},"1 Ay İleri"),l().createElement("select",{className:"master-header-select",value:i,onChange:e=>c(parseInt(e.target.value))},l().createElement("option",{value:30},"30 Gün"),l().createElement("option",{value:60},"60 Gün"),l().createElement("option",{value:90},"90 Gün")),l().createElement("button",{className:"master-header-btn",onClick:s},d?"Light Mode":"Dark Mode"))},D=e=>{let{content:n}=e;return l().createElement("div",{className:"resources-header"},n)},E=e=>{let{groupedResources:n=[],collapsedGroups:t={},toggleGroupCollapse:r,resourceSettings:o={showIdAsName:!1,isGrouped:!0,isCollapsible:!0}}=e;const{showIdAsName:a,isGrouped:i,isCollapsible:c}=o;return l().createElement("div",{className:"timeline-resources"},i?n.map(((e,n)=>l().createElement("div",{key:n,className:"resource-group"},l().createElement("div",{className:"resource-group-header",onClick:()=>c&&r(e.groupName)},e.groupName," ",c&&(t[e.groupName]?"▲":"▼")),!t[e.groupName]&&e.resources.map(((e,n)=>l().createElement("div",{key:n,className:"resource-cell"},a?e.id:e.name||e.id)))))):n.flatMap((e=>e.resources)).map(((e,n)=>l().createElement("div",{key:n,className:"resource-cell"},a?e.id:e.name||e.id))))},k=e=>{let{dates:n,monthHeaders:t}=e;return l().createElement("div",{className:"timeline-header-container"},l().createElement("div",{className:"timeline-header-month-row"},t.map(((e,n)=>l().createElement("div",{key:n,className:"timeline-header-month-cell",style:{flex:e.endIndex-e.startIndex+1,borderRight:n<t.length-1?"1px solid var(--border-color)":"none"}},e.monthName," ",e.year)))),l().createElement("div",{className:"timeline-header-day-row"},n.map(((e,t)=>l().createElement("div",{key:t,className:"timeline-header-day-cell",style:{flex:1,borderRight:t<n.length-1?"1px solid var(--border-color)":"none"}},e.display)))))},S=e=>{if(e instanceof Date)return e;if("string"==typeof e){const[n,t,r]=e.split("/").map(Number);return new Date(r,t-1,n)}return"object"==typeof e&&e.fullDate instanceof Date?new Date(e.fullDate.getTime()+6e4*e.fullDate.getTimezoneOffset()):(console.error("parseDate received invalid input:",e),new Date)};function O(e,n){var t=Object.keys(e);if(Object.getOwnPropertySymbols){var r=Object.getOwnPropertySymbols(e);n&&(r=r.filter((function(n){return Object.getOwnPropertyDescriptor(e,n).enumerable}))),t.push.apply(t,r)}return t}function j(e){for(var n=1;n<arguments.length;n++){var t=null!=arguments[n]?arguments[n]:{};n%2?O(Object(t),!0).forEach((function(n){I(e,n,t[n])})):Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(t)):O(Object(t)).forEach((function(n){Object.defineProperty(e,n,Object.getOwnPropertyDescriptor(t,n))}))}return e}function I(e,n,t){return(n=function(e){var n=function(e){if("object"!=typeof e||!e)return e;var n=e[Symbol.toPrimitive];if(void 0!==n){var t=n.call(e,"string");if("object"!=typeof t)return t;throw new TypeError("@@toPrimitive must return a primitive value.")}return String(e)}(e);return"symbol"==typeof n?n:n+""}(n))in e?Object.defineProperty(e,n,{value:t,enumerable:!0,configurable:!0,writable:!0}):e[n]=t,e}const P=e=>{let{todayIndex:n,totalDays:t}=e;return n<0||n>=t?(console.log("Indicator not visible: Out of bounds"),null):(console.log("todayIndex:",n),console.log("totalDays:",t),l().createElement("div",{style:{position:"absolute",top:0,left:"calc(".concat((n+.5)/t," * 100%)"),width:"2px",height:"100%",backgroundColor:"transparent",zIndex:5,borderStyle:"dashed",borderWidth:"0 0 0 2px",borderColor:"red"}}))};function C(e,n){var t=Object.keys(e);if(Object.getOwnPropertySymbols){var r=Object.getOwnPropertySymbols(e);n&&(r=r.filter((function(n){return Object.getOwnPropertyDescriptor(e,n).enumerable}))),t.push.apply(t,r)}return t}function T(e){for(var n=1;n<arguments.length;n++){var t=null!=arguments[n]?arguments[n]:{};n%2?C(Object(t),!0).forEach((function(n){N(e,n,t[n])})):Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(t)):C(Object(t)).forEach((function(n){Object.defineProperty(e,n,Object.getOwnPropertyDescriptor(t,n))}))}return e}function N(e,n,t){return(n=function(e){var n=function(e){if("object"!=typeof e||!e)return e;var n=e[Symbol.toPrimitive];if(void 0!==n){var t=n.call(e,"string");if("object"!=typeof t)return t;throw new TypeError("@@toPrimitive must return a primitive value.")}return String(e)}(e);return"symbol"==typeof n?n:n+""}(n))in e?Object.defineProperty(e,n,{value:t,enumerable:!0,configurable:!0,writable:!0}):e[n]=t,e}function M(e,n){var t=Object.keys(e);if(Object.getOwnPropertySymbols){var r=Object.getOwnPropertySymbols(e);n&&(r=r.filter((function(n){return Object.getOwnPropertyDescriptor(e,n).enumerable}))),t.push.apply(t,r)}return t}function z(e){for(var n=1;n<arguments.length;n++){var t=null!=arguments[n]?arguments[n]:{};n%2?M(Object(t),!0).forEach((function(n){R(e,n,t[n])})):Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(t)):M(Object(t)).forEach((function(n){Object.defineProperty(e,n,Object.getOwnPropertyDescriptor(t,n))}))}return e}function R(e,n,t){return(n=function(e){var n=function(e){if("object"!=typeof e||!e)return e;var n=e[Symbol.toPrimitive];if(void 0!==n){var t=n.call(e,"string");if("object"!=typeof t)return t;throw new TypeError("@@toPrimitive must return a primitive value.")}return String(e)}(e);return"symbol"==typeof n?n:n+""}(n))in e?Object.defineProperty(e,n,{value:t,enumerable:!0,configurable:!0,writable:!0}):e[n]=t,e}const A=e=>{let{groupedResources:n,dates:t,collapsedGroups:r,events:o,setEvents:i,onEventClick:c,todayIndex:d,indicatorOn:s,resourceSettings:u,setDropInfo:p,eventsDragOn:f=!0,eventsExtendOn:m=!0,createNewEventOn:g=!0,onDragInfo:b,onExtendInfo:v,onCreateEventInfo:h,onEventRightClick:x}=e;const y=(0,a.useRef)(null),{isDragging:w,dragStart:D,dragEnd:E}=function(){let e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:[];const[n,t]=(0,a.useState)(!1),[r,o]=(0,a.useState)(null),[l,i]=(0,a.useState)(null),[c,d]=(0,a.useState)(e),s=()=>{t(!1),o(null),i(null)};return{events:c,isDragging:n,dragStart:r,dragEnd:l,startDrag:(e,n)=>{t(!0),o({resourceId:e,date:n}),i({resourceId:e,date:n})},updateDrag:(e,t)=>{n&&i({resourceId:e,date:t})},endDrag:e=>{if(!n||!r||!l)return;if(r.resourceId!==l.resourceId)return void s();const t=e.findIndex((e=>S(e.fullDate).toDateString()===S(r.date.fullDate).toDateString())),o=e.findIndex((e=>S(e.fullDate).toDateString()===S(l.date.fullDate).toDateString()));if(-1===t||-1===o)return void s();const a=Math.min(t,o),i=Math.max(t,o),c=e[a].fullDate,u=e[i].fullDate,p={id:Date.now(),title:"Yeni Etkinlik",resourceId:r.resourceId,startDate:c,endDate:u,color:"#ff7f50"};d((e=>[...e,p])),s()},setEvents:d}}(o,i),{handleDragStart:k,handleDragOver:O,handleDrop:I,handleDragEnd:C}=((e,n,t)=>{const[r,o]=(0,a.useState)(null),[l,i]=(0,a.useState)(0),[c,d]=(0,a.useState)(null);return{handleDragStart:(n,t)=>{if("extend"===c)return;n.stopPropagation();const r=n.target.getBoundingClientRect(),a=n.clientX-r.left;o(t),i(a),d("drag");const l=e.find((e=>e.id===t));l&&(console.log("Dragging Event Start:",l.startDate),console.log("Dragging Event End:",l.endDate))},handleExtendStart:(e,n)=>{e.stopPropagation(),o(n),d("extend")},handleDragOver:e=>{e.preventDefault()},handleDrop:(a,s,u)=>{if(a.preventDefault(),"drag"===c&&r){const o=e.find((e=>e.id===r));if(o){const e=o.endDate-o.startDate,i=a.target.offsetWidth||30,c=Math.floor(l/i),d=new Date(u.getTime()-24*c*60*60*1e3),p=new Date(d.getTime()+e);console.log("New Start Date:",d),console.log("New End Date:",p),n((e=>e.map((e=>e.id===r?j(j({},e),{},{resourceId:s,startDate:d,endDate:p}):e)))),t&&t({id:r,newResourceId:s,newStartDate:d,newEndDate:p})}}o(null),i(0),d(null)},handleExtend:(e,t,a)=>{"extend"===c&&r===t&&(n((e=>e.map((e=>e.id===t?j(j({},e),{},{endDate:a}):e)))),console.log("Extended Event ID:",t,"New End Date:",a),o(null),d(null))},handleDragEnd:()=>{o(null),i(0),d(null)}}})(o,i,p),{extendEvent:N}=((e,n)=>({extendEvent:(0,a.useCallback)(((e,t)=>{n((n=>n.map((n=>n.id===e?T(T({},n),{},{endDate:t}):n))))}),[n])}))(0,i),[M,R]=(0,a.useState)(null),[A,G]=(0,a.useState)(null),[H,L]=(0,a.useState)(null),[B,X]=(0,a.useState)(null),[K,V]=(0,a.useState)(!1),[W,Y]=(0,a.useState)(null),[F,J]=(0,a.useState)(null),[_,q]=(0,a.useState)({top:0,left:0}),U=t.length;(0,a.useEffect)((()=>{if(!g)return;if(!K)return;if("extend"===M)return void console.log(">>> 'extend' mode, skip new event creation");const e=e=>{if(!K||!W)return;const n=document.elementFromPoint(e.clientX,e.clientY),t=(null==n?void 0:n.offsetWidth)||30,r=W.startX||e.clientX,o=e.clientX-r,a=Math.max(1,Math.floor(o/t)),l=new Date(W.startDate.getTime());l.setDate(l.getDate()+a),Y(z(z({},W),{},{endDate:l,startX:r,title:"".concat(a," Gece")}))},n=()=>{K&&W&&(i([...o,W]),h&&h(W)),Y(null),V(!1)};return window.addEventListener("mousemove",e),window.addEventListener("mouseup",n),()=>{window.removeEventListener("mousemove",e),window.removeEventListener("mouseup",n)}}),[g,K,M,W,o,h,i]),(0,a.useEffect)((()=>{if("extend"===M){const e=e=>(e=>{if("extend"!==M||!A)return;if(!m)return;const n=e.clientX-(null!=B?B:0),t=Math.floor(n/30),r=new Date((null!=H?H:new Date).getTime());r.setDate(r.getDate()+t),console.log(">>> Extending ID:",A.id,"=>",r),i((e=>e.map((e=>e.id===A.id?z(z({},e),{},{endDate:r}):e))))})(e),n=()=>(()=>{if(console.log(">>> Extend finished ID:",null==A?void 0:A.id),v&&A){const e=o.find((e=>e.id===A.id));e&&v({eventId:A.id,newEndDate:e.endDate})}R(null),G(null),L(null),X(null)})();return document.addEventListener("mousemove",e),document.addEventListener("mouseup",n),()=>{document.removeEventListener("mousemove",e),document.removeEventListener("mouseup",n)}}}),[M,A,m,H,B]);const $=(e,n)=>{if(!D||!E)return!1;if(e!==D.resourceId)return!1;const r=t.findIndex((e=>S(e.fullDate).getTime()===S(D.date).getTime())),o=t.findIndex((e=>S(e.fullDate).getTime()===S(E.date).getTime())),a=t.findIndex((e=>S(e.fullDate).getTime()===S(n.fullDate).getTime()));return-1!==r&&-1!==o&&-1!==a&&a>=Math.min(r,o)&&a<=Math.max(r,o)},Q=(e,n)=>{const t=S(e.startDate),r=S(e.endDate),o=n.findIndex((e=>S(e.fullDate).toDateString()===t.toDateString())),a=n.findIndex((e=>S(e.fullDate).toDateString()===r.toDateString())),l=n.length;if(o<0&&a<0)return{isVisible:!1,left:0,width:0,isPartialStart:!1,isPartialEnd:!1};if(o>=l&&a>=l)return{isVisible:!1,left:0,width:0,isPartialStart:!1,isPartialEnd:!1};const i=o<0,c=a>=l,d=(Math.max(o,0)+(i?0:.5))/l*100,s=(Math.min(a,l-1)+(c?1:.5))/l*100-d;return{isVisible:!0,left:"".concat(d,"%"),width:"".concat(s,"%"),isPartialStart:i,isPartialEnd:c}};return l().createElement("div",{ref:y,className:"timeline-content-container"},s&&l().createElement(P,{todayIndex:d,totalDays:U}),n.map(((e,n)=>l().createElement("div",{key:n,className:"timeline-group-container"},u.isGrouped&&l().createElement("div",{className:"timeline-group-header-row"},t.map(((e,t)=>l().createElement("div",{key:"group-header-".concat(n,"-").concat(t),className:"timeline-group-header-cell"})))),!r[e.groupName]&&e.resources.map(((e,r)=>{const a=o.filter((n=>n.resourceId===e.id));return l().createElement("div",{key:e.id,className:"timeline-resource-row"},a.map((e=>{const{isVisible:n,left:r,width:o,isPartialStart:a,isPartialEnd:i}=Q(e,t);return n?l().createElement("div",{key:e.id,className:"timeline-event",draggable:"extend"!==M&&f,onDragStart:n=>{"extend"!==M?((e,n)=>{f?k(e,n):e.preventDefault()})(n,e.id):n.preventDefault()},onDragEnd:e=>{"extend"!==M?(e=>{f?C():e.preventDefault()})(e):e.preventDefault()},onContextMenu:n=>((e,n)=>{n.preventDefault(),x&&x(e,n)})(e,n),onClick:n=>((e,n)=>{n.stopPropagation(),c&&c(e,n);const t=n.currentTarget;if(t){const n=t.getBoundingClientRect();q({top:n.top+window.scrollY,left:n.left+n.width/2+window.scrollX}),J(e)}})(e,n),style:{left:r,width:o,top:"5px",borderTopLeftRadius:a?"0px":"20px",borderBottomLeftRadius:a?"0px":"20px",borderTopRightRadius:i?"0px":"20px",borderBottomRightRadius:i?"0px":"20px",cursor:"extend"===M?"col-resize":"grab"}},e.title,m&&l().createElement("div",{className:"timeline-event-extend-handle",onMouseDown:n=>{n.stopPropagation(),((e,n)=>{m&&(e.stopPropagation(),console.log(">>> Extend start ID:",n.id),R("extend"),G(n),L(n.endDate),X(e.clientX))})(n,e)}})):null})),W&&W.resourceId===e.id&&l().createElement("div",{className:"timeline-temp-event",style:z(z({},Q(W,t)),{},{top:"5px"})},W.title),t.map(((t,o)=>l().createElement("div",{key:"cell-".concat(n,"-").concat(r,"-").concat(o),className:"timeline-cell ".concat($(e.id,t)?"selected":""),"data-date":JSON.stringify(t),"data-resource-id":e.id,onMouseDown:()=>((e,n)=>{if(!g)return;const t=S(n.fullDate),r={id:Date.now(),title:"1 Gece",startDate:t,endDate:new Date(t.getTime()+864e5),resourceId:e,color:""};Y(r),V(!0)})(e.id,t),onDragOver:e=>O(e),onDrop:n=>I(n,e.id,S(t.fullDate))}))))}))))),F&&l().createElement("div",{style:{position:"absolute",top:_.top,left:_.left,backgroundColor:"#333",color:"#fff",padding:"5px",borderRadius:"4px",zIndex:999}},l().createElement("button",{onClick:()=>{J(null)}},"X"),F.title))},G=e=>{let{event:n,position:t={top:0,left:0},onClose:r,onEdit:o,onDelete:a}=e;if(!n)return null;const{top:i,left:c}=t,d=(e=>{switch(e){case"Confirmed":return"#4caf50";case"Pending":return"#ff9800";case"Cancelled":return"#f44336";case"Completed":return"#2196f3";default:return"#9e9e9e"}})(n.status);return l().createElement("div",{style:{position:"absolute",top:i-30,left:c+70,transform:"translateX(-50%)",backgroundColor:"#ffffff",color:"#333333",borderRadius:"10px",boxShadow:"0 8px 16px rgba(0, 0, 0, 0.2)",fontSize:"16px",zIndex:1e3,pointerEvents:"auto",whiteSpace:"normal",maxWidth:"400px",width:"100%",transition:"opacity 0.3s ease, transform 0.3s ease"}},r&&l().createElement("button",{onClick:r,style:{position:"absolute",top:"10px",right:"15px",background:"transparent",border:"none",color:"#aaa",fontSize:"24px",cursor:"pointer",transition:"color 0.2s"},"aria-label":"Kapat",onMouseOver:e=>e.target.style.color="#000",onMouseOut:e=>e.target.style.color="#aaa"},"×"),l().createElement("div",{style:{backgroundColor:d,color:"#ffffff",padding:"15px 20px",borderTopLeftRadius:"10px",borderTopRightRadius:"10px",display:"flex",flexDirection:"column",gap:"5px"}},l().createElement("div",{style:{fontWeight:"bold",fontSize:"18px"}},n.title),l().createElement("div",{style:{fontSize:"14px"}},"Rezervasyon ID: ",n.reservationId)),l().createElement("div",{style:{padding:"20px",display:"flex",flexDirection:"column",gap:"15px"}},Array.isArray(n.guestNames)&&l().createElement("div",null,l().createElement("strong",null,"Misafirler:")," ",n.guestNames.join(", ")),l().createElement("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:"10px"}},l().createElement("div",null,l().createElement("strong",null,"Giriş:")," ",new Date(n.startDate).toLocaleDateString()),l().createElement("div",null,l().createElement("strong",null,"Çıkış:")," ",new Date(n.endDate).toLocaleDateString())),(void 0!==n.totalAmount||void 0!==n.amountPaid)&&l().createElement("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:"10px"}},void 0!==n.amountPaid&&l().createElement("div",null,l().createElement("strong",null,"Ödenen Miktar:")," $",n.amountPaid.toFixed(2)),void 0!==n.totalAmount&&l().createElement("div",null,l().createElement("strong",null,"Toplam Borç:")," $",n.totalAmount.toFixed(2))),n.status&&l().createElement("div",null,l().createElement("strong",null,"Durum:")," ",n.status),n.note&&l().createElement("div",null,l().createElement("strong",null,"Not:")," ",n.note)),l().createElement("div",{style:{padding:"15px 20px",borderTop:"1px solid #ddd",display:"flex",justifyContent:"flex-end",gap:"10px",borderBottomLeftRadius:"10px",borderBottomRightRadius:"10px"}},o&&l().createElement("button",{onClick:()=>o(n),style:{padding:"8px 16px",backgroundColor:"#2196f3",color:"#ffffff",border:"none",borderRadius:"4px",cursor:"pointer",fontSize:"14px",display:"flex",alignItems:"center",gap:"5px",transition:"background-color 0.2s"},onMouseOver:e=>e.target.style.backgroundColor="#1976d2",onMouseOut:e=>e.target.style.backgroundColor="#2196f3"},l().createElement("span",{role:"img","aria-label":"Düzenle"},"✏️"),"Düzenle"),a&&l().createElement("button",{onClick:()=>a(n.id),style:{padding:"8px 16px",backgroundColor:"#f44336",color:"#ffffff",border:"none",borderRadius:"4px",cursor:"pointer",fontSize:"14px",display:"flex",alignItems:"center",gap:"5px",transition:"background-color 0.2s"},onMouseOver:e=>e.target.style.backgroundColor="#d32f2f",onMouseOut:e=>e.target.style.backgroundColor="#f44336"},l().createElement("span",{role:"img","aria-label":"Sil"},"🗑️"),"Sil")))};function H(e,n){var t=Object.keys(e);if(Object.getOwnPropertySymbols){var r=Object.getOwnPropertySymbols(e);n&&(r=r.filter((function(n){return Object.getOwnPropertyDescriptor(e,n).enumerable}))),t.push.apply(t,r)}return t}function L(e){for(var n=1;n<arguments.length;n++){var t=null!=arguments[n]?arguments[n]:{};n%2?H(Object(t),!0).forEach((function(n){B(e,n,t[n])})):Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(t)):H(Object(t)).forEach((function(n){Object.defineProperty(e,n,Object.getOwnPropertyDescriptor(t,n))}))}return e}function B(e,n,t){return(n=function(e){var n=function(e){if("object"!=typeof e||!e)return e;var n=e[Symbol.toPrimitive];if(void 0!==n){var t=n.call(e,"string");if("object"!=typeof t)return t;throw new TypeError("@@toPrimitive must return a primitive value.")}return String(e)}(e);return"symbol"==typeof n?n:n+""}(n))in e?Object.defineProperty(e,n,{value:t,enumerable:!0,configurable:!0,writable:!0}):e[n]=t,e}const X=e=>{let{resources:n,programDate:t=null,events:r=[],resourceSettings:o={showIdAsName:!1,isGrouped:!0,isCollapsible:!0},indicatorOn:i=!1,dropInfo:c,setDropInfo:d,masterHeaderView:s=!0,resourceHeaderContent:u="Akfa Timeline",eventsDragOn:p=!0,eventsExtendOn:f=!0,createNewEventOn:m=!0,onDragInfo:g,onExtendInfo:b,onCreateEventInfo:v,onEventClick:h,onEventRightClick:x,horizontalScrollOn:y=!1}=e;const S=(()=>{const e=["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"],n=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"],t=[],r=[];for(let o=2020;o<=2030;o++)for(let a=1;a<=12;a++){const l=new Date(o,a,0).getDate(),i=t.length;for(let n=1;n<=l;n++){const r=new Date(o,a-1,n),l=e[r.getDay()];t.push({fullDate:r,display:"".concat(n," ").concat(l)})}const c=t.length-1;r.push({monthName:n[a-1],year:o,startIndex:i,endIndex:c,totalDays:c-i+1})}return{dates:t,monthHeaders:r}})(),{dates:O,monthHeaders:j}=S,[I,P]=(0,a.useState)({}),[C,T]=(0,a.useState)((()=>{const e=t?new Date(t):new Date;return e.setDate(e.getDate()-3),e})),[N,M]=(0,a.useState)(r),[z,R]=(0,a.useState)(null),[H,B]=(0,a.useState)({top:0,left:0}),[X,K]=(0,a.useState)(30),[V,W]=(0,a.useState)(!1),Y=56.95*X,F=O.findIndex((e=>e.fullDate>=C)),J=F+X,_=-1!==F?O.slice(F,Math.min(J,O.length)):[],q=t?new Date(t):new Date,U=_.findIndex((e=>new Date(e.fullDate).toDateString()===q.toDateString())),$=_.length,Q=e=>{P((n=>L(L({},n),{},{[e]:!n[e]})))};(0,a.useEffect)((()=>{document.body.classList.toggle("dark-mode",V)}),[V]);const Z=j.map((e=>{const n=Math.max(e.startIndex,F),t=Math.min(e.endIndex,J-1);return L(L({},e),{},{startIndex:n,endIndex:t})})).filter((e=>e.startIndex<=e.endIndex));return l().createElement("div",{className:"timeline-container ".concat(V?"dark-mode":"")},s&&l().createElement("div",{className:"timeline-master-header"},l().createElement(w,{onToday:()=>{const e=t?new Date(t):new Date;e.setDate(e.getDate()-3),T(e)},onAdvance:()=>T((e=>new Date(e.getTime()+432e6))),onRetreat:()=>T((e=>new Date(e.getTime()-432e6))),onMonthAdvance:()=>T((e=>{const n=new Date(e);return n.setMonth(n.getMonth()+1),n})),onMonthRetreat:()=>T((e=>{const n=new Date(e);return n.setMonth(n.getMonth()-1),n})),dayRange:X,setDayRange:K,isDarkMode:V,toggleDarkMode:()=>{W((e=>!e))}})),l().createElement("div",{className:"timeline-body"},l().createElement("div",{className:"timeline-resources-container"},l().createElement(D,{content:u}),l().createElement(E,{groupedResources:n,toggleGroupCollapse:Q,collapsedGroups:I,resourceSettings:o})),l().createElement("div",{className:"timeline-scrollable-container",style:{overflowX:y?"auto":"hidden"}},l().createElement("div",{className:"timeline-header-content-wrapper",style:{width:y?"".concat(Y,"px"):"100%"}},l().createElement(k,{dates:_,monthHeaders:Z}),l().createElement(A,{groupedResources:n,dates:_,collapsedGroups:I,events:N,setEvents:M,onEventClick:(e,n)=>{h&&h(e,n);const t=n.currentTarget;if(t){const n=t.getBoundingClientRect();B({top:n.top+window.scrollY,left:n.left+n.width/2+window.scrollX}),R(e)}},todayIndex:U,totalDays:$,indicatorOn:i,resourceSettings:o,toggleGroupCollapse:Q,setDropInfo:d,eventsDragOn:p,eventsExtendOn:f,createNewEventOn:m,onDragInfo:g,onExtendInfo:b,onCreateEventInfo:v,onEventRightClick:x}),z&&l().createElement(G,{event:z,position:H,onClose:()=>{R(null)},onDelete:e=>M((n=>n.filter((n=>n.id!==e))))})))))};return o})()));
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory(require("react"));
+	else if(typeof define === 'function' && define.amd)
+		define(["react"], factory);
+	else if(typeof exports === 'object')
+		exports["AkfaTimeline"] = factory(require("react"));
+	else
+		root["AkfaTimeline"] = factory(root["react"]);
+})(this, (__WEBPACK_EXTERNAL_MODULE__155__) => {
+return /******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ 27:
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(601);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(314);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `/* src/components/Timeline/Timeline.css */
+
+/* 
+  Temel: "sales sayfası" temasıyla uyumlu renkler, 
+  light vs. dark tanımları 
+*/
+
+:root {
+  /* Light Tema Varsayılan Renkler */
+  --background-color: #f5f5f2;       /* Açık tema arka plan */
+  --text-color: #666;               /* Açık tema yazı rengi */
+  --border-color: #bbb;             /* Daha yumuşak border */
+
+  /* Header */
+  --header-background-color: #f5f5f2;  /* Üst header, tablo header */
+  --header-text-color: #666;
+
+  /* Resources */
+  --resource-background-color: #f5f5f2;  
+  --resource-text-color: #666;
+  --group-header-background-color: #dadada;
+
+  /* Timeline */
+  --timeline-header-background-color: #f5f5f2;
+  --timeline-cell-border-color: #ccc;
+  --timeline-event-background-color: #fff;
+  --timeline-event-border-color: #666;
+  --timeline-event-text-color: #666;
+
+  /* Scrollbar */
+  --scrollbar-thumb-background: #aaa;
+  --scrollbar-thumb-hover-background: #888;
+
+  --resource-width: 150px;
+  --cell-height: 40px;
+  --header-height: 60px;
+  --time-slot-height: 20px;
+  --container-height: 480px;
+
+  --timeline-new-event-background-color: #ff5722;
+  --timeline-new-event-text-color: #fff;
+
+  --timeline-event-background-color: #ff7f50; 
+  --timeline-event-text-color: #fff;
+  --timeline-event-border-color: #fff;
+
+  --timeline-cell-selected-bg: rgba(25,118,210,0.2);
+
+  user-select: none; /* Metin seçimini engelle */
+}
+
+/* Koyu Tema */
+.dark-mode {
+  /* Koyu tema */
+  --background-color: #16202a;               /* Koyu tema arka plan */
+  --text-color: #ddd;                        /* Koyu tema yazı rengi */
+  --border-color: #444;
+
+  --header-background-color: #16202a;
+  --header-text-color: #bbb;
+
+  --resource-background-color: #16202a;
+  --resource-text-color: #bbb;
+  --group-header-background-color: #0d141b;
+
+  --timeline-header-background-color: #16202a;
+  --timeline-cell-border-color: #444;
+  --timeline-event-background-color: #2a2a2a;
+  --timeline-event-border-color: #222;
+  --timeline-event-text-color: #ddd;
+
+  --scrollbar-thumb-background: #555;
+  --scrollbar-thumb-hover-background: #888;
+
+  --timeline-new-event-background-color: #a83e20;
+  --timeline-new-event-text-color: #eee;
+
+  --timeline-event-background-color: #a83e20;
+  --timeline-event-text-color: #fff;
+  --timeline-event-border-color: #222;
+
+  --timeline-cell-selected-bg: rgba(76,175,80,0.2);
+}
+
+/* Genel Timeline Konteyner */
+.timeline-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+/* Master Header */
+.timeline-master-header {
+  width: 100%;
+  background-color: var(--header-background-color);
+  color: var(--header-text-color);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 10;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* Timeline Body */
+.timeline-body {
+  display: flex;
+  flex: 1;
+}
+
+/* Sol Kısım: Resources */
+.timeline-resources-container {
+  width: var(--resource-width);
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border-color);
+  position: sticky;
+  left: 0;
+  top: var(--header-height);
+  z-index: 2;
+  background-color: var(--resource-background-color);
+  overflow-y: auto;
+}
+
+/* Resources Header */
+.resources-header {
+  background-color: var(--header-background-color);
+  color: var(--resource-text-color);
+  text-align: center;
+  width: var(--resource-width);
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(var(--header-height) * 2); /* Üst üste iki header yüksekliği */
+  border-right: 1px solid var(--border-color);
+  box-sizing: border-box;
+}
+
+/* Grup Başlığı Hücreleri */
+.group-header-row {
+  display: flex;
+  height: var(--cell-height);
+  background-color: var(--group-header-background-color);
+  color: var(--resource-text-color);
+  font-weight: bold;
+}
+
+.group-header-cell {
+  flex: 1;
+  border: 1px solid var(--border-color);
+  text-align: center;
+  background-color: var(--group-header-background-color);
+  color: var(--resource-text-color);
+  height: var(--cell-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Resource Grupları */
+.resource-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Resource Grup Header */
+.resource-group-header {
+  background-color: var(--group-header-background-color);
+  color: var(--resource-text-color);
+  font-weight: bold;
+  height: var(--cell-height);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0px;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+}
+
+/* Resource Hücreleri */
+.resource-cell {
+  padding: 0;
+  text-align: left;
+  background-color: var(--resource-background-color);
+  color: var(--resource-text-color);
+  height: var(--cell-height);
+  display: flex;
+  align-items: center;
+  border: 0.3px solid var(--border-color);
+  box-sizing: border-box;
+}
+
+/* Sağ Kısım: Timeline */
+.timeline-scrollable-container {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Header ve Content Wrapper */
+.timeline-header-content-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Timeline Header */
+.timeline-header {
+  display: flex;
+  background-color: var(--timeline-header-background-color);
+  color: var(--header-text-color);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  height: var(--header-height);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Timeline Content */
+.timeline-content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Grup Container */
+.group-container {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Resource Satırları */
+.resource-row {
+  display: flex;
+  box-sizing: border-box;
+  position: relative;
+  height: var(--cell-height);
+  border: 1px solid var(--border-color);
+  margin-top: -1px;
+  overflow: hidden;
+}
+
+/* Timeline Hücreleri */
+.timeline-cell {
+  flex: 1;
+  border: 1px solid var(--timeline-cell-border-color);
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* Hücre Seçili Durumu */
+.timeline-cell.selected {
+  background-color: rgba(25, 118, 210, 0.2); /* satır içi/hover */
+}
+
+/* Event Stilleri */
+.event {
+  position: absolute;
+  background-color: var(--timeline-event-background-color);
+  color: var(--timeline-event-text-color);
+  font-size: 12px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+  z-index: 10;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: 1px solid var(--timeline-event-border-color);
+  cursor: pointer;
+}
+
+/* Event Time Stili */
+.event-time {
+  font-size: 10px;
+  margin-top: 2px;
+}
+
+/* Scrollbar için */
+.timeline-scrollable-container::-webkit-scrollbar {
+  height: 10px;
+}
+
+.timeline-scrollable-container::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-background);
+  border-radius: 5px;
+}
+
+.timeline-scrollable-container::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover-background);
+}
+
+.resources-header {
+  background-color: var(--header-background-color);
+  color: var(--resource-text-color);
+  text-align: center;
+  width: var(--resource-width);
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+  border-right: 1px solid var(--border-color);
+  box-sizing: border-box;
+}
+
+/* TimelineHeader Container */
+.timeline-header-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ay + Yıl satırı */
+.timeline-header-month-row {
+  display: flex;
+  background-color: var(--header-background-color);
+  color: var(--header-text-color);
+  font-weight: bold;
+  font-size: 16px;
+  height: 40px;
+  line-height: 40px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Ay + Yıl hücreleri */
+.timeline-header-month-cell {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* border-right => dynamic, inline style if needed */
+  box-sizing: border-box;
+}
+
+/* Günlük Hücreler (tarih satırı) */
+.timeline-header-day-row {
+  display: flex;
+  background-color: var(--timeline-header-background-color);
+  color: var(--header-text-color);
+  /* border-bottom: 1px solid var(--border-color); if needed */
+}
+
+/* Günlük hücre (her gün) */
+.timeline-header-day-cell {
+  height: 40px;
+  line-height: 40px;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+
+/* src/components/Timeline/Timeline.css */
+/* Ekleme: MasterHeader stili */
+
+/* Kapsayıcı */
+.master-header-container {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+
+  background-color: var(--header-background-color);
+  color: var(--header-text-color);
+
+  /* eğer border vs. istersen
+  border-bottom: 1px solid var(--border-color);
+  */
+}
+
+/* Butonlar */
+.master-header-btn {
+  background-color: transparent;
+  color: var(--header-text-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 6px 12px;
+  margin-right: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.master-header-btn:hover {
+  background-color: rgba(25, 118, 210, 0.2); /* Light tema hover */
+}
+
+.dark-mode .master-header-btn:hover {
+  background-color: rgba(76, 175, 80, 0.2); /* Koyu tema hover */
+}
+
+.master-header-btn:focus {
+  outline: none;
+}
+
+/* Select */
+.master-header-select {
+  margin-left: 10px;
+  background-color: transparent;
+  color: var(--header-text-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.master-header-select:focus {
+  outline: none;
+}
+
+
+/* Container */
+.timeline-content-container {
+  position: relative;
+  width: 100%;
+  height: auto; /* or as needed */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Group container */
+.timeline-group-container {
+  margin-bottom: 0px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Group header row */
+.timeline-group-header-row {
+  display: flex;
+  margin-top: -0.08rem;
+}
+
+.timeline-group-header-cell {
+  flex: 1;
+  height: 2.58rem;
+  background-color: var(--group-header-background-color);
+  border: 1px solid var(--border-color);
+  
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Resource row */
+.timeline-resource-row {
+  display: flex;
+  position: relative;
+  height: var(--cell-height, 40px);
+  border: 1px solid var(--border-color);
+  box-sizing: border-box;
+}
+
+/* Each day cell */
+.timeline-cell {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  border-left: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+/* "selected" day cell */
+.timeline-cell.selected {
+  background-color: var(--timeline-cell-selected-bg, rgba(25,118,210,0.2));
+}
+
+/* Event */
+.timeline-event {
+  position: absolute;
+  background-color: var(--timeline-event-background-color, #0093ce);
+  color: var(--timeline-event-text-color, #fff);
+  font-size: 14px;
+  padding: 5px;
+  border-radius: 20px;
+  box-sizing: border-box;
+  z-index: 10;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: 1px solid var(--timeline-event-border-color, #fff);
+  top: 5px; /* or a variable offset if you want */
+  /* "left" and "width" are inline from JS */
+}
+
+/* Extend handle */
+.timeline-event-extend-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 10px;
+  height: 100%;
+  background-color: rgba(0,0,0,0.2);
+  cursor: col-resize;
+  z-index: 20;
+}
+
+/* Temp event (while creating) */
+.timeline-temp-event {
+  position: absolute;
+  background-color: var(--timeline-new-event-background-color, #0093ce);
+  color: var(--timeline-new-event-text-color, #fff);
+  opacity: 0.7;
+  border-radius: 20px;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  /* "left"/"width" from JS: " ...calculatePosition(tempEvent, dates)" */
+  top: 5px;
+}
+`, ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ 314:
+/***/ ((module) => {
+
+
+
+/*
+  MIT License http://www.opensource.org/licenses/mit-license.php
+  Author Tobias Koppers @sokra
+*/
+module.exports = function (cssWithMappingToString) {
+  var list = [];
+
+  // return the list of modules as css string
+  list.toString = function toString() {
+    return this.map(function (item) {
+      var content = "";
+      var needLayer = typeof item[5] !== "undefined";
+      if (item[4]) {
+        content += "@supports (".concat(item[4], ") {");
+      }
+      if (item[2]) {
+        content += "@media ".concat(item[2], " {");
+      }
+      if (needLayer) {
+        content += "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {");
+      }
+      content += cssWithMappingToString(item);
+      if (needLayer) {
+        content += "}";
+      }
+      if (item[2]) {
+        content += "}";
+      }
+      if (item[4]) {
+        content += "}";
+      }
+      return content;
+    }).join("");
+  };
+
+  // import a list of modules into the list
+  list.i = function i(modules, media, dedupe, supports, layer) {
+    if (typeof modules === "string") {
+      modules = [[null, modules, undefined]];
+    }
+    var alreadyImportedModules = {};
+    if (dedupe) {
+      for (var k = 0; k < this.length; k++) {
+        var id = this[k][0];
+        if (id != null) {
+          alreadyImportedModules[id] = true;
+        }
+      }
+    }
+    for (var _k = 0; _k < modules.length; _k++) {
+      var item = [].concat(modules[_k]);
+      if (dedupe && alreadyImportedModules[item[0]]) {
+        continue;
+      }
+      if (typeof layer !== "undefined") {
+        if (typeof item[5] === "undefined") {
+          item[5] = layer;
+        } else {
+          item[1] = "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {").concat(item[1], "}");
+          item[5] = layer;
+        }
+      }
+      if (media) {
+        if (!item[2]) {
+          item[2] = media;
+        } else {
+          item[1] = "@media ".concat(item[2], " {").concat(item[1], "}");
+          item[2] = media;
+        }
+      }
+      if (supports) {
+        if (!item[4]) {
+          item[4] = "".concat(supports);
+        } else {
+          item[1] = "@supports (".concat(item[4], ") {").concat(item[1], "}");
+          item[4] = supports;
+        }
+      }
+      list.push(item);
+    }
+  };
+  return list;
+};
+
+/***/ }),
+
+/***/ 601:
+/***/ ((module) => {
+
+
+
+module.exports = function (i) {
+  return i[1];
+};
+
+/***/ }),
+
+/***/ 72:
+/***/ ((module) => {
+
+
+
+var stylesInDOM = [];
+function getIndexByIdentifier(identifier) {
+  var result = -1;
+  for (var i = 0; i < stylesInDOM.length; i++) {
+    if (stylesInDOM[i].identifier === identifier) {
+      result = i;
+      break;
+    }
+  }
+  return result;
+}
+function modulesToDom(list, options) {
+  var idCountMap = {};
+  var identifiers = [];
+  for (var i = 0; i < list.length; i++) {
+    var item = list[i];
+    var id = options.base ? item[0] + options.base : item[0];
+    var count = idCountMap[id] || 0;
+    var identifier = "".concat(id, " ").concat(count);
+    idCountMap[id] = count + 1;
+    var indexByIdentifier = getIndexByIdentifier(identifier);
+    var obj = {
+      css: item[1],
+      media: item[2],
+      sourceMap: item[3],
+      supports: item[4],
+      layer: item[5]
+    };
+    if (indexByIdentifier !== -1) {
+      stylesInDOM[indexByIdentifier].references++;
+      stylesInDOM[indexByIdentifier].updater(obj);
+    } else {
+      var updater = addElementStyle(obj, options);
+      options.byIndex = i;
+      stylesInDOM.splice(i, 0, {
+        identifier: identifier,
+        updater: updater,
+        references: 1
+      });
+    }
+    identifiers.push(identifier);
+  }
+  return identifiers;
+}
+function addElementStyle(obj, options) {
+  var api = options.domAPI(options);
+  api.update(obj);
+  var updater = function updater(newObj) {
+    if (newObj) {
+      if (newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap && newObj.supports === obj.supports && newObj.layer === obj.layer) {
+        return;
+      }
+      api.update(obj = newObj);
+    } else {
+      api.remove();
+    }
+  };
+  return updater;
+}
+module.exports = function (list, options) {
+  options = options || {};
+  list = list || [];
+  var lastIdentifiers = modulesToDom(list, options);
+  return function update(newList) {
+    newList = newList || [];
+    for (var i = 0; i < lastIdentifiers.length; i++) {
+      var identifier = lastIdentifiers[i];
+      var index = getIndexByIdentifier(identifier);
+      stylesInDOM[index].references--;
+    }
+    var newLastIdentifiers = modulesToDom(newList, options);
+    for (var _i = 0; _i < lastIdentifiers.length; _i++) {
+      var _identifier = lastIdentifiers[_i];
+      var _index = getIndexByIdentifier(_identifier);
+      if (stylesInDOM[_index].references === 0) {
+        stylesInDOM[_index].updater();
+        stylesInDOM.splice(_index, 1);
+      }
+    }
+    lastIdentifiers = newLastIdentifiers;
+  };
+};
+
+/***/ }),
+
+/***/ 659:
+/***/ ((module) => {
+
+
+
+var memo = {};
+
+/* istanbul ignore next  */
+function getTarget(target) {
+  if (typeof memo[target] === "undefined") {
+    var styleTarget = document.querySelector(target);
+
+    // Special case to return head of iframe instead of iframe itself
+    if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
+      try {
+        // This will throw an exception if access to iframe is blocked
+        // due to cross-origin restrictions
+        styleTarget = styleTarget.contentDocument.head;
+      } catch (e) {
+        // istanbul ignore next
+        styleTarget = null;
+      }
+    }
+    memo[target] = styleTarget;
+  }
+  return memo[target];
+}
+
+/* istanbul ignore next  */
+function insertBySelector(insert, style) {
+  var target = getTarget(insert);
+  if (!target) {
+    throw new Error("Couldn't find a style target. This probably means that the value for the 'insert' parameter is invalid.");
+  }
+  target.appendChild(style);
+}
+module.exports = insertBySelector;
+
+/***/ }),
+
+/***/ 540:
+/***/ ((module) => {
+
+
+
+/* istanbul ignore next  */
+function insertStyleElement(options) {
+  var element = document.createElement("style");
+  options.setAttributes(element, options.attributes);
+  options.insert(element, options.options);
+  return element;
+}
+module.exports = insertStyleElement;
+
+/***/ }),
+
+/***/ 56:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+
+
+/* istanbul ignore next  */
+function setAttributesWithoutAttributes(styleElement) {
+  var nonce =  true ? __webpack_require__.nc : 0;
+  if (nonce) {
+    styleElement.setAttribute("nonce", nonce);
+  }
+}
+module.exports = setAttributesWithoutAttributes;
+
+/***/ }),
+
+/***/ 825:
+/***/ ((module) => {
+
+
+
+/* istanbul ignore next  */
+function apply(styleElement, options, obj) {
+  var css = "";
+  if (obj.supports) {
+    css += "@supports (".concat(obj.supports, ") {");
+  }
+  if (obj.media) {
+    css += "@media ".concat(obj.media, " {");
+  }
+  var needLayer = typeof obj.layer !== "undefined";
+  if (needLayer) {
+    css += "@layer".concat(obj.layer.length > 0 ? " ".concat(obj.layer) : "", " {");
+  }
+  css += obj.css;
+  if (needLayer) {
+    css += "}";
+  }
+  if (obj.media) {
+    css += "}";
+  }
+  if (obj.supports) {
+    css += "}";
+  }
+  var sourceMap = obj.sourceMap;
+  if (sourceMap && typeof btoa !== "undefined") {
+    css += "\n/*# sourceMappingURL=data:application/json;base64,".concat(btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))), " */");
+  }
+
+  // For old IE
+  /* istanbul ignore if  */
+  options.styleTagTransform(css, styleElement, options.options);
+}
+function removeStyleElement(styleElement) {
+  // istanbul ignore if
+  if (styleElement.parentNode === null) {
+    return false;
+  }
+  styleElement.parentNode.removeChild(styleElement);
+}
+
+/* istanbul ignore next  */
+function domAPI(options) {
+  if (typeof document === "undefined") {
+    return {
+      update: function update() {},
+      remove: function remove() {}
+    };
+  }
+  var styleElement = options.insertStyleElement(options);
+  return {
+    update: function update(obj) {
+      apply(styleElement, options, obj);
+    },
+    remove: function remove() {
+      removeStyleElement(styleElement);
+    }
+  };
+}
+module.exports = domAPI;
+
+/***/ }),
+
+/***/ 113:
+/***/ ((module) => {
+
+
+
+/* istanbul ignore next  */
+function styleTagTransform(css, styleElement) {
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = css;
+  } else {
+    while (styleElement.firstChild) {
+      styleElement.removeChild(styleElement.firstChild);
+    }
+    styleElement.appendChild(document.createTextNode(css));
+  }
+}
+module.exports = styleTagTransform;
+
+/***/ }),
+
+/***/ 155:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__155__;
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			id: moduleId,
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/nonce */
+/******/ 	(() => {
+/******/ 		__webpack_require__.nc = undefined;
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__);
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  "default": () => (/* binding */ components_Timeline_Timeline)
+});
+
+// EXTERNAL MODULE: external "react"
+var external_react_ = __webpack_require__(155);
+var external_react_default = /*#__PURE__*/__webpack_require__.n(external_react_);
+// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js
+var injectStylesIntoStyleTag = __webpack_require__(72);
+var injectStylesIntoStyleTag_default = /*#__PURE__*/__webpack_require__.n(injectStylesIntoStyleTag);
+// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/styleDomAPI.js
+var styleDomAPI = __webpack_require__(825);
+var styleDomAPI_default = /*#__PURE__*/__webpack_require__.n(styleDomAPI);
+// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/insertBySelector.js
+var insertBySelector = __webpack_require__(659);
+var insertBySelector_default = /*#__PURE__*/__webpack_require__.n(insertBySelector);
+// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js
+var setAttributesWithoutAttributes = __webpack_require__(56);
+var setAttributesWithoutAttributes_default = /*#__PURE__*/__webpack_require__.n(setAttributesWithoutAttributes);
+// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/insertStyleElement.js
+var insertStyleElement = __webpack_require__(540);
+var insertStyleElement_default = /*#__PURE__*/__webpack_require__.n(insertStyleElement);
+// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/styleTagTransform.js
+var styleTagTransform = __webpack_require__(113);
+var styleTagTransform_default = /*#__PURE__*/__webpack_require__.n(styleTagTransform);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/components/Timeline/Timeline.css
+var Timeline = __webpack_require__(27);
+;// ./src/components/Timeline/Timeline.css
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (styleTagTransform_default());
+options.setAttributes = (setAttributesWithoutAttributes_default());
+options.insert = insertBySelector_default().bind(null, "head");
+options.domAPI = (styleDomAPI_default());
+options.insertStyleElement = (insertStyleElement_default());
+
+var update = injectStylesIntoStyleTag_default()(Timeline/* default */.A, options);
+
+
+
+
+       /* harmony default export */ const Timeline_Timeline = (Timeline/* default */.A && Timeline/* default */.A.locals ? Timeline/* default */.A.locals : undefined);
+
+;// ./src/components/Timeline/MasterHeader.js
+// src/components/Timeline/MasterHeader.js
+
+ // veya MasterHeader.css, eğer ayrı dosyaya koyacaksan
+
+const MasterHeader = _ref => {
+  let {
+    onToday,
+    onAdvance,
+    onRetreat,
+    onMonthAdvance,
+    onMonthRetreat,
+    dayRange,
+    setDayRange,
+    isDarkMode,
+    toggleDarkMode
+  } = _ref;
+  return /*#__PURE__*/external_react_default().createElement("div", {
+    className: "master-header-container"
+  }, /*#__PURE__*/external_react_default().createElement("button", {
+    className: "master-header-btn",
+    onClick: onToday
+  }, "Today"), /*#__PURE__*/external_react_default().createElement("button", {
+    className: "master-header-btn",
+    onClick: onMonthRetreat
+  }, "1 Ay Geri"), /*#__PURE__*/external_react_default().createElement("button", {
+    className: "master-header-btn",
+    onClick: onRetreat
+  }, "5 G\xFCn Geri"), /*#__PURE__*/external_react_default().createElement("button", {
+    className: "master-header-btn",
+    onClick: onAdvance
+  }, "5 G\xFCn \u0130leri"), /*#__PURE__*/external_react_default().createElement("button", {
+    className: "master-header-btn",
+    onClick: onMonthAdvance
+  }, "1 Ay \u0130leri"), /*#__PURE__*/external_react_default().createElement("select", {
+    className: "master-header-select",
+    value: dayRange,
+    onChange: e => setDayRange(parseInt(e.target.value))
+  }, /*#__PURE__*/external_react_default().createElement("option", {
+    value: 30
+  }, "30 G\xFCn"), /*#__PURE__*/external_react_default().createElement("option", {
+    value: 60
+  }, "60 G\xFCn"), /*#__PURE__*/external_react_default().createElement("option", {
+    value: 90
+  }, "90 G\xFCn")), /*#__PURE__*/external_react_default().createElement("button", {
+    className: "master-header-btn",
+    onClick: toggleDarkMode
+  }, isDarkMode ? "Light Mode" : "Dark Mode"));
+};
+/* harmony default export */ const Timeline_MasterHeader = (MasterHeader);
+;// ./src/components/Timeline/ResourcesHeader.js
+// ResourcesHeader.js
+
+
+const ResourcesHeader = _ref => {
+  let {
+    content
+  } = _ref;
+  return /*#__PURE__*/external_react_default().createElement("div", {
+    className: "resources-header"
+  }, content);
+};
+/* harmony default export */ const Timeline_ResourcesHeader = (ResourcesHeader);
+;// ./src/components/Timeline/Resources.js
+
+const Resources = _ref => {
+  let {
+    groupedResources = [],
+    // Kaynakların listesi
+    collapsedGroups = {},
+    // Grupların açık/kapalı durumunu tutan nesne
+    toggleGroupCollapse,
+    // Grupları açma/kapama fonksiyonu
+    resourceSettings = {
+      showIdAsName: false,
+      // Varsayılan: `name` varsa onu göster, yoksa `id`
+      isGrouped: true,
+      // Varsayılan: Gruplama açık
+      isCollapsible: true // Varsayılan: Gruplar açılıp kapanabilir
+    }
+  } = _ref;
+  const {
+    showIdAsName,
+    isGrouped,
+    isCollapsible
+  } = resourceSettings;
+  return /*#__PURE__*/external_react_default().createElement("div", {
+    className: "timeline-resources"
+  }, isGrouped ?
+  // Gruplama aktif
+  groupedResources.map((group, groupIndex) => /*#__PURE__*/external_react_default().createElement("div", {
+    key: groupIndex,
+    className: "resource-group"
+  }, /*#__PURE__*/external_react_default().createElement("div", {
+    className: "resource-group-header",
+    onClick: () => isCollapsible && toggleGroupCollapse(group.groupName)
+  }, group.groupName, " ", isCollapsible && (collapsedGroups[group.groupName] ? "▲" : "▼")), !collapsedGroups[group.groupName] && group.resources.map((resource, resourceIndex) => /*#__PURE__*/external_react_default().createElement("div", {
+    key: resourceIndex,
+    className: "resource-cell"
+  }, showIdAsName ? resource.id : resource.name || resource.id)))) :
+  // Gruplama yok
+  groupedResources.flatMap(group => group.resources).map((resource, resourceIndex) => /*#__PURE__*/external_react_default().createElement("div", {
+    key: resourceIndex,
+    className: "resource-cell"
+  }, showIdAsName ? resource.id : resource.name || resource.id)));
+};
+/* harmony default export */ const Timeline_Resources = (Resources);
+;// ./src/components/Timeline/TimelineHeader.js
+
+ // CSS dosyasını import etmeyi unutma
+
+const TimelineHeader = _ref => {
+  let {
+    dates,
+    monthHeaders
+  } = _ref;
+  return /*#__PURE__*/external_react_default().createElement("div", {
+    className: "timeline-header-container"
+  }, /*#__PURE__*/external_react_default().createElement("div", {
+    className: "timeline-header-month-row"
+  }, monthHeaders.map((monthHeader, index) => /*#__PURE__*/external_react_default().createElement("div", {
+    key: index,
+    className: "timeline-header-month-cell",
+    style: {
+      flex: monthHeader.endIndex - monthHeader.startIndex + 1,
+      borderRight: index < monthHeaders.length - 1 ? "1px solid var(--border-color)" : "none"
+    }
+  }, monthHeader.monthName, " ", monthHeader.year))), /*#__PURE__*/external_react_default().createElement("div", {
+    className: "timeline-header-day-row"
+  }, dates.map((date, index) => /*#__PURE__*/external_react_default().createElement("div", {
+    key: index,
+    className: "timeline-header-day-cell",
+    style: {
+      flex: 1,
+      borderRight: index < dates.length - 1 ? "1px solid var(--border-color)" : "none"
+    }
+  }, date.display))));
+};
+/* harmony default export */ const Timeline_TimelineHeader = (TimelineHeader);
+;// ./src/utils/dateUtils.js
+// src/utils/dateUtils.js
+
+/**
+ * "dd/mm/yyyy" formatındaki bir tarih string'ini Date objesine dönüştürür.
+ * Eğer dateInput bir string değilse, direkt Date objesini döndürür.
+ * @param {string | Object | Date} dateInput - "dd/mm/yyyy" formatında tarih stringi veya {fullDate: Date, display: string} objesi veya Date objesi.
+ * @returns {Date} - Date objesi.
+ */
+const parseDate = dateInput => {
+  if (dateInput instanceof Date) {
+    return dateInput;
+  }
+  if (typeof dateInput === 'string') {
+    const [day, month, year] = dateInput.split("/").map(Number);
+    return new Date(year, month - 1, day);
+  } else if (typeof dateInput === 'object' && dateInput.fullDate instanceof Date) {
+    return new Date(dateInput.fullDate.getTime() + dateInput.fullDate.getTimezoneOffset() * 60000);
+  } else {
+    console.error("parseDate received invalid input:", dateInput);
+    return new Date(); // veya hata fırlat
+  }
+};
+
+/**
+ * Bir tarihin belirli bir aralık içinde olup olmadığını kontrol eder.
+ * @param {string | Object | Date} date - "dd/mm/yyyy" formatında tarih stringi, {fullDate: Date, display: string} objesi veya Date objesi.
+ * @param {string | Object | Date} startDate - "dd/mm/yyyy" formatında başlangıç tarihi stringi, {fullDate: Date, display: string} objesi veya Date objesi.
+ * @param {string | Object | Date} endDate - "dd/mm/yyyy" formatında bitiş tarihi stringi, {fullDate: Date, display: string} objesi veya Date objesi.
+ * @returns {boolean} - Tarih aralık içinde ise true, değilse false.
+ */
+const isDateInRange = (date, startDate, endDate) => {
+  const d = parseDate(date);
+  const start = parseDate(startDate);
+  const end = parseDate(endDate);
+  return d >= start && d <= end;
+};
+;// ./src/hooks/useDragAndDrop.js
+// src/hooks/useDragAndDrop.js
+
+ // Named import
+
+const useDragAndDrop = function () {
+  let initialEvents = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  const [isDragging, setIsDragging] = (0,external_react_.useState)(false);
+  const [dragStart, setDragStart] = (0,external_react_.useState)(null);
+  const [dragEnd, setDragEnd] = (0,external_react_.useState)(null);
+  const [events, setEvents] = (0,external_react_.useState)(initialEvents);
+
+  // Sürükleme başlat
+  const startDrag = (resourceId, date) => {
+    setIsDragging(true);
+    setDragStart({
+      resourceId,
+      date
+    });
+    setDragEnd({
+      resourceId,
+      date
+    });
+  };
+
+  // Sürükleme hareketi
+  const updateDrag = (resourceId, date) => {
+    if (!isDragging) return;
+    setDragEnd({
+      resourceId,
+      date
+    });
+  };
+
+  // Sürükleme bitişi
+  const endDrag = dates => {
+    if (!isDragging || !dragStart || !dragEnd) return;
+    if (dragStart.resourceId !== dragEnd.resourceId) {
+      resetDrag();
+      return;
+    }
+    const startDateIndex = dates.findIndex(d => parseDate(d.fullDate).toDateString() === parseDate(dragStart.date.fullDate).toDateString());
+    const endDateIndex = dates.findIndex(d => parseDate(d.fullDate).toDateString() === parseDate(dragEnd.date.fullDate).toDateString());
+    if (startDateIndex === -1 || endDateIndex === -1) {
+      resetDrag();
+      return;
+    }
+    const sortedStartIndex = Math.min(startDateIndex, endDateIndex);
+    const sortedEndIndex = Math.max(startDateIndex, endDateIndex);
+    const startDate = dates[sortedStartIndex].fullDate;
+    const endDate = dates[sortedEndIndex].fullDate;
+    const newEvent = {
+      id: Date.now(),
+      title: "Yeni Etkinlik",
+      resourceId: dragStart.resourceId,
+      startDate: startDate,
+      endDate: endDate,
+      color: "#ff7f50"
+    };
+    setEvents(prev => [...prev, newEvent]);
+    resetDrag();
+  };
+  const resetDrag = () => {
+    setIsDragging(false);
+    setDragStart(null);
+    setDragEnd(null);
+  };
+  return {
+    events,
+    isDragging,
+    dragStart,
+    dragEnd,
+    startDrag,
+    updateDrag,
+    endDrag,
+    setEvents
+  };
+};
+/* harmony default export */ const hooks_useDragAndDrop = (useDragAndDrop);
+;// ./src/hooks/useEventDragDrop.js
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+
+const useEventDragDrop = (events, setEvents, setDropInfo) => {
+  const [draggingEvent, setDraggingEvent] = (0,external_react_.useState)(null);
+  const [dragOffset, setDragOffset] = (0,external_react_.useState)(0);
+  const [mode, setMode] = (0,external_react_.useState)(null); // "drag" veya "extend"
+
+  const handleDragStart = (event, eventId) => {
+    if (mode === "extend") return; // Uzatma modundaysa taşıma işlemini başlatma
+
+    event.stopPropagation();
+    const eventElement = event.target;
+    const eventRect = eventElement.getBoundingClientRect();
+    const offset = event.clientX - eventRect.left;
+    setDraggingEvent(eventId);
+    setDragOffset(offset);
+    setMode("drag"); // Modu taşıma olarak ayarla
+
+    const draggedEvent = events.find(evt => evt.id === eventId);
+    if (draggedEvent) {
+      console.log("Dragging Event Start:", draggedEvent.startDate);
+      console.log("Dragging Event End:", draggedEvent.endDate);
+    }
+  };
+  const handleExtendStart = (event, eventId) => {
+    event.stopPropagation();
+    setDraggingEvent(eventId);
+    setMode("extend"); // Modu uzatma olarak ayarla
+  };
+  const handleDragOver = event => {
+    event.preventDefault();
+  };
+  const handleDrop = (event, resourceId, targetDate) => {
+    event.preventDefault();
+    if (mode === "drag" && draggingEvent) {
+      const draggedEvent = events.find(evt => evt.id === draggingEvent);
+      if (draggedEvent) {
+        const duration = draggedEvent.endDate - draggedEvent.startDate;
+        const cellWidth = event.target.offsetWidth || 30;
+        const offsetDays = Math.floor(dragOffset / cellWidth);
+        const newStartDate = new Date(targetDate.getTime() - offsetDays * 24 * 60 * 60 * 1000);
+        const newEndDate = new Date(newStartDate.getTime() + duration);
+        console.log("New Start Date:", newStartDate);
+        console.log("New End Date:", newEndDate);
+        setEvents(prevEvents => prevEvents.map(evt => evt.id === draggingEvent ? _objectSpread(_objectSpread({}, evt), {}, {
+          resourceId,
+          startDate: newStartDate,
+          endDate: newEndDate
+        }) : evt));
+        if (setDropInfo) {
+          setDropInfo({
+            id: draggingEvent,
+            newResourceId: resourceId,
+            newStartDate,
+            newEndDate
+          });
+        }
+      }
+    }
+    setDraggingEvent(null);
+    setDragOffset(0);
+    setMode(null);
+  };
+  const handleExtend = (event, eventId, newEndDate) => {
+    if (mode !== "extend" || draggingEvent !== eventId) return;
+    setEvents(prevEvents => prevEvents.map(evt => evt.id === eventId ? _objectSpread(_objectSpread({}, evt), {}, {
+      endDate: newEndDate
+    }) : evt));
+    console.log("Extended Event ID:", eventId, "New End Date:", newEndDate);
+    setDraggingEvent(null);
+    setMode(null);
+  };
+  const handleDragEnd = () => {
+    setDraggingEvent(null);
+    setDragOffset(0);
+    setMode(null);
+  };
+  return {
+    handleDragStart,
+    handleExtendStart,
+    handleDragOver,
+    handleDrop,
+    handleExtend,
+    handleDragEnd
+  };
+};
+/* harmony default export */ const hooks_useEventDragDrop = (useEventDragDrop);
+;// ./src/components/Timeline/Indicator.js
+
+const Indicator = _ref => {
+  let {
+    todayIndex,
+    totalDays
+  } = _ref;
+  if (todayIndex < 0 || todayIndex >= totalDays) {
+    console.log("Indicator not visible: Out of bounds");
+    return null; // Bugün timeline dışında ise çizgiyi gösterme
+  }
+  console.log("todayIndex:", todayIndex);
+  console.log("totalDays:", totalDays);
+  return /*#__PURE__*/external_react_default().createElement("div", {
+    style: {
+      position: "absolute",
+      top: 0,
+      left: "calc(".concat((todayIndex + 0.5) / totalDays, " * 100%)"),
+      // Günün ortasına yerleştirmek için +0.5
+      width: "2px",
+      height: "100%",
+      backgroundColor: "transparent",
+      zIndex: 5,
+      borderStyle: "dashed",
+      // Kesikli çizgi için
+      borderWidth: "0 0 0 2px",
+      // Sadece sol tarafa kesikli çizgi
+      borderColor: "red"
+    }
+  });
+};
+/* harmony default export */ const Timeline_Indicator = (Indicator);
+;// ./src/hooks/useExtendEvent.js
+function useExtendEvent_ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function useExtendEvent_objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? useExtendEvent_ownKeys(Object(t), !0).forEach(function (r) { useExtendEvent_defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : useExtendEvent_ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function useExtendEvent_defineProperty(e, r, t) { return (r = useExtendEvent_toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function useExtendEvent_toPropertyKey(t) { var i = useExtendEvent_toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
+function useExtendEvent_toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+
+const useExtendEvent = (events, setEvents) => {
+  /**
+   * Etkinliği uzatmak veya kısaltmak için kullanılan işlev.
+   * @param {number} eventId - Güncellenmesi gereken etkinliğin ID'si.
+   * @param {Date} newEndDate - Etkinliğin yeni bitiş tarihi.
+   */
+  const extendEvent = (0,external_react_.useCallback)((eventId, newEndDate) => {
+    setEvents(prevEvents => prevEvents.map(event => event.id === eventId ? useExtendEvent_objectSpread(useExtendEvent_objectSpread({}, event), {}, {
+      endDate: newEndDate // Yeni bitiş tarihini günceller
+    }) : event // Diğer etkinlikler aynı kalır
+    ));
+  }, [setEvents]);
+  return {
+    extendEvent
+  };
+};
+/* harmony default export */ const hooks_useExtendEvent = (useExtendEvent);
+;// ./src/components/Timeline/TimelineContent.js
+function TimelineContent_ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function TimelineContent_objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? TimelineContent_ownKeys(Object(t), !0).forEach(function (r) { TimelineContent_defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : TimelineContent_ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function TimelineContent_defineProperty(e, r, t) { return (r = TimelineContent_toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function TimelineContent_toPropertyKey(t) { var i = TimelineContent_toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
+function TimelineContent_toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+
+
+
+
+
+
+// import "./Timeline.css"; // varsayalım "Timeline.css" globalde import ediliyor
+
+const TimelineContent = _ref => {
+  let {
+    groupedResources,
+    dates,
+    collapsedGroups,
+    events,
+    setEvents,
+    onEventClick,
+    todayIndex,
+    indicatorOn,
+    resourceSettings,
+    setDropInfo,
+    // Yeni prop'lar
+    eventsDragOn = true,
+    eventsExtendOn = true,
+    createNewEventOn = true,
+    onDragInfo,
+    onExtendInfo,
+    onCreateEventInfo,
+    onEventRightClick
+  } = _ref;
+  // ------------------- HOOKS & STATE -------------------
+  const containerRef = (0,external_react_.useRef)(null);
+
+  // Drag
+  const {
+    isDragging,
+    dragStart,
+    dragEnd
+  } = hooks_useDragAndDrop(events, setEvents);
+  const {
+    handleDragStart,
+    handleDragOver,
+    handleDrop,
+    handleDragEnd
+  } = hooks_useEventDragDrop(events, setEvents, setDropInfo);
+
+  // Extend
+  const {
+    extendEvent
+  } = hooks_useExtendEvent(events, setEvents);
+  const [mode, setMode] = (0,external_react_.useState)(null); // null | "extend"
+  const [extendingEvent, setExtendingEvent] = (0,external_react_.useState)(null);
+  const [originalEndDate, setOriginalEndDate] = (0,external_react_.useState)(null);
+  const [startMouseX, setStartMouseX] = (0,external_react_.useState)(null);
+
+  // Create new event
+  const [isCreating, setIsCreating] = (0,external_react_.useState)(false);
+  const [tempEvent, setTempEvent] = (0,external_react_.useState)(null);
+
+  // Tooltip
+  const [selectedEvent, setSelectedEvent] = (0,external_react_.useState)(null);
+  const [tooltipPosition, setTooltipPosition] = (0,external_react_.useState)({
+    top: 0,
+    left: 0
+  });
+  const totalDays = dates.length;
+
+  // ------------------- Tooltip Logic -------------------
+  const handleEventClickInternal = (event, e) => {
+    e.stopPropagation();
+    // Harici callback
+    if (onEventClick) onEventClick(event, e);
+
+    // Tooltip göstermek
+    const eventElement = e.currentTarget;
+    if (eventElement) {
+      const rect = eventElement.getBoundingClientRect();
+      setTooltipPosition({
+        top: rect.top + window.scrollY,
+        left: rect.left + rect.width / 2 + window.scrollX
+      });
+      setSelectedEvent(event);
+    }
+  };
+  const handleCloseTooltip = () => {
+    setSelectedEvent(null);
+  };
+
+  // ------------------- Create New Event -------------------
+  const handleCellClick = (resourceId, date) => {
+    if (!createNewEventOn) return; // create devrede değilse
+
+    const startDate = parseDate(date.fullDate);
+    const newEvent = {
+      id: Date.now(),
+      title: "1 Gece",
+      startDate,
+      endDate: new Date(startDate.getTime() + 24 * 60 * 60 * 1000),
+      resourceId,
+      // color => var(--timeline-new-event-background-color) => => Sonra inline style yerine className
+      color: "" // Bunu .css’te "var(--timeline-new-event-background-color)" atayabilirsin
+    };
+    setTempEvent(newEvent);
+    setIsCreating(true);
+  };
+  (0,external_react_.useEffect)(() => {
+    if (!createNewEventOn) return;
+    if (!isCreating) return;
+    if (mode === "extend") {
+      console.log(">>> 'extend' mode, skip new event creation");
+      return;
+    }
+    const handleMouseMove = e => {
+      if (!isCreating || !tempEvent) return;
+      const cell = document.elementFromPoint(e.clientX, e.clientY);
+      const cellW = (cell === null || cell === void 0 ? void 0 : cell.offsetWidth) || 30;
+      const startX = tempEvent.startX || e.clientX;
+      const deltaX = e.clientX - startX;
+      const daysToAdd = Math.max(1, Math.floor(deltaX / cellW));
+      const newEndDate = new Date(tempEvent.startDate.getTime());
+      newEndDate.setDate(newEndDate.getDate() + daysToAdd);
+      setTempEvent(TimelineContent_objectSpread(TimelineContent_objectSpread({}, tempEvent), {}, {
+        endDate: newEndDate,
+        startX: startX,
+        title: "".concat(daysToAdd, " Gece")
+      }));
+    };
+    const handleMouseUp = () => {
+      if (isCreating && tempEvent) {
+        setEvents([...events, tempEvent]);
+        if (onCreateEventInfo) {
+          onCreateEventInfo(tempEvent);
+        }
+      }
+      setTempEvent(null);
+      setIsCreating(false);
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [createNewEventOn, isCreating, mode, tempEvent, events, onCreateEventInfo, setEvents]);
+
+  // ------------------- Drag Logic -------------------
+  const handleDragStartSafe = (e, eventId) => {
+    if (!eventsDragOn) {
+      e.preventDefault();
+      return;
+    }
+    handleDragStart(e, eventId);
+  };
+  const handleDragEndSafe = e => {
+    if (!eventsDragOn) {
+      e.preventDefault();
+      return;
+    }
+    handleDragEnd();
+    // onDragInfo(...) => if needed
+  };
+
+  // ------------------- Extend Logic -------------------
+  const handleMouseDownExtend = (mouseEvent, event) => {
+    if (!eventsExtendOn) return;
+    mouseEvent.stopPropagation();
+    console.log(">>> Extend start ID:", event.id);
+    setMode("extend");
+    setExtendingEvent(event);
+    setOriginalEndDate(event.endDate);
+    setStartMouseX(mouseEvent.clientX);
+  };
+  const handleMouseMoveExtend = e => {
+    if (mode !== "extend" || !extendingEvent) return;
+    if (!eventsExtendOn) return;
+    const currentMouseX = e.clientX;
+    const deltaX = currentMouseX - (startMouseX !== null && startMouseX !== void 0 ? startMouseX : 0);
+    const cellW = 30;
+    const daysToAdd = Math.floor(deltaX / cellW);
+    const newEndDate = new Date((originalEndDate !== null && originalEndDate !== void 0 ? originalEndDate : new Date()).getTime());
+    newEndDate.setDate(newEndDate.getDate() + daysToAdd);
+    console.log(">>> Extending ID:", extendingEvent.id, "=>", newEndDate);
+    setEvents(prev => prev.map(evt => evt.id === extendingEvent.id ? TimelineContent_objectSpread(TimelineContent_objectSpread({}, evt), {}, {
+      endDate: newEndDate
+    }) : evt));
+  };
+  const handleMouseUpExtend = () => {
+    console.log(">>> Extend finished ID:", extendingEvent === null || extendingEvent === void 0 ? void 0 : extendingEvent.id);
+    if (onExtendInfo && extendingEvent) {
+      // callback
+      const updatedEvent = events.find(ev => ev.id === extendingEvent.id);
+      if (updatedEvent) {
+        onExtendInfo({
+          eventId: extendingEvent.id,
+          newEndDate: updatedEvent.endDate
+        });
+      }
+    }
+    setMode(null);
+    setExtendingEvent(null);
+    setOriginalEndDate(null);
+    setStartMouseX(null);
+  };
+  (0,external_react_.useEffect)(() => {
+    if (mode === "extend") {
+      const onMove = e => handleMouseMoveExtend(e);
+      const onUp = () => handleMouseUpExtend();
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+      return () => {
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+      };
+    }
+  }, [mode, extendingEvent, eventsExtendOn, originalEndDate, startMouseX]);
+
+  // ------------------- Right Click (context) -------------------
+  const handleRightClickEvent = (evt, reactEvent) => {
+    reactEvent.preventDefault();
+    if (onEventRightClick) onEventRightClick(evt, reactEvent);
+  };
+
+  // ------------------- Helper isCellSelected -------------------
+  const isCellSelected = (resourceId, date) => {
+    if (!dragStart || !dragEnd) return false;
+    if (resourceId !== dragStart.resourceId) return false;
+    const startIndex = dates.findIndex(d => parseDate(d.fullDate).getTime() === parseDate(dragStart.date).getTime());
+    const endIndex = dates.findIndex(d => parseDate(d.fullDate).getTime() === parseDate(dragEnd.date).getTime());
+    const currentIndex = dates.findIndex(d => parseDate(d.fullDate).getTime() === parseDate(date.fullDate).getTime());
+    if (startIndex === -1 || endIndex === -1 || currentIndex === -1) return false;
+    return currentIndex >= Math.min(startIndex, endIndex) && currentIndex <= Math.max(startIndex, endIndex);
+  };
+
+  // ------------------- calculatePosition -------------------
+  const calculatePosition = (ev, dateArr) => {
+    const startDate = parseDate(ev.startDate);
+    const endDate = parseDate(ev.endDate);
+    const startIndex = dateArr.findIndex(d => parseDate(d.fullDate).toDateString() === startDate.toDateString());
+    const endIndex = dateArr.findIndex(d => parseDate(d.fullDate).toDateString() === endDate.toDateString());
+    const totalDays = dateArr.length;
+    if (startIndex < 0 && endIndex < 0) {
+      return {
+        isVisible: false,
+        left: 0,
+        width: 0,
+        isPartialStart: false,
+        isPartialEnd: false
+      };
+    }
+    if (startIndex >= totalDays && endIndex >= totalDays) {
+      return {
+        isVisible: false,
+        left: 0,
+        width: 0,
+        isPartialStart: false,
+        isPartialEnd: false
+      };
+    }
+    const effectiveStartIndex = Math.max(startIndex, 0);
+    const effectiveEndIndex = Math.min(endIndex, totalDays - 1);
+    const isPartialStart = startIndex < 0;
+    const isPartialEnd = endIndex >= totalDays;
+    const leftPercentage = (effectiveStartIndex + (isPartialStart ? 0 : 0.5)) / totalDays * 100;
+    const rightPercentage = (effectiveEndIndex + (isPartialEnd ? 1 : 0.5)) / totalDays * 100;
+    const widthPercentage = rightPercentage - leftPercentage;
+    return {
+      isVisible: true,
+      left: "".concat(leftPercentage, "%"),
+      width: "".concat(widthPercentage, "%"),
+      isPartialStart,
+      isPartialEnd
+    };
+  };
+
+  // ------------------- RENDER -------------------
+  return /*#__PURE__*/external_react_default().createElement("div", {
+    ref: containerRef,
+    className: "timeline-content-container" // Yeni class, stilini timeline.css'e ekleyebilirsin
+  }, indicatorOn && /*#__PURE__*/external_react_default().createElement(Timeline_Indicator, {
+    todayIndex: todayIndex,
+    totalDays: totalDays
+  }), groupedResources.map((group, groupIndex) => /*#__PURE__*/external_react_default().createElement("div", {
+    key: groupIndex,
+    className: "timeline-group-container"
+  }, resourceSettings.isGrouped && /*#__PURE__*/external_react_default().createElement("div", {
+    className: "timeline-group-header-row"
+  }, dates.map((dateObj, colIndex) => /*#__PURE__*/external_react_default().createElement("div", {
+    key: "group-header-".concat(groupIndex, "-").concat(colIndex),
+    className: "timeline-group-header-cell"
+  }))), !collapsedGroups[group.groupName] && group.resources.map((resource, rowIndex) => {
+    const resourceEvents = events.filter(ev => ev.resourceId === resource.id);
+    return /*#__PURE__*/external_react_default().createElement("div", {
+      key: resource.id,
+      className: "timeline-resource-row"
+    }, resourceEvents.map(event => {
+      const {
+        isVisible,
+        left,
+        width,
+        isPartialStart,
+        isPartialEnd
+      } = calculatePosition(event, dates);
+      if (!isVisible) return null;
+      return /*#__PURE__*/external_react_default().createElement("div", {
+        key: event.id,
+        className: "timeline-event",
+        draggable: mode !== "extend" && eventsDragOn,
+        onDragStart: e => {
+          if (mode === "extend") {
+            e.preventDefault();
+            return;
+          }
+          handleDragStartSafe(e, event.id);
+        },
+        onDragEnd: e => {
+          if (mode === "extend") {
+            e.preventDefault();
+            return;
+          }
+          handleDragEndSafe(e);
+        },
+        onContextMenu: reactEvent => handleRightClickEvent(event, reactEvent),
+        onClick: ev => handleEventClickInternal(event, ev),
+        style: {
+          left,
+          width,
+          top: "5px",
+          // color from var(--timeline-event-text-color)
+          // background from event.color or var(...) => if event.color empty, fallback in CSS
+          borderTopLeftRadius: isPartialStart ? "0px" : "20px",
+          borderBottomLeftRadius: isPartialStart ? "0px" : "20px",
+          borderTopRightRadius: isPartialEnd ? "0px" : "20px",
+          borderBottomRightRadius: isPartialEnd ? "0px" : "20px",
+          cursor: mode === "extend" ? "col-resize" : "grab"
+        }
+      }, event.title, eventsExtendOn && /*#__PURE__*/external_react_default().createElement("div", {
+        className: "timeline-event-extend-handle",
+        onMouseDown: mouseEvent => {
+          mouseEvent.stopPropagation();
+          handleMouseDownExtend(mouseEvent, event);
+        }
+      }));
+    }), tempEvent && tempEvent.resourceId === resource.id && /*#__PURE__*/external_react_default().createElement("div", {
+      className: "timeline-temp-event",
+      style: TimelineContent_objectSpread(TimelineContent_objectSpread({}, calculatePosition(tempEvent, dates)), {}, {
+        top: "5px"
+      })
+    }, tempEvent.title), dates.map((dateObj, colIndex) => /*#__PURE__*/external_react_default().createElement("div", {
+      key: "cell-".concat(groupIndex, "-").concat(rowIndex, "-").concat(colIndex),
+      className: "timeline-cell ".concat(isCellSelected(resource.id, dateObj) ? "selected" : ""),
+      "data-date": JSON.stringify(dateObj),
+      "data-resource-id": resource.id,
+      onMouseDown: () => handleCellClick(resource.id, dateObj),
+      onDragOver: e => handleDragOver(e),
+      onDrop: e => handleDrop(e, resource.id, parseDate(dateObj.fullDate))
+    })));
+  }))), selectedEvent &&
+  /*#__PURE__*/
+  // "timeline-event-tooltip" gibi className tanımlanabilir
+  // eğer custom css istenirse
+  external_react_default().createElement("div", {
+    style: {
+      position: "absolute",
+      top: tooltipPosition.top,
+      left: tooltipPosition.left,
+      // ...
+      backgroundColor: "#333",
+      color: "#fff",
+      padding: "5px",
+      borderRadius: "4px",
+      zIndex: 999
+    }
+  }, /*#__PURE__*/external_react_default().createElement("button", {
+    onClick: () => handleCloseTooltip()
+  }, "X"), selectedEvent.title));
+};
+/* harmony default export */ const Timeline_TimelineContent = (TimelineContent);
+;// ./src/components/Timeline/EventTooltip.js
+// src/components/Timeline/EventTooltip.js
+
+const EventTooltip = _ref => {
+  let {
+    event,
+    position = {
+      top: 0,
+      left: 0
+    },
+    onClose,
+    onEdit,
+    onDelete
+  } = _ref;
+  if (!event) return null;
+  const {
+    top,
+    left
+  } = position;
+
+  // Rezervasyon durumuna göre renk belirleme
+  const getStatusColor = status => {
+    switch (status) {
+      case "Confirmed":
+        return "#4caf50";
+      // Yeşil
+      case "Pending":
+        return "#ff9800";
+      // Turuncu
+      case "Cancelled":
+        return "#f44336";
+      // Kırmızı
+      case "Completed":
+        return "#2196f3";
+      // Mavi
+      default:
+        return "#9e9e9e";
+      // Gri
+    }
+  };
+  const statusColor = getStatusColor(event.status);
+  return /*#__PURE__*/external_react_default().createElement("div", {
+    style: {
+      position: "absolute",
+      top: top - 30,
+      // Tooltip'in biraz yukarıda görünmesi için
+      left: left + 70,
+      transform: "translateX(-50%)",
+      backgroundColor: "#ffffff",
+      color: "#333333",
+      borderRadius: "10px",
+      boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
+      fontSize: "16px",
+      zIndex: 1000,
+      pointerEvents: "auto",
+      // Tooltip'in tıklanabilir olmasını sağlar
+      whiteSpace: "normal",
+      maxWidth: "400px",
+      width: "100%",
+      transition: "opacity 0.3s ease, transform 0.3s ease"
+    }
+  }, onClose && /*#__PURE__*/external_react_default().createElement("button", {
+    onClick: onClose,
+    style: {
+      position: "absolute",
+      top: "10px",
+      right: "15px",
+      background: "transparent",
+      border: "none",
+      color: "#aaa",
+      fontSize: "24px",
+      cursor: "pointer",
+      transition: "color 0.2s"
+    },
+    "aria-label": "Kapat",
+    onMouseOver: e => e.target.style.color = "#000",
+    onMouseOut: e => e.target.style.color = "#aaa"
+  }, "\xD7"), /*#__PURE__*/external_react_default().createElement("div", {
+    style: {
+      backgroundColor: statusColor,
+      color: "#ffffff",
+      padding: "15px 20px",
+      borderTopLeftRadius: "10px",
+      borderTopRightRadius: "10px",
+      display: "flex",
+      flexDirection: "column",
+      gap: "5px"
+    }
+  }, /*#__PURE__*/external_react_default().createElement("div", {
+    style: {
+      fontWeight: "bold",
+      fontSize: "18px"
+    }
+  }, event.title), /*#__PURE__*/external_react_default().createElement("div", {
+    style: {
+      fontSize: "14px"
+    }
+  }, "Rezervasyon ID: ", event.reservationId)), /*#__PURE__*/external_react_default().createElement("div", {
+    style: {
+      padding: "20px",
+      display: "flex",
+      flexDirection: "column",
+      gap: "15px"
+    }
+  }, Array.isArray(event.guestNames) && /*#__PURE__*/external_react_default().createElement("div", null, /*#__PURE__*/external_react_default().createElement("strong", null, "Misafirler:"), " ", event.guestNames.join(", ")), /*#__PURE__*/external_react_default().createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      marginBottom: "10px"
+    }
+  }, /*#__PURE__*/external_react_default().createElement("div", null, /*#__PURE__*/external_react_default().createElement("strong", null, "Giri\u015F:"), " ", new Date(event.startDate).toLocaleDateString()), /*#__PURE__*/external_react_default().createElement("div", null, /*#__PURE__*/external_react_default().createElement("strong", null, "\xC7\u0131k\u0131\u015F:"), " ", new Date(event.endDate).toLocaleDateString())), (event.totalAmount !== undefined || event.amountPaid !== undefined) && /*#__PURE__*/external_react_default().createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      marginBottom: "10px"
+    }
+  }, event.amountPaid !== undefined && /*#__PURE__*/external_react_default().createElement("div", null, /*#__PURE__*/external_react_default().createElement("strong", null, "\xD6denen Miktar:"), " $", event.amountPaid.toFixed(2)), event.totalAmount !== undefined && /*#__PURE__*/external_react_default().createElement("div", null, /*#__PURE__*/external_react_default().createElement("strong", null, "Toplam Bor\xE7:"), " $", event.totalAmount.toFixed(2))), event.status && /*#__PURE__*/external_react_default().createElement("div", null, /*#__PURE__*/external_react_default().createElement("strong", null, "Durum:"), " ", event.status), event.note && /*#__PURE__*/external_react_default().createElement("div", null, /*#__PURE__*/external_react_default().createElement("strong", null, "Not:"), " ", event.note)), /*#__PURE__*/external_react_default().createElement("div", {
+    style: {
+      padding: "15px 20px",
+      borderTop: "1px solid #ddd",
+      display: "flex",
+      justifyContent: "flex-end",
+      gap: "10px",
+      borderBottomLeftRadius: "10px",
+      borderBottomRightRadius: "10px"
+    }
+  }, onEdit && /*#__PURE__*/external_react_default().createElement("button", {
+    onClick: () => onEdit(event),
+    style: {
+      padding: "8px 16px",
+      backgroundColor: "#2196f3",
+      color: "#ffffff",
+      border: "none",
+      borderRadius: "4px",
+      cursor: "pointer",
+      fontSize: "14px",
+      display: "flex",
+      alignItems: "center",
+      gap: "5px",
+      transition: "background-color 0.2s"
+    },
+    onMouseOver: e => e.target.style.backgroundColor = "#1976d2",
+    onMouseOut: e => e.target.style.backgroundColor = "#2196f3"
+  }, /*#__PURE__*/external_react_default().createElement("span", {
+    role: "img",
+    "aria-label": "D\xFCzenle"
+  }, "\u270F\uFE0F"), "D\xFCzenle"), onDelete && /*#__PURE__*/external_react_default().createElement("button", {
+    onClick: () => onDelete(event.id),
+    style: {
+      padding: "8px 16px",
+      backgroundColor: "#f44336",
+      color: "#ffffff",
+      border: "none",
+      borderRadius: "4px",
+      cursor: "pointer",
+      fontSize: "14px",
+      display: "flex",
+      alignItems: "center",
+      gap: "5px",
+      transition: "background-color 0.2s"
+    },
+    onMouseOver: e => e.target.style.backgroundColor = "#d32f2f",
+    onMouseOut: e => e.target.style.backgroundColor = "#f44336"
+  }, /*#__PURE__*/external_react_default().createElement("span", {
+    role: "img",
+    "aria-label": "Sil"
+  }, "\uD83D\uDDD1\uFE0F"), "Sil")));
+};
+/* harmony default export */ const Timeline_EventTooltip = (EventTooltip);
+;// ./src/utils/timelineUtils.js
+// src/utils/timelineUtils.js
+
+const generateTimelineData = (startYear, endYear) => {
+  const dayNames = ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"];
+  const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+  const dates = [];
+  const monthHeaders = [];
+  for (let year = startYear; year <= endYear; year++) {
+    for (let month = 1; month <= 12; month++) {
+      const daysInMonth = new Date(year, month, 0).getDate();
+      const startIndex = dates.length;
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month - 1, day);
+        const dayName = dayNames[date.getDay()];
+        dates.push({
+          fullDate: date,
+          display: "".concat(day, " ").concat(dayName)
+        });
+      }
+      const endIndex = dates.length - 1;
+      monthHeaders.push({
+        monthName: monthNames[month - 1],
+        year,
+        startIndex,
+        endIndex,
+        totalDays: endIndex - startIndex + 1
+      });
+    }
+  }
+  return {
+    dates,
+    monthHeaders
+  };
+};
+;// ./src/components/Timeline/Timeline.js
+function Timeline_ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function Timeline_objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? Timeline_ownKeys(Object(t), !0).forEach(function (r) { Timeline_defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : Timeline_ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function Timeline_defineProperty(e, r, t) { return (r = Timeline_toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function Timeline_toPropertyKey(t) { var i = Timeline_toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
+function Timeline_toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+
+
+
+
+
+
+
+
+
+const Timeline_Timeline_Timeline = _ref => {
+  let {
+    resources,
+    programDate = null,
+    events = [],
+    resourceSettings = {
+      showIdAsName: false,
+      isGrouped: true,
+      isCollapsible: true
+    },
+    indicatorOn = false,
+    dropInfo,
+    setDropInfo,
+    masterHeaderView = true,
+    resourceHeaderContent = "Akfa Timeline",
+    eventsDragOn = true,
+    eventsExtendOn = true,
+    createNewEventOn = true,
+    onDragInfo,
+    onExtendInfo,
+    onCreateEventInfo,
+    // İsteğe bağlı event tıklama callback'leri
+    onEventClick,
+    onEventRightClick,
+    // Yatay scroll özelliği aç/kapa
+    horizontalScrollOn = false // Varsayılan false
+  } = _ref;
+  // ---------------------------------------------------------
+  // 1) timelineData oluştur (dates, monthHeaders vs.)
+  // ---------------------------------------------------------
+  const timelineData = generateTimelineData(2020, 2030); // 10 yıllık veri
+  const {
+    dates,
+    monthHeaders
+  } = timelineData;
+
+  // ---------------------------------------------------------
+  // 2) local state
+  // ---------------------------------------------------------
+  const [collapsedGroups, setCollapsedGroups] = (0,external_react_.useState)({});
+  const [selectedDate, setSelectedDate] = (0,external_react_.useState)(() => {
+    const date = programDate ? new Date(programDate) : new Date();
+    date.setDate(date.getDate() - 3);
+    return date;
+  });
+  const [localEvents, setLocalEvents] = (0,external_react_.useState)(events);
+  const [selectedEvent, setSelectedEvent] = (0,external_react_.useState)(null);
+  const [tooltipPosition, setTooltipPosition] = (0,external_react_.useState)({
+    top: 0,
+    left: 0
+  });
+
+  // dayRange = ekranda göstermeyi istediğimiz gün/hücre sayısı (ör. 30 gün)
+  const [dayRange, setDayRange] = (0,external_react_.useState)(30);
+  const [isDarkMode, setIsDarkMode] = (0,external_react_.useState)(false);
+
+  // ---------------------------------------------------------
+  // 3) Sabit hücre genişliği (örneğin 56.95 px)
+  //    Container genişliği = dayRange * cellWidth
+  // ---------------------------------------------------------
+  const cellWidth = 56.95; // her gün/hücre ~57 piksel
+  const containerWidth = dayRange * cellWidth;
+  // örneğin dayRange=30 => containerWidth=30*56.95=1708.5 px
+
+  // ---------------------------------------------------------
+  // 4) Event Tooltip logic
+  // ---------------------------------------------------------
+  const handleEventClick = (event, e) => {
+    // Harici onEventClick callback'i varsa, önce onu tetikleyelim
+    if (onEventClick) {
+      onEventClick(event, e);
+    }
+    // Ardından tooltip göstermek istiyorsak:
+    const eventElement = e.currentTarget;
+    if (eventElement) {
+      const rect = eventElement.getBoundingClientRect();
+      setTooltipPosition({
+        top: rect.top + window.scrollY,
+        left: rect.left + rect.width / 2 + window.scrollX
+      });
+      setSelectedEvent(event);
+    }
+  };
+  const handleCloseTooltip = () => {
+    setSelectedEvent(null);
+  };
+
+  // ---------------------------------------------------------
+  // 5) Tarih filtreleme => filteredDates
+  // ---------------------------------------------------------
+  const startIndex = dates.findIndex(d => d.fullDate >= selectedDate);
+  const endIndex = startIndex + dayRange;
+  const filteredDates = startIndex !== -1 ? dates.slice(startIndex, Math.min(endIndex, dates.length)) : [];
+  const today = programDate ? new Date(programDate) : new Date();
+  const todayIndex = filteredDates.findIndex(d => new Date(d.fullDate).toDateString() === today.toDateString());
+  const totalDays = filteredDates.length;
+
+  // ---------------------------------------------------------
+  // 6) Grupları aç/kapa
+  // ---------------------------------------------------------
+  const toggleGroupCollapse = groupName => {
+    setCollapsedGroups(prev => Timeline_objectSpread(Timeline_objectSpread({}, prev), {}, {
+      [groupName]: !prev[groupName]
+    }));
+  };
+
+  // ---------------------------------------------------------
+  // 7) Navigation fonksiyonları
+  // ---------------------------------------------------------
+  const handleToday = () => {
+    const date = programDate ? new Date(programDate) : new Date();
+    date.setDate(date.getDate() - 3);
+    setSelectedDate(date);
+  };
+  const handleAdvance = () => setSelectedDate(prev => new Date(prev.getTime() + 5 * 24 * 60 * 60 * 1000));
+  const handleRetreat = () => setSelectedDate(prev => new Date(prev.getTime() - 5 * 24 * 60 * 60 * 1000));
+  const handleMonthRetreat = () => setSelectedDate(prev => {
+    const newDate = new Date(prev);
+    newDate.setMonth(newDate.getMonth() - 1);
+    return newDate;
+  });
+  const handleMonthAdvance = () => setSelectedDate(prev => {
+    const newDate = new Date(prev);
+    newDate.setMonth(newDate.getMonth() + 1);
+    return newDate;
+  });
+
+  // ---------------------------------------------------------
+  // 8) Dark Mode
+  // ---------------------------------------------------------
+  const toggleDarkMode = () => {
+    setIsDarkMode(prevMode => !prevMode);
+  };
+  (0,external_react_.useEffect)(() => {
+    document.body.classList.toggle("dark-mode", isDarkMode);
+  }, [isDarkMode]);
+
+  // ---------------------------------------------------------
+  // 9) Ay başlıklarını filtrele
+  // ---------------------------------------------------------
+  const filteredMonthHeaders = monthHeaders.map(header => {
+    const adjustedStartIndex = Math.max(header.startIndex, startIndex);
+    const adjustedEndIndex = Math.min(header.endIndex, endIndex - 1);
+    return Timeline_objectSpread(Timeline_objectSpread({}, header), {}, {
+      startIndex: adjustedStartIndex,
+      endIndex: adjustedEndIndex
+    });
+  }).filter(header => header.startIndex <= header.endIndex);
+
+  // ---------------------------------------------------------
+  // 10) Return
+  // ---------------------------------------------------------
+  return /*#__PURE__*/external_react_default().createElement("div", {
+    className: "timeline-container ".concat(isDarkMode ? "dark-mode" : "")
+  }, masterHeaderView && /*#__PURE__*/external_react_default().createElement("div", {
+    className: "timeline-master-header"
+  }, /*#__PURE__*/external_react_default().createElement(Timeline_MasterHeader, {
+    onToday: handleToday,
+    onAdvance: handleAdvance,
+    onRetreat: handleRetreat,
+    onMonthAdvance: handleMonthAdvance,
+    onMonthRetreat: handleMonthRetreat,
+    dayRange: dayRange,
+    setDayRange: setDayRange // dayRange'ı burada user değiştirebilir
+    ,
+    isDarkMode: isDarkMode,
+    toggleDarkMode: toggleDarkMode
+  })), /*#__PURE__*/external_react_default().createElement("div", {
+    className: "timeline-body"
+  }, /*#__PURE__*/external_react_default().createElement("div", {
+    className: "timeline-resources-container"
+  }, /*#__PURE__*/external_react_default().createElement(Timeline_ResourcesHeader, {
+    content: resourceHeaderContent
+  }), /*#__PURE__*/external_react_default().createElement(Timeline_Resources, {
+    groupedResources: resources,
+    toggleGroupCollapse: toggleGroupCollapse,
+    collapsedGroups: collapsedGroups,
+    resourceSettings: resourceSettings
+  })), /*#__PURE__*/external_react_default().createElement("div", {
+    className: "timeline-scrollable-container",
+    style: {
+      overflowX: horizontalScrollOn ? "auto" : "hidden"
+    }
+  }, /*#__PURE__*/external_react_default().createElement("div", {
+    className: "timeline-header-content-wrapper",
+    style: {
+      width: horizontalScrollOn ? "".concat(containerWidth, "px") : "100%"
+    }
+  }, /*#__PURE__*/external_react_default().createElement(Timeline_TimelineHeader, {
+    dates: filteredDates,
+    monthHeaders: filteredMonthHeaders
+  }), /*#__PURE__*/external_react_default().createElement(Timeline_TimelineContent
+  // Props
+  , {
+    groupedResources: resources,
+    dates: filteredDates,
+    collapsedGroups: collapsedGroups,
+    events: localEvents,
+    setEvents: setLocalEvents,
+    onEventClick: handleEventClick,
+    todayIndex: todayIndex,
+    totalDays: totalDays,
+    indicatorOn: indicatorOn,
+    resourceSettings: resourceSettings,
+    toggleGroupCollapse: toggleGroupCollapse,
+    setDropInfo: setDropInfo
+
+    // Yeni prop'lar
+    ,
+    eventsDragOn: eventsDragOn,
+    eventsExtendOn: eventsExtendOn,
+    createNewEventOn: createNewEventOn,
+    onDragInfo: onDragInfo,
+    onExtendInfo: onExtendInfo,
+    onCreateEventInfo: onCreateEventInfo,
+    onEventRightClick: onEventRightClick
+  }), selectedEvent && /*#__PURE__*/external_react_default().createElement(Timeline_EventTooltip, {
+    event: selectedEvent,
+    position: tooltipPosition,
+    onClose: handleCloseTooltip,
+    onDelete: eventId => setLocalEvents(prev => prev.filter(e => e.id !== eventId))
+  })))));
+};
+/* harmony default export */ const components_Timeline_Timeline = (Timeline_Timeline_Timeline);
+/******/ 	return __webpack_exports__;
+/******/ })()
+;
+});

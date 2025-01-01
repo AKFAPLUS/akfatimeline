@@ -1,31 +1,49 @@
 const path = require("path");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = {
-  entry: "./src/components/Timeline/Timeline.js", // Giriş dosyası
+  mode: "production", // Üretim modu
+  entry: "./src/components/Timeline/Timeline.js", // Ana giriş dosyası
   output: {
-    path: path.resolve(__dirname, "dist"), // Çıkış dizini
-    filename: "Timeline.js", // Çıkış dosyası
-    library: "AkfaTimeline", // Paket ismi
+    path: path.resolve(__dirname, "dist"), // Çıkış klasörü
+    filename: "Timeline.js", // Ana çıkış dosyası
+    library: "AkfaTimeline", // Kütüphane adı
     libraryTarget: "umd", // Evrensel modül formatı
     globalObject: "this",
+  },
+  resolve: {
+    extensions: [".js", ".jsx"], // Çözülebilecek dosya türleri
   },
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.(js|jsx)$/, // JavaScript ve JSX dosyaları için
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
         },
       },
       {
-        test: /\.css$/,
+        test: /\.css$/, // CSS dosyaları için
         use: ["style-loader", "css-loader"],
       },
     ],
   },
+  optimization: {
+    minimize: false, // Terser'i devre dışı bırakıyoruz
+  },
   externals: {
-    react: "react",
+    react: "react", // React ve ReactDOM'u dışa bırak
     "react-dom": "react-dom",
   },
+  plugins: [
+    // Gerekli dosyaları dist klasörüne kopyala
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: "src/components/Timeline", to: "dist/components/Timeline" },
+        { from: "src/hooks", to: "dist/hooks" },
+        { from: "src/utils", to: "dist/utils" },
+      ],
+    }),
+  ],
 };
