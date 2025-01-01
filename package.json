@@ -48,12 +48,21 @@
     ]
   },
   "repository": {
-  "type": "git",
-  "url": "https://github.com/AKFAPLUS/akfatimeline.git"
-},
-"bugs": {
-  "url": "https://github.com/AKFAPLUS/akfatimeline/issues"
-},
-"homepage": "https://github.com/AKFAPLUS/akfatimeline#readme"
-
+    "type": "git",
+    "url": "https://github.com/AKFAPLUS/akfatimeline.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AKFAPLUS/akfatimeline/issues"
+  },
+  "homepage": "https://github.com/AKFAPLUS/akfatimeline#readme",
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-react": "^7.26.3",
+    "babel-loader": "^9.2.1",
+    "css-loader": "^7.1.2",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^6.0.1"
+  }
 }
