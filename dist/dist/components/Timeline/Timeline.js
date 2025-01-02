@@ -35,32 +35,56 @@ const Timeline = ({
 
   // Yatay scroll özelliği aç/kapa
   horizontalScrollOn = false, // Varsayılan false
+
+  dayRange = 30,
+  setDayRange,
+  themeType = "light", // Tema bilgisi varsayılan olarak light
+
+  eventTooltipOn = true,
+  tooltipComponent: TooltipComponent, // Özelleştirilebilir Tooltip bileşeni
+  tempEventStyle = {},
+  eventStyleResolver = () => ({}),
+  indicatorDate = new Date(),
+    onToday,
+  onAdvance,
+  onRetreat,
+  onMonthAdvance,
+  onMonthRetreat,
 }) => {
   // ---------------------------------------------------------
   // 1) timelineData oluştur (dates, monthHeaders vs.)
   // ---------------------------------------------------------
   const timelineData = generateTimelineData(2020, 2030); // 10 yıllık veri
   const { dates, monthHeaders } = timelineData;
-
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const date = programDate ? new Date(programDate) : new Date();
+    date.setDate(date.getDate() - 3); // Program tarihinden 3 gün öncesini al
+    return date;
+  });
+  
   // ---------------------------------------------------------
   // 2) local state
   // ---------------------------------------------------------
   const [collapsedGroups, setCollapsedGroups] = useState({});
-  const [selectedDate, setSelectedDate] = useState(() => {
-    const date = programDate ? new Date(programDate) : new Date();
-    date.setDate(date.getDate() - 3);
-    return date;
-  });
+
   const [localEvents, setLocalEvents] = useState(events);
 
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
 
   // dayRange = ekranda göstermeyi istediğimiz gün/hücre sayısı (ör. 30 gün)
-  const [dayRange, setDayRange] = useState(30);
 
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(themeType === "dark");
 
+  useEffect(() => {
+    if (themeType !== undefined) {
+      setIsDarkMode(themeType === "dark");
+    }
+  }, [themeType]);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode((prev) => !prev);
+  };
   // ---------------------------------------------------------
   // 3) Sabit hücre genişliği (örneğin 56.95 px)
   //    Container genişliği = dayRange * cellWidth
@@ -101,10 +125,15 @@ const Timeline = ({
   const filteredDates =
     startIndex !== -1 ? dates.slice(startIndex, Math.min(endIndex, dates.length)) : [];
 
-  const today = programDate ? new Date(programDate) : new Date();
-  const todayIndex = filteredDates.findIndex(
-    (d) => new Date(d.fullDate).toDateString() === today.toDateString()
-  );
+    const today = programDate ? new Date(programDate) : new Date();
+    today.setDate(today.getDate() - 3);
+    
+
+    
+    const todayIndex = filteredDates.findIndex(
+      (d) => new Date(d.fullDate).toDateString() === new Date(indicatorDate).toDateString()
+    );
+
   const totalDays = filteredDates.length;
 
   // ---------------------------------------------------------
@@ -119,43 +148,50 @@ const Timeline = ({
 
   // ---------------------------------------------------------
   // 7) Navigation fonksiyonları
-  // ---------------------------------------------------------
-  const handleToday = () => {
-    const date = programDate ? new Date(programDate) : new Date();
-    date.setDate(date.getDate() - 3);
-    setSelectedDate(date);
+  // ---------------------------------------------------------  const { dates, monthHeaders } = timelineData;
+
+
+
+  const handleDateChange = (newDate) => {
+    setSelectedDate(new Date(newDate));
   };
 
-  const handleAdvance = () =>
+  const handleToday = () => {
+    const today = programDate ? new Date(programDate) : new Date();
+    today.setDate(today.getDate() - 3); // Program tarihinden 3 gün öncesini ayarla
+    setSelectedDate(today);
+  };
+  
+  
+
+  const handleAdvance = () => {
     setSelectedDate((prev) => new Date(prev.getTime() + 5 * 24 * 60 * 60 * 1000));
+  };
 
-  const handleRetreat = () =>
+  const handleRetreat = () => {
     setSelectedDate((prev) => new Date(prev.getTime() - 5 * 24 * 60 * 60 * 1000));
+  };
 
-  const handleMonthRetreat = () =>
-    setSelectedDate((prev) => {
-      const newDate = new Date(prev);
-      newDate.setMonth(newDate.getMonth() - 1);
-      return newDate;
-    });
-
-  const handleMonthAdvance = () =>
+  const handleMonthAdvance = () => {
     setSelectedDate((prev) => {
       const newDate = new Date(prev);
       newDate.setMonth(newDate.getMonth() + 1);
       return newDate;
     });
+  };
+
+  const handleMonthRetreat = () => {
+    setSelectedDate((prev) => {
+      const newDate = new Date(prev);
+      newDate.setMonth(newDate.getMonth() - 1);
+      return newDate;
+    });
+  };
 
   // ---------------------------------------------------------
   // 8) Dark Mode
   // ---------------------------------------------------------
-  const toggleDarkMode = () => {
-    setIsDarkMode((prevMode) => !prevMode);
-  };
 
-  useEffect(() => {
-    document.body.classList.toggle("dark-mode", isDarkMode);
-  }, [isDarkMode]);
 
   // ---------------------------------------------------------
   // 9) Ay başlıklarını filtrele
@@ -181,21 +217,22 @@ const Timeline = ({
       {masterHeaderView && (
       <div className="timeline-master-header">
         <MasterHeader
+          selectedDate={selectedDate} // Seçili tarihi gönder
+          onDateSelect={handleDateChange}
           onToday={handleToday}
           onAdvance={handleAdvance}
           onRetreat={handleRetreat}
           onMonthAdvance={handleMonthAdvance}
           onMonthRetreat={handleMonthRetreat}
           dayRange={dayRange}
-          setDayRange={setDayRange}  // dayRange'ı burada user değiştirebilir
-          isDarkMode={isDarkMode}
-          toggleDarkMode={toggleDarkMode}
+          setDayRange={setDayRange}
         />
       </div>
 )}
       {/* Body: Sol kısım => Resources, Sağ kısım => timeline */}
       <div className="timeline-body">
-        <div className="timeline-resources-container">
+        <div className="timeline-resources-container"
+        style={{ overflow: "hidden"}}>
         <ResourcesHeader content={resourceHeaderContent} />
         <Resources
             groupedResources={resources}
@@ -205,21 +242,14 @@ const Timeline = ({
           />
         </div>
 
-        {/* 
-          Dış kap => .timeline-scrollable-container
-          horizontalScrollOn => overflow-x auto/hidden 
-        */}
+
         <div
           className="timeline-scrollable-container"
           style={{
             overflowX: horizontalScrollOn ? "auto" : "hidden",
           }}
         >
-          {/*
-            İç kap => .timeline-header-content-wrapper
-            Genişlik => dayRange * cellWidth px (eğer horizontalScrollOn=true)
-            Yoksa 100% (scroll devre dışı)
-          */}
+
           <div
             className="timeline-header-content-wrapper"
             style={{
@@ -231,22 +261,19 @@ const Timeline = ({
               monthHeaders={filteredMonthHeaders}
             />
 
-            <TimelineContent
-              // Props
+<TimelineContent
               groupedResources={resources}
               dates={filteredDates}
               collapsedGroups={collapsedGroups}
               events={localEvents}
               setEvents={setLocalEvents}
-              onEventClick={handleEventClick}
+              onEventClick={onEventClick}
+              
               todayIndex={todayIndex}
-              totalDays={totalDays}
               indicatorOn={indicatorOn}
               resourceSettings={resourceSettings}
               toggleGroupCollapse={toggleGroupCollapse}
               setDropInfo={setDropInfo}
-
-              // Yeni prop'lar
               eventsDragOn={eventsDragOn}
               eventsExtendOn={eventsExtendOn}
               createNewEventOn={createNewEventOn}
@@ -254,6 +281,11 @@ const Timeline = ({
               onExtendInfo={onExtendInfo}
               onCreateEventInfo={onCreateEventInfo}
               onEventRightClick={onEventRightClick}
+              eventTooltipOn={eventTooltipOn} // Tooltip kontrolü
+              tooltipComponent={TooltipComponent} // Özelleştirilebilir Tooltip bileşeni
+              tempEventStyle = {tempEventStyle}
+              eventStyleResolver={eventStyleResolver}
+
             />
 
             {/* Tooltip */}

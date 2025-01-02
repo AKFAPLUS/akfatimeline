@@ -44,8 +44,8 @@ const Timeline = ({
   tooltipComponent: TooltipComponent, // Özelleştirilebilir Tooltip bileşeni
   tempEventStyle = {},
   eventStyleResolver = () => ({}),
-  indicatorDate = new Date(),
-    onToday,
+
+  onToday,
   onAdvance,
   onRetreat,
   onMonthAdvance,
@@ -125,15 +125,10 @@ const Timeline = ({
   const filteredDates =
     startIndex !== -1 ? dates.slice(startIndex, Math.min(endIndex, dates.length)) : [];
 
-    const today = programDate ? new Date(programDate) : new Date();
-    today.setDate(today.getDate() - 3);
-    
-
-    
-    const todayIndex = filteredDates.findIndex(
-      (d) => new Date(d.fullDate).toDateString() === new Date(indicatorDate).toDateString()
-    );
-
+  const today = programDate ? new Date(programDate) : new Date();
+  const todayIndex = filteredDates.findIndex(
+    (d) => new Date(d.fullDate).toDateString() === today.toDateString()
+  );
   const totalDays = filteredDates.length;
 
   // ---------------------------------------------------------
@@ -157,11 +152,10 @@ const Timeline = ({
   };
 
   const handleToday = () => {
-    const today = programDate ? new Date(programDate) : new Date();
-    today.setDate(today.getDate() - 3); // Program tarihinden 3 gün öncesini ayarla
+    const today = new Date();
+    today.setDate(today.getDate() - 3); // Bugünden 3 gün öncesini ayarla
     setSelectedDate(today);
   };
-  
   
 
   const handleAdvance = () => {
@@ -268,8 +262,9 @@ const Timeline = ({
               events={localEvents}
               setEvents={setLocalEvents}
               onEventClick={onEventClick}
-              
-              todayIndex={todayIndex}
+              todayIndex={filteredDates.findIndex(
+                (d) => new Date(d.fullDate).toDateString() === new Date().toDateString()
+              )}
               indicatorOn={indicatorOn}
               resourceSettings={resourceSettings}
               toggleGroupCollapse={toggleGroupCollapse}

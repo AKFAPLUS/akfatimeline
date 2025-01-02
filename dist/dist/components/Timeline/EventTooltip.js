@@ -28,7 +28,7 @@ const EventTooltip = ({ event, position = { top: 0, left: 0 }, onClose, onEdit, 
     <div
       style={{
         position: "absolute",
-        top: top - 30, // Tooltip'in biraz yukarıda görünmesi için
+        top: top - 200, // Tooltip'in biraz yukarıda görünmesi için
         left: left + 70,
         transform: "translateX(-50%)",
         backgroundColor: "#ffffff",

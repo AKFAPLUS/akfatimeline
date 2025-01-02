@@ -1,200 +1,209 @@
-// Gerekli kütüphaneleri import ediyoruz
 import React, { useState } from "react";
-// Timeline bileşenini import ediyoruz
 import Timeline from "./components/Timeline/Timeline";
+import EventTooltip from "./components/Timeline/EventTooltip"; // Tooltip bileşenini import ediyoruz
 
 const App = () => {
-  // Timeline başlangıç tarihi (zorunlu, format: "YYYY-MM-DD")
-  const programDate = "2025-01-02";
+  const programDate = "2025-01-08";
 
-  // Timeline için etkinliklerin veri listesi
   const events = [
     {
-      id: "lux-101-1", // Benzersiz etkinlik kimliği (zorunlu)
-      title: "Room 101 Event", // Etkinlik adı (zorunlu)
-      startDate: new Date("2025-01-01"), // Başlangıç tarihi (zorunlu, JS Date formatı)
-      endDate: new Date("2025-01-08"), // Bitiş tarihi (zorunlu, JS Date formatı)
-      resourceId: "lux-101", // Hangi kaynağa ait olduğunu belirten ID (zorunlu)
-      color: "#ff5733", // Etkinlik için özel renk (isteğe bağlı)
-      totalAmount: 500, // Ek alan: Toplam borç (isteğe bağlı)
-      amountPaid: 200, // Ek alan: Ödenen miktar (isteğe bağlı)
-      status: "Confirmed", // Ek alan: Rezervasyon durumu (isteğe bağlı)
-      note: "Misafirler özel talep olarak ekstra yastık istediler.", // Not (isteğe bağlı)
+      id: "lux-101-1",
+      title: "Room 101 Cleaning",
+      startDate: new Date("2025-01-01"),
+      endDate: new Date("2025-01-03"),
+      resourceId: "lux-101",
+      status: "Completed", // Tamamlanmış
+    },
+    {
+      id: "lux-101-2",
+      title: "Room 101 Maintenance",
+      startDate: new Date("2025-01-03"),
+      endDate: new Date("2025-01-05"),
+      resourceId: "lux-101",
+      status: "In-progress", // Devam Ediyor
+    },
+    {
+      id: "lux-101-3",
+      title: "Room 101 Inspection",
+      startDate: new Date("2025-01-05"),
+      endDate: new Date("2025-01-07"),
+      resourceId: "lux-101",
+      status: "Cancelled", // İptal
     },
     {
       id: "lux-102-1",
-      title: "Room 102 Event",
-      startDate: new Date("2025-01-02"),
-      endDate: new Date("2025-01-04"),
+      title: "Room 102 Cleaning",
+      startDate: new Date("2025-01-07"),
+      endDate: new Date("2025-01-10"),
       resourceId: "lux-102",
-      color: "#33a1ff",
+      status: "Completed",
     },
     {
-      id: "lux-103-1",
-      title: "Room 103 Event",
-      startDate: new Date("2025-01-01"),
-      endDate: new Date("2025-01-02"),
-      resourceId: "lux-103",
-      color: "#33ff57",
-    },
-    {
-      id: "fam-201-1",
-      title: "Suite 201 Event",
-      startDate: new Date("2025-01-01"),
-      endDate: new Date("2025-01-02"),
-      resourceId: "fam-201",
-      color: "#ff33a1",
-    },
-    {
-      id: "fam-202-1",
-      title: "Suite 202 Event",
-      startDate: new Date("2025-01-03"),
-      endDate: new Date("2025-01-05"),
-      resourceId: "fam-202",
-      color: "#a1ff33",
-    },
-    {
-      id: "bus-301-1",
-      title: "Room 301 Event",
-      startDate: new Date("2025-01-02"),
-      endDate: new Date("2025-01-04"),
-      resourceId: "bus-301",
-      color: "#ff9a00",
-    },
-    {
-      id: "vip-401-1",
-      title: "VIP 401 Event",
-      startDate: new Date("2025-01-04"),
-      endDate: new Date("2025-01-06"),
-      resourceId: "vip-401",
-      color: "#800080",
-    },
-    {
-      id: "vip-402-1",
-      title: "VIP 402 Event",
-      startDate: new Date("2025-01-05"),
-      endDate: new Date("2025-01-06"),
-      resourceId: "vip-402",
-      color: "#008080",
-    },
-    // Diğer etkinlikler...
-  ];
-
-  // Kaynakların listesi (zorunlu, grup ve kaynak bilgisi içermeli)
-  const resources = [
-    {
-      groupName: "Luxury Rooms", // Grup adı (zorunlu)
-      resources: [
-        { id: "lux-101", name: "Room 101" }, // Kaynak ID ve adı (zorunlu)
-        { id: "lux-102", name: "Room 102" },
-        { id: "lux-103", name: "Room 103" },
-        { id: "lux-104", name: "Room 104" },
-            ],
-    },
-    {
-      groupName: "Family Suites",
-      resources: [
-        { id: "fam-201", name: "Suite 201" },
-        { id: "fam-202", name: "Suite 202" },
-        { id: "fam-203", name: "Suite 203" },
-        { id: "fam-204", name: "Suite 204" },
-      ],
-    },
-    {
-      groupName: "Business Class",
-      resources: [
-        { id: "bus-301", name: "Room 301" },
-        { id: "bus-302", name: "Room 302" },
-        { id: "bus-303", name: "Room 303" },
-        { id: "bus-304", name: "Room 304" },
-      ],
-    },
-    {
-      groupName: "VIP Exclusive",
-      resources: [
-        { id: "vip-401", name: "VIP 401" },
-        { id: "vip-402", name: "VIP 402" },
-        { id: "vip-403", name: "VIP 403" },
-        { id: "vip-404", name: "VIP 404" },
-
-      ],
+      id: "lux-102-2",
+      title: "Room 102 Maintenance",
+      startDate: new Date("2025-01-10"),
+      endDate: new Date("2025-01-15"),
+      resourceId: "lux-102",
+      status: "In-progress",
     },
   ];
+  
 
-  // Kaynak ayarları (isteğe bağlı, varsayılan ayarlar mevcut)
+
+const resources = [
+  {
+      groupName: "Luxury Rooms",
+      resources: [
+          { id: "lux-101", name: "Room 101" },
+          { id: "lux-102", name: "Room 102" },
+          { id: "lux-103", name: "Room 103" },
+          { id: "lux-104", name: "Room 104" },
+          { id: "lux-105", name: "Room 105" },
+          { id: "lux-106", name: "Room 106" },
+          { id: "lux-107", name: "Room 107" },
+          { id: "lux-108", name: "Room 108" },
+          { id: "lux-109", name: "Room 109" },
+          { id: "lux-110", name: "Room 110" },
+      ],
+  },
+  {
+      groupName: "Deluxe Rooms",
+      resources: [
+          { id: "deluxe-201", name: "Room 201" },
+          { id: "deluxe-202", name: "Room 202" },
+          { id: "deluxe-203", name: "Room 203" },
+          { id: "deluxe-204", name: "Room 204" },
+          { id: "deluxe-205", name: "Room 205" },
+          { id: "deluxe-206", name: "Room 206" },
+          { id: "deluxe-207", name: "Room 207" },
+          { id: "deluxe-208", name: "Room 208" },
+          { id: "deluxe-209", name: "Room 209" },
+          { id: "deluxe-210", name: "Room 210" },
+      ],
+  },
+];
+
+
   const resourceSettings = {
-    showIdAsName: false, // true: Kaynak ID gösterir, false: Kaynak adı gösterir
-    isGrouped: true, // true: Kaynakları gruplar halinde gösterir
-    isCollapsible: true, // true: Gruplar açılıp kapatılabilir
+    showIdAsName: false,
+    isGrouped: true,
+    isCollapsible: true,
   };
 
-  // Drag-and-drop işlemleri için gerekli callback ve state'ler
-  const [dropInfo, setDropInfo] = useState(null); // Sürükle-bırak sonrası bilgi saklar
-  const handleDragInfo = (dragData) => {
-    console.log("Dragged Event Info:", dragData);
+  const eventStyleResolver = (event) => {
+    switch (event.status) {
+      case "Completed":
+        return {
+          backgroundColor: "#28a745",
+          color: "#fff",
+          border: "1px solid #28a745",
+        };
+      case "In-progress":
+        return {
+          backgroundColor: "#ffc107",
+          color: "#000",
+          border: "1px solid #ffc107",
+        };
+      case "Cancelled":
+        return {
+          backgroundColor: "#dc3545",
+          color: "#fff",
+          border: "1px solid #dc3545",
+        };
+      default:
+        return {
+          backgroundColor: "#ccc",
+          color: "#000",
+          border: "1px solid #ccc",
+        };
+    }
+  };
+  
+  
+  const [dayRange, setDayRange] = useState(30);
+  const [themeType, setThemeType] = useState("dark");
+
+  const toggleTheme = () => {
+    setThemeType((prev) => (prev === "light" ? "dark" : "light"));
   };
 
-  // Etkinlik genişletme (extend) işlemi callback'i
-  const handleExtendInfo = (extendData) => {
-    console.log("Extended Event Info:", extendData);
+  const handleToday = () => {
+    console.log("Bugüne git");
+    // Program tarihini bugüne getir
   };
 
-  // Yeni etkinlik oluşturma işlemi callback'i
-  const handleCreateEventInfo = (newEventData) => {
-    console.log("New Event Created:", newEventData);
+  const handleAdvance = () => {
+    console.log("5 gün ileri git");
   };
 
-  // Etkinlik tıklama işlemi callback'i
-  const handleEventClick = (evt, ev) => {
-    console.log("Event clicked:", evt);
+  const handleRetreat = () => {
+    console.log("5 gün geri git");
   };
 
-  // Etkinlik sağ tıklama işlemi callback'i
-  const handleEventRightClick = (evt, ev) => {
-    ev.preventDefault(); // Varsayılan sağ tık menüsünü engeller
-    console.log("Event right-clicked:", evt);
+  const handleMonthAdvance = () => {
+    console.log("1 ay ileri git");
   };
 
-  // Diğer özellikler ve kontrol mekanizmaları
-  const eventsDragOn = true; // true: Etkinlik sürükle-bırak özelliği aktif
-  const eventsExtendOn = true; // true: Etkinlik genişletme özelliği aktif
-  const createNewEventOn = true; // true: Yeni etkinlik oluşturma özelliği aktif
-  const horizontalScrollOn = true; // true: Yatay kaydırma özelliği aktif
-  const [masterHeaderView, setMasterHeaderView] = useState(true); // true: Master Header gösterilir
-  const [resourceHeaderContent, setResourceHeaderContent] = useState("Akfa Timeline"); // Resources başlık içeriği
+  const handleMonthRetreat = () => {
+    console.log("1 ay geri git");
+  };
 
+  const handleDropInfo = (dropInfo) => {
+    console.log("Event dropped with info:", dropInfo);
+  };
+  
+  
+  const handleExtendInfo = (extendedEventInfo) => {
+    console.log("Uzatılan etkinlik bilgisi:", extendedEventInfo);
+  };
+  
+  const handleCreateEventInfo = (newEvent) => {
+    console.log("Oluşturulan yeni etkinlik bilgisi:", newEvent);
+  };
+  
   return (
-    <Timeline
-      // Kaynak verileri (zorunlu)
-      resources={resources}
-      // Kaynak ayarları (isteğe bağlı)
-      resourceSettings={resourceSettings}
-      // Timeline başlangıç tarihi (zorunlu)
-      programDate={programDate}
-      // Etkinlik verileri (zorunlu)
-      events={events}
-      externalEvents={events}
-      // Drop bilgisi için callback ve state
-      setDropInfo={setDropInfo}
-      dropInfo={dropInfo}
-      // Bugün göstergesi (isteğe bağlı)
-      indicatorOn={true}
-      // Sürükle-bırak ve genişletme özellikleri (isteğe bağlı)
-      eventsDragOn={eventsDragOn}
-      eventsExtendOn={eventsExtendOn}
-      createNewEventOn={createNewEventOn}
-      // Callback'ler
-      onDragInfo={handleDragInfo}
-      onExtendInfo={handleExtendInfo}
-      onCreateEventInfo={handleCreateEventInfo}
-      onEventClick={handleEventClick}
-      onEventRightClick={handleEventRightClick}
-      // Yatay kaydırma özelliği (isteğe bağlı)
-      horizontalScrollOn={horizontalScrollOn}
-      // Master Header görünürlüğü ve Resources başlığı içeriği
-      masterHeaderView={masterHeaderView}
-      resourceHeaderContent={resourceHeaderContent}
-    />
+    <div>
+      <button onClick={toggleTheme}>
+        Temayı Değiştir ({themeType === "dark" ? "Karanlık" : "Aydınlık"})
+      </button>
+      <div style={{ margin: "20px 0" }}>
+        <button onClick={handleToday}>Bugüne Git</button>
+        <button onClick={handleRetreat}>5 Gün Geri</button>
+        <button onClick={handleAdvance}>5 Gün İleri</button>
+        <button onClick={handleMonthRetreat}>1 Ay Geri</button>
+        <button onClick={handleMonthAdvance}>1 Ay İleri</button>
+      </div>
+      <Timeline
+        resources={resources}
+        resourceSettings={resourceSettings}
+        programDate={programDate}
+        events={events}
+        indicatorOn={true}
+        horizontalScrollOn={true}
+        dayRange={dayRange}
+        setDayRange={setDayRange}
+        themeType={themeType} // Tema türü prop olarak geçiliyor
+        onToday={handleToday}
+        onAdvance={handleAdvance}
+        onRetreat={handleRetreat}
+        onMonthAdvance={handleMonthAdvance}
+        onMonthRetreat={handleMonthRetreat}
+        eventTooltipOn={true} // Tooltip'i aktif hale getiriyoruz
+        tooltipComponent={EventTooltip} // Tooltip bileşenini belirtiyoruz
+        tempEventStyle={{
+          backgroundColor: "rgba(235, 0, 235, 0.8)", // Örnek stil
+          color: "#fff",
+          borderRadius: "40px",
+          padding: "5px",
+        }}
+        eventStyleResolver={eventStyleResolver}
+        setDropInfo={handleDropInfo} // Callback'i buradan bağlıyoruz
+        onExtendInfo={handleExtendInfo} // Uzatma bilgisi
+        onCreateEventInfo={handleCreateEventInfo} // Yeni etkinlik bilgisi
+        indicatorDate="2025-01-09" // İstediğiniz tarihi gönderin
+
+      />
+    </div>
   );
 };
 

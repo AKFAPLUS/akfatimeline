@@ -38,20 +38,34 @@ const useEventDragDrop = (events, setEvents, setDropInfo) => {
 
   const handleDrop = (event, resourceId, targetDate) => {
     event.preventDefault();
-
+  
     if (mode === "drag" && draggingEvent) {
       const draggedEvent = events.find((evt) => evt.id === draggingEvent);
-
+  
       if (draggedEvent) {
         const duration = draggedEvent.endDate - draggedEvent.startDate;
         const cellWidth = event.target.offsetWidth || 30;
         const offsetDays = Math.floor(dragOffset / cellWidth);
         const newStartDate = new Date(targetDate.getTime() - offsetDays * 24 * 60 * 60 * 1000);
         const newEndDate = new Date(newStartDate.getTime() + duration);
-
-        console.log("New Start Date:", newStartDate);
-        console.log("New End Date:", newEndDate);
-
+  
+        // Callback kontrolü ve loglama
+        if (setDropInfo) {
+          console.log("setDropInfo is being called with:", {
+            id: draggingEvent,
+            newResourceId: resourceId,
+            newStartDate,
+            newEndDate,
+          });
+          setDropInfo({
+            id: draggingEvent,
+            newResourceId: resourceId,
+            newStartDate,
+            newEndDate,
+          });
+        }
+  
+        // Event güncellemesi
         setEvents((prevEvents) =>
           prevEvents.map((evt) =>
             evt.id === draggingEvent
@@ -64,22 +78,14 @@ const useEventDragDrop = (events, setEvents, setDropInfo) => {
               : evt
           )
         );
-
-        if (setDropInfo) {
-          setDropInfo({
-            id: draggingEvent,
-            newResourceId: resourceId,
-            newStartDate,
-            newEndDate,
-          });
-        }
       }
     }
-
+  
     setDraggingEvent(null);
     setDragOffset(0);
     setMode(null);
   };
+  
 
   const handleExtend = (event, eventId, newEndDate) => {
     if (mode !== "extend" || draggingEvent !== eventId) return;

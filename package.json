@@ -1,6 +1,6 @@
 {
   "name": "akfatimeline",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "A customizable timeline component for React applications",
   "main": "dist/Timeline.js",
   "module": "dist/Timeline.js",

@@ -2,12 +2,8 @@ import React from "react";
 
 const Indicator = ({ todayIndex, totalDays }) => {
   if (todayIndex < 0 || todayIndex >= totalDays) {
-    console.log("Indicator not visible: Out of bounds");
     return null; // Bugün timeline dışında ise çizgiyi gösterme
   }
-
-  console.log("todayIndex:", todayIndex);
-  console.log("totalDays:", totalDays);
 
   return (
     <div

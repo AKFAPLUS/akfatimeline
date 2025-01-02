@@ -202,6 +202,7 @@ const TimelineContent = ({
     const newEndDate = new Date((originalEndDate ?? new Date()).getTime());
     newEndDate.setDate(newEndDate.getDate() + daysToAdd);
 
+    console.log(">>> Extending ID:", extendingEvent.id, "=>", newEndDate);
 
     setEvents((prev) =>
       prev.map((evt) => (evt.id === extendingEvent.id ? { ...evt, endDate: newEndDate } : evt))

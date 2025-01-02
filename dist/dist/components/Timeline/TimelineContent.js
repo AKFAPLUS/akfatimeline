@@ -18,22 +18,35 @@ const TimelineContent = ({
   resourceSettings,
   setDropInfo,
 
-  // Yeni prop'lar
+  
   eventsDragOn = true,
   eventsExtendOn = true,
   createNewEventOn = true,
-  onDragInfo,
+
   onExtendInfo,
   onCreateEventInfo,
   onEventRightClick,
+
+  eventTooltipOn = true, 
+  tooltipComponent: TooltipComponent,
+  tempEventStyle = {},
+
+  eventStyleResolver = () => ({}),
 }) => {
   // ------------------- HOOKS & STATE -------------------
   const containerRef = useRef(null);
 
   // Drag
   const { isDragging, dragStart, dragEnd } = useDragAndDrop(events, setEvents);
-  const { handleDragStart, handleDragOver, handleDrop, handleDragEnd } =
-    useEventDragDrop(events, setEvents, setDropInfo);
+  const { handleDragStart, handleDragOver, handleDrop, handleDragEnd } = useEventDragDrop(
+    events,
+    setEvents,
+    setDropInfo // Doğrudan setDropInfo'yu geçiriyoruz
+  );
+  
+
+
+  
 
   // Extend
   const { extendEvent } = useExtendEvent(events, setEvents);
@@ -55,9 +68,14 @@ const TimelineContent = ({
   // ------------------- Tooltip Logic -------------------
   const handleEventClickInternal = (event, e) => {
     e.stopPropagation();
+    // Eğer mod "extend" ise tooltip'i açma
+    if (mode === "extend") {
+      return;
+    }
+  
     // Harici callback
     if (onEventClick) onEventClick(event, e);
-
+  
     // Tooltip göstermek
     const eventElement = e.currentTarget;
     if (eventElement) {
@@ -69,6 +87,7 @@ const TimelineContent = ({
       setSelectedEvent(event);
     }
   };
+  
 
   const handleCloseTooltip = () => {
     setSelectedEvent(null);
@@ -154,8 +173,11 @@ const TimelineContent = ({
       return;
     }
     handleDragEnd();
-    // onDragInfo(...) => if needed
+  
+
   };
+  
+  
 
   // ------------------- Extend Logic -------------------
   const handleMouseDownExtend = (mouseEvent, event) => {
@@ -180,7 +202,6 @@ const TimelineContent = ({
     const newEndDate = new Date((originalEndDate ?? new Date()).getTime());
     newEndDate.setDate(newEndDate.getDate() + daysToAdd);
 
-    console.log(">>> Extending ID:", extendingEvent.id, "=>", newEndDate);
 
     setEvents((prev) =>
       prev.map((evt) => (evt.id === extendingEvent.id ? { ...evt, endDate: newEndDate } : evt))
@@ -199,11 +220,16 @@ const TimelineContent = ({
         });
       }
     }
-    setMode(null);
+  
+    // Tooltip açılmasını engellemek için modun null olmasını geciktiriyoruz
+    setTimeout(() => {
+      setMode(null);
+    }, 100); // 100ms gecikme
     setExtendingEvent(null);
     setOriginalEndDate(null);
     setStartMouseX(null);
   };
+  
 
   useEffect(() => {
     if (mode === "extend") {
@@ -273,6 +299,11 @@ const TimelineContent = ({
     };
   };
 
+
+  
+
+  
+  
   // ------------------- RENDER -------------------
   return (
     <div
@@ -283,138 +314,131 @@ const TimelineContent = ({
         <Indicator todayIndex={todayIndex} totalDays={totalDays} />
       )}
 
-      {groupedResources.map((group, groupIndex) => (
-        <div key={groupIndex} className="timeline-group-container">
-          {/* Grup Başlığı */}
-          {resourceSettings.isGrouped && (
-            <div className="timeline-group-header-row">
-              {dates.map((dateObj, colIndex) => (
-                <div
-                  key={`group-header-${groupIndex}-${colIndex}`}
-                  className="timeline-group-header-cell"
-                ></div>
-              ))}
-            </div>
-          )}
+{groupedResources.map((group, groupIndex) => (
+  <div key={groupIndex} className="timeline-group-container">
+    {/* Grup Başlığı */}
+    {resourceSettings.isGrouped && (
+      <div className="timeline-group-header-row">
+        {dates.map((dateObj, colIndex) => (
+          <div
+            key={`group-header-${groupIndex}-${colIndex}`}
+            className="timeline-group-header-cell"
+          ></div>
+        ))}
+      </div>
+    )}
 
-          {/* Kaynaklar */}
-          {!collapsedGroups[group.groupName] &&
-            group.resources.map((resource, rowIndex) => {
-              const resourceEvents = events.filter((ev) => ev.resourceId === resource.id);
+    {/* Kaynaklar */}
+    {!collapsedGroups[group.groupName] &&
+      group.resources.map((resource, rowIndex) => {
+        const resourceEvents = events.filter((ev) => ev.resourceId === resource.id);
+
+        return (
+          <div key={resource.id} className="timeline-resource-row">
+            {/* Her resource row'u */}
+            {resourceEvents.map((event) => {
+              const { isVisible, left, width, isPartialStart, isPartialEnd } =
+                calculatePosition(event, dates);
+              if (!isVisible) return null;
+
+              // Kullanıcıdan gelen stil
+              const eventStyle = eventStyleResolver ? eventStyleResolver(event) : {};
 
               return (
-                <div key={resource.id} className="timeline-resource-row">
-                  {/* Her resource row'u */}
-                  {resourceEvents.map((event) => {
-                    const { isVisible, left, width, isPartialStart, isPartialEnd } =
-                      calculatePosition(event, dates);
-                    if (!isVisible) return null;
-
-                    return (
-                      <div
-                        key={event.id}
-                        className="timeline-event"
-                        draggable={mode !== "extend" && eventsDragOn}
-                        onDragStart={(e) => {
-                          if (mode === "extend") {
-                            e.preventDefault();
-                            return;
-                          }
-                          handleDragStartSafe(e, event.id);
-                        }}
-                        onDragEnd={(e) => {
-                          if (mode === "extend") {
-                            e.preventDefault();
-                            return;
-                          }
-                          handleDragEndSafe(e);
-                        }}
-                        onContextMenu={(reactEvent) => handleRightClickEvent(event, reactEvent)}
-                        onClick={(ev) => handleEventClickInternal(event, ev)}
-                        style={{
-                          left,
-                          width,
-                          top: "5px",
-                          // color from var(--timeline-event-text-color)
-                          // background from event.color or var(...) => if event.color empty, fallback in CSS
-                          borderTopLeftRadius: isPartialStart ? "0px" : "20px",
-                          borderBottomLeftRadius: isPartialStart ? "0px" : "20px",
-                          borderTopRightRadius: isPartialEnd ? "0px" : "20px",
-                          borderBottomRightRadius: isPartialEnd ? "0px" : "20px",
-                          cursor: mode === "extend" ? "col-resize" : "grab",
-                        }}
-                      >
-                        {event.title}
-                        {eventsExtendOn && (
-                          <div
-                            className="timeline-event-extend-handle"
-                            onMouseDown={(mouseEvent) => {
-                              mouseEvent.stopPropagation();
-                              handleMouseDownExtend(mouseEvent, event);
-                            }}
-                          ></div>
-                        )}
-                      </div>
-                    );
-                  })}
-
-                  {/* Geçici (yeni) event */}
-                  {tempEvent && tempEvent.resourceId === resource.id && (
+                <div
+                  key={event.id}
+                  className="timeline-event"
+                  draggable={mode !== "extend" && eventsDragOn}
+                  onDragStart={(e) => {
+                    if (mode === "extend") {
+                      e.preventDefault();
+                      return;
+                    }
+                    handleDragStartSafe(e, event.id);
+                  }}
+                  onDragEnd={(e) => {
+                    if (mode === "extend") {
+                      e.preventDefault();
+                      return;
+                    }
+                    handleDragEndSafe(e);
+                  }}
+                  onContextMenu={(reactEvent) => handleRightClickEvent(event, reactEvent)}
+                  onClick={(ev) => handleEventClickInternal(event, ev)}
+                  style={{
+                    left,
+                    width,
+                    top: "5px",
+                    borderTopLeftRadius: isPartialStart ? "0px" : "20px",
+                    borderBottomLeftRadius: isPartialStart ? "0px" : "20px",
+                    borderTopRightRadius: isPartialEnd ? "0px" : "20px",
+                    borderBottomRightRadius: isPartialEnd ? "0px" : "20px",
+                    cursor: mode === "extend" ? "col-resize" : "grab",
+                    ...eventStyle, // Kullanıcı tarafından tanımlanan stiller
+                  }}
+                >
+                  {event.title}
+                  {eventsExtendOn && (
                     <div
-                      className="timeline-temp-event"
-                      style={{
-                        ...calculatePosition(tempEvent, dates),
-                        top: "5px",
+                      className="timeline-event-extend-handle"
+                      onMouseDown={(mouseEvent) => {
+                        mouseEvent.stopPropagation();
+                        handleMouseDownExtend(mouseEvent, event);
                       }}
-                    >
-                      {tempEvent.title}
-                    </div>
-                  )}
-
-                  {/* Tarih Hücreleri */}
-                  {dates.map((dateObj, colIndex) => (
-                    <div
-                      key={`cell-${groupIndex}-${rowIndex}-${colIndex}`}
-                      className={`timeline-cell ${
-                        isCellSelected(resource.id, dateObj) ? "selected" : ""
-                      }`}
-                      data-date={JSON.stringify(dateObj)}
-                      data-resource-id={resource.id}
-                      onMouseDown={() => handleCellClick(resource.id, dateObj)}
-                      onDragOver={(e) => handleDragOver(e)}
-                      onDrop={(e) =>
-                        handleDrop(e, resource.id, parseDate(dateObj.fullDate))
-                      }
                     ></div>
-                  ))}
+                  )}
                 </div>
               );
             })}
-        </div>
-      ))}
+
+            {/* Geçici (yeni) event */}
+            {tempEvent && tempEvent.resourceId === resource.id && (
+              <div
+                className="timeline-temp-event"
+                style={{
+                  ...calculatePosition(tempEvent, dates),
+                  ...tempEventStyle, // Kullanıcının geçtiği stiller
+                }}
+              >
+                {tempEvent.title}
+              </div>
+            )}
+
+            {/* Tarih Hücreleri */}
+            {dates.map((dateObj, colIndex) => (
+              <div
+                key={`cell-${groupIndex}-${rowIndex}-${colIndex}`}
+                className={`timeline-cell ${
+                  isCellSelected(resource.id, dateObj) ? "selected" : ""
+                }`}
+                data-date={JSON.stringify(dateObj)}
+                data-resource-id={resource.id}
+                onMouseDown={() => handleCellClick(resource.id, dateObj)}
+                onDragOver={(e) => handleDragOver(e)}
+                onDrop={(e) =>
+                  handleDrop(e, resource.id, parseDate(dateObj.fullDate))
+                }
+              ></div>
+            ))}
+          </div>
+        );
+      })}
+  </div>
+))}
+
 
       {/* Tooltip vb. */}
-      {selectedEvent && (
-        // "timeline-event-tooltip" gibi className tanımlanabilir
-        // eğer custom css istenirse
-        <div
-          style={{
-            position: "absolute",
-            top: tooltipPosition.top,
-            left: tooltipPosition.left,
-            // ...
-            backgroundColor: "#333",
-            color: "#fff",
-            padding: "5px",
-            borderRadius: "4px",
-            zIndex: 999,
-          }}
-        >
-          <button onClick={() => handleCloseTooltip()}>X</button>
-          {/* Content */}
-          {selectedEvent.title}
-        </div>
-      )}
+      {eventTooltipOn && selectedEvent && TooltipComponent && mode !== "extend" && (
+  <TooltipComponent
+    event={selectedEvent}
+    position={tooltipPosition}
+    onClose={handleCloseTooltip}
+  />
+)}
+
+
+
+
     </div>
   );
 };

@@ -2371,6 +2371,7 @@ const Indicator = _ref => {
     totalDays
   } = _ref;
   if (todayIndex < 0 || todayIndex >= totalDays) {
+    console.log("Indicator not visible: Out of bounds");
     return null; // Bugün timeline dışında ise çizgiyi gösterme
   }
   return /*#__PURE__*/external_react_default().createElement("div", {
@@ -2609,6 +2610,7 @@ const TimelineContent = _ref => {
     const daysToAdd = Math.floor(deltaX / cellW);
     const newEndDate = new Date((originalEndDate !== null && originalEndDate !== void 0 ? originalEndDate : new Date()).getTime());
     newEndDate.setDate(newEndDate.getDate() + daysToAdd);
+    console.log(">>> Extending ID:", extendingEvent.id, "=>", newEndDate);
     setEvents(prev => prev.map(evt => evt.id === extendingEvent.id ? TimelineContent_objectSpread(TimelineContent_objectSpread({}, evt), {}, {
       endDate: newEndDate
     }) : evt));
@@ -3050,7 +3052,6 @@ const Timeline_Timeline_Timeline = _ref => {
     // Özelleştirilebilir Tooltip bileşeni
     tempEventStyle = {},
     eventStyleResolver = () => ({}),
-    indicatorDate = new Date(),
     onToday,
     onAdvance,
     onRetreat,
@@ -3131,8 +3132,7 @@ const Timeline_Timeline_Timeline = _ref => {
   const endIndex = startIndex + dayRange;
   const filteredDates = startIndex !== -1 ? dates.slice(startIndex, Math.min(endIndex, dates.length)) : [];
   const today = programDate ? new Date(programDate) : new Date();
-  today.setDate(today.getDate() - 3);
-  const todayIndex = filteredDates.findIndex(d => new Date(d.fullDate).toDateString() === new Date(indicatorDate).toDateString());
+  const todayIndex = filteredDates.findIndex(d => new Date(d.fullDate).toDateString() === today.toDateString());
   const totalDays = filteredDates.length;
 
   // ---------------------------------------------------------
@@ -3152,8 +3152,8 @@ const Timeline_Timeline_Timeline = _ref => {
     setSelectedDate(new Date(newDate));
   };
   const handleToday = () => {
-    const today = programDate ? new Date(programDate) : new Date();
-    today.setDate(today.getDate() - 3); // Program tarihinden 3 gün öncesini ayarla
+    const today = new Date();
+    today.setDate(today.getDate() - 3); // Bugünden 3 gün öncesini ayarla
     setSelectedDate(today);
   };
   const handleAdvance = () => {
@@ -3245,7 +3245,7 @@ const Timeline_Timeline_Timeline = _ref => {
     events: localEvents,
     setEvents: setLocalEvents,
     onEventClick: onEventClick,
-    todayIndex: todayIndex,
+    todayIndex: filteredDates.findIndex(d => new Date(d.fullDate).toDateString() === new Date().toDateString()),
     indicatorOn: indicatorOn,
     resourceSettings: resourceSettings,
     toggleGroupCollapse: toggleGroupCollapse,
