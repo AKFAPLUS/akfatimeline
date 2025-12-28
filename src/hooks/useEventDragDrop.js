@@ -1,12 +1,16 @@
 import { useState } from "react";
 
-const useEventDragDrop = (events, setEvents, setDropInfo) => {
+const useEventDragDrop = (events, setEvents, setDropInfo, onDragInfo = null) => {
   const [draggingEvent, setDraggingEvent] = useState(null);
   const [dragOffset, setDragOffset] = useState(0);
   const [mode, setMode] = useState(null); // "drag" veya "extend"
 
   const handleDragStart = (event, eventId) => {
-    if (mode === "extend") return; // Uzatma modundaysa taşıma işlemini başlatma
+    console.log("[useEventDragDrop] handleDragStart called:", { eventId, currentMode: mode });
+    if (mode === "extend") {
+      console.log("[useEventDragDrop] Extend mode active, skipping drag start");
+      return; // Uzatma modundaysa taşıma işlemini başlatma
+    }
 
     event.stopPropagation();
 
@@ -18,10 +22,14 @@ const useEventDragDrop = (events, setEvents, setDropInfo) => {
     setDragOffset(offset);
     setMode("drag"); // Modu taşıma olarak ayarla
 
+    console.log("[useEventDragDrop] Drag state set:", { eventId, offset, mode: "drag" });
+
     const draggedEvent = events.find((evt) => evt.id === eventId);
     if (draggedEvent) {
-      console.log("Dragging Event Start:", draggedEvent.startDate);
-      console.log("Dragging Event End:", draggedEvent.endDate);
+      console.log("[useEventDragDrop] Dragging Event Start:", draggedEvent.startDate);
+      console.log("[useEventDragDrop] Dragging Event End:", draggedEvent.endDate);
+    } else {
+      console.warn("[useEventDragDrop] Dragged event not found:", eventId);
     }
   };
 
@@ -38,37 +46,67 @@ const useEventDragDrop = (events, setEvents, setDropInfo) => {
 
   const handleDrop = (event, resourceId, targetDate) => {
     event.preventDefault();
+    
+    // State'i önce kaydet - handleDragEnd'den önce çağrılabilir
+    const currentMode = mode;
+    const currentDraggingEvent = draggingEvent;
+    const currentDragOffset = dragOffset;
+    
+    console.log("[useEventDragDrop] handleDrop called:", {
+      currentMode,
+      currentDraggingEvent,
+      resourceId,
+      targetDate,
+      onDragInfo: !!onDragInfo,
+      setDropInfo: !!setDropInfo,
+    });
   
-    if (mode === "drag" && draggingEvent) {
-      const draggedEvent = events.find((evt) => evt.id === draggingEvent);
+    if (currentMode === "drag" && currentDraggingEvent) {
+      console.log("[useEventDragDrop] Drag mode detected, processing drop...");
+      const draggedEvent = events.find((evt) => evt.id === currentDraggingEvent);
   
       if (draggedEvent) {
+        console.log("[useEventDragDrop] Dragged event found:", draggedEvent);
         const duration = draggedEvent.endDate - draggedEvent.startDate;
         const cellWidth = event.target.offsetWidth || 30;
-        const offsetDays = Math.floor(dragOffset / cellWidth);
+        const offsetDays = Math.floor(currentDragOffset / cellWidth);
         const newStartDate = new Date(targetDate.getTime() - offsetDays * 24 * 60 * 60 * 1000);
         const newEndDate = new Date(newStartDate.getTime() + duration);
   
         // Callback kontrolü ve loglama
+        const dragInfo = {
+          id: currentDraggingEvent,
+          newResourceId: resourceId,
+          newStartDate,
+          newEndDate,
+        };
+        
+        console.log("[useEventDragDrop] Drag info prepared:", dragInfo);
+        
         if (setDropInfo) {
-          console.log("setDropInfo is being called with:", {
-            id: draggingEvent,
-            newResourceId: resourceId,
-            newStartDate,
-            newEndDate,
-          });
-          setDropInfo({
-            id: draggingEvent,
-            newResourceId: resourceId,
-            newStartDate,
-            newEndDate,
-          });
+          console.log("[useEventDragDrop] Calling setDropInfo with:", dragInfo);
+          setDropInfo(dragInfo);
+        } else {
+          console.warn("[useEventDragDrop] setDropInfo is not available");
+        }
+        
+        // onDragInfo callback'ini çağır
+        if (onDragInfo) {
+          console.log("[useEventDragDrop] Calling onDragInfo callback with:", dragInfo);
+          try {
+            onDragInfo(dragInfo);
+            console.log("[useEventDragDrop] onDragInfo callback executed successfully");
+          } catch (error) {
+            console.error("[useEventDragDrop] Error in onDragInfo callback:", error);
+          }
+        } else {
+          console.warn("[useEventDragDrop] onDragInfo callback is not available");
         }
   
         // Event güncellemesi
         setEvents((prevEvents) =>
           prevEvents.map((evt) =>
-            evt.id === draggingEvent
+            evt.id === currentDraggingEvent
               ? {
                   ...evt,
                   resourceId,
@@ -78,7 +116,14 @@ const useEventDragDrop = (events, setEvents, setDropInfo) => {
               : evt
           )
         );
+      } else {
+        console.warn("[useEventDragDrop] Dragged event not found in events array");
       }
+    } else {
+      console.log("[useEventDragDrop] Not in drag mode or no dragging event:", {
+        currentMode,
+        currentDraggingEvent,
+      });
     }
   
     setDraggingEvent(null);

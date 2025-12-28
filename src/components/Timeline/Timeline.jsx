@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import MasterHeader from "./MasterHeader";
-import ResourcesHeader from "./ResourcesHeader";
-import Resources from "./Resources";
-import TimelineHeader from "./TimelineHeader";
-import TimelineContent from "./TimelineContent";
+import MasterHeader from "./MasterHeader.jsx";
+import ResourcesHeader from "./ResourcesHeader.jsx";
+import Resources from "./Resources.jsx";
+import TimelineHeader from "./TimelineHeader.jsx";
+import TimelineContent from "./TimelineContent.jsx";
 import "./Timeline.css";
-import EventTooltip from "./EventTooltip";
-import EventDetailModal from "./EventDetailModal";
-import DailyView from "./DailyView";
+import EventTooltip from "./EventTooltip.jsx";
+import EventDetailModal from "./EventDetailModal.jsx";
+import DailyView from "./DailyView.jsx";
 import { generateTimelineData } from "../../utils/timelineUtils";
 import { useTouchGestures } from "../../hooks/useTouchGestures";
 import useKeyboardShortcuts from "../../hooks/useKeyboardShortcuts";
@@ -23,8 +23,8 @@ const Timeline = ({
     isCollapsible: true,
   },
   indicatorOn = false,
-  dropInfo,
-  setDropInfo,
+  dropInfo: externalDropInfo,
+  setDropInfo: externalSetDropInfo,
 
   masterHeaderView = true,          
   resourceHeaderContent = "Akfa Timeline", // String veya React component olabilir
@@ -117,6 +117,12 @@ const Timeline = ({
     onPaste: null,
   },
   keyboardShortcutsKeyMap = {}, // Özelleştirilebilir tuş haritası
+  
+  // Disable Dates
+  disableDates = null, // { mode: 'exclude' | 'include', dates: [], ranges: [] }
+  // mode: 'exclude' = belirtilen tarihler disabled, 'include' = belirtilen tarihler enabled (diğerleri disabled)
+  // dates: ['2025-01-15', '2025-01-20', ...] veya [Date, Date, ...] - Tekil tarihler
+  // ranges: [{ start: '2025-01-15', end: '2025-01-20' }, ...] veya [{ start: Date, end: Date }, ...] - Tarih aralıkları
 }) => {
   // ---------------------------------------------------------
   // 1) timelineData oluştur (dates, monthHeaders vs.)
@@ -146,6 +152,11 @@ const Timeline = ({
   );
 
   const [localEvents, setLocalEvents] = useState(events);
+  
+  // dropInfo state - eğer external yoksa internal state kullan
+  const [internalDropInfo, setInternalDropInfo] = useState(null);
+  const dropInfo = externalDropInfo !== undefined ? externalDropInfo : internalDropInfo;
+  const setDropInfo = externalSetDropInfo || setInternalDropInfo;
   
   // Update local events when events prop changes
   useEffect(() => {
@@ -264,9 +275,25 @@ const Timeline = ({
     
 
     
-    const todayIndex = filteredDates.findIndex(
-      (d) => new Date(d.fullDate).toDateString() === new Date(indicatorDate).toDateString()
-    );
+    // Indicator için tarih index'ini bul
+    const todayIndex = indicatorDate 
+      ? filteredDates.findIndex((d) => {
+          const dateStr = new Date(d.fullDate).toDateString();
+          const indicatorStr = new Date(indicatorDate).toDateString();
+          return dateStr === indicatorStr;
+        })
+      : -1;
+    
+    // Debug: Indicator index hesaplama
+    if (indicatorOn && indicatorDate) {
+      console.log("[Timeline] Indicator debug:", {
+        indicatorDate,
+        filteredDatesLength: filteredDates.length,
+        todayIndex,
+        firstDate: filteredDates[0]?.fullDate,
+        lastDate: filteredDates[filteredDates.length - 1]?.fullDate,
+      });
+    }
 
   // ---------------------------------------------------------
   // 6) Grupları aç/kapa
@@ -293,7 +320,6 @@ const Timeline = ({
     today.setDate(today.getDate() - 3); // Program tarihinden 3 gün öncesini ayarla
     setSelectedDate(today);
   };
-  
   
 
   const handleAdvance = () => {
@@ -498,6 +524,7 @@ const Timeline = ({
               eventBadgeResolver={eventBadgeResolver}
               isLoading={isLoading}
               loadingType={loadingType}
+              disableDates={disableDates}
 
             />
 
@@ -565,43 +592,9 @@ const Timeline = ({
           themeType={themeType}
         />
       )}
-      
-      {/* Daily View */}
-      {dailyViewOn && (
-        <DailyView
-          isOpen={dailyView.isOpen}
-          onClose={() => setDailyView({ isOpen: false, resource: null, date: null })}
-          resource={dailyView.resource}
-          date={dailyView.date}
-          events={localEvents}
-          onEventCreate={(newEvent) => {
-            const updatedEvents = [...localEvents, newEvent];
-            setLocalEvents(updatedEvents);
-            if (onEventUpdate) {
-              onEventUpdate(updatedEvents);
-            }
-          }}
-          onEventUpdate={(updatedEvent) => {
-            const updatedEvents = localEvents.map(e => 
-              e.id === updatedEvent.id ? updatedEvent : e
-            );
-            setLocalEvents(updatedEvents);
-            if (onEventUpdate) {
-              onEventUpdate(updatedEvents);
-            }
-          }}
-          onEventDelete={(eventId) => {
-            const updatedEvents = localEvents.filter(e => e.id !== eventId);
-            setLocalEvents(updatedEvents);
-            if (onEventUpdate) {
-              onEventUpdate(updatedEvents);
-            }
-          }}
-          themeType={themeType}
-        />
-      )}
     </div>
   );
 };
 
 export default Timeline;
+

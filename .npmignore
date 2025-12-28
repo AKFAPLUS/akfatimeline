@@ -1,0 +1,52 @@
+# Build files (keep dist, exclude build)
+build/
+public/
+
+# Development files
+*.log
+*.md
+!README.md
+!CHANGELOG.md
+
+# Config files
+.gitignore
+.npmignore
+.editorconfig
+.eslintrc*
+.prettierrc*
+babel.config.json
+tailwind.config.js
+postcss.config.js
+webpack.config.js
+
+# Documentation (keep only essential)
+GIT_SETUP.md
+PUBLISH.md
+NPM_2FA_FIX.md
+NPM_TOKEN_SETUP.md
+
+# Test files
+coverage/
+*.test.js
+*.spec.js
+__tests__/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env*
+!.env.example
+
+# Lock files (optional - you might want to include package-lock.json)
+# package-lock.json
+yarn.lock
+

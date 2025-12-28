@@ -3,7 +3,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   mode: "production", // Üretim modu
-  entry: "./src/components/Timeline/Timeline.js", // Ana giriş dosyası
+  entry: "./src/components/Timeline/Timeline.jsx", // Ana giriş dosyası
   output: {
     path: path.resolve(__dirname, "dist"), // Çıkış klasörü
     filename: "Timeline.js", // Ana çıkış dosyası
@@ -31,6 +31,17 @@ module.exports = {
   },
   optimization: {
     minimize: false, // Terser'i devre dışı bırakıyoruz
+    usedExports: true, // Kullanılmayan export'ları işaretle
+    sideEffects: false, // Tree-shaking için
+  },
+  stats: {
+    orphanModules: false, // Orphan modules uyarısını gizle
+    modules: false, // Modül listesini gizle
+    chunks: false, // Chunk bilgilerini gizle
+    chunkModules: false, // Chunk modül bilgilerini gizle
+    warnings: true, // Uyarıları göster
+    errors: true, // Hataları göster
+    colors: true, // Renkli çıktı
   },
   externals: {
     react: "react", // React ve ReactDOM'u dışa bırak

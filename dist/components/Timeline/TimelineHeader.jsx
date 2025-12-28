@@ -52,3 +52,4 @@ const TimelineHeader = ({ dates, monthHeaders, highlightWeekends = false }) => {
 };
 
 export default TimelineHeader;
+

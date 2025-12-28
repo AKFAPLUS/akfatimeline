@@ -27,6 +27,21 @@ const App = () => {
   // Loading State
   const [isLoading, setIsLoading] = useState(false);
   
+  // Disable Dates örneği
+  const disableDates = {
+    mode: 'exclude', // 'exclude' = belirtilen tarihler disabled, 'include' = belirtilen tarihler enabled (diğerleri disabled)
+    dates: [
+      // Tekil tarihler - string formatında (YYYY-MM-DD) veya Date objesi
+      '2025-01-20',
+      new Date(2025, 0, 25), // 25 Ocak 2025
+    ],
+    ranges: [
+      // Tarih aralıkları
+      { start: '2025-01-15', end: '2025-01-18' }, // 15-18 Ocak arası disabled
+      { start: new Date(2025, 0, 28), end: new Date(2025, 0, 30) }, // 28-30 Ocak arası disabled
+    ],
+  };
+  
   // Cell Tooltip için örnek fiyat verisi
   // Her gün için farklı fiyatlar tanımlanabilir
   const getCellTooltipContent = (resource, dateObj) => {
@@ -234,7 +249,7 @@ const resources = [
         };
     }
   };
-
+  
   // Event Icon Resolver - Event'e göre ikon tipi döndürür
   const eventIconResolver = (event) => {
     // Öncelik sırası: Bakiye uyarısı > Önemli not > Ödeme bekliyor > Durum
@@ -482,6 +497,7 @@ const resources = [
             getOptionValue={(option) => option.id}
           />
         }
+        disableDates={disableDates}
 
       />
     </div>

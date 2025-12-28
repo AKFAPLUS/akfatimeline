@@ -1,4 +1,4 @@
-// src/components/Timeline/EventTooltip.js
+// src/components/Timeline/EventTooltip.jsx
 import React from "react";
 
 const EventTooltip = ({ event, position = { top: 0, left: 0 }, onClose, onEdit, onDelete }) => {
@@ -204,3 +204,4 @@ const EventTooltip = ({ event, position = { top: 0, left: 0 }, onClose, onEdit, 
 };
 
 export default EventTooltip;
+

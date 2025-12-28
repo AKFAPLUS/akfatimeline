@@ -24,3 +24,4 @@ const Indicator = ({ todayIndex, totalDays }) => {
 };
 
 export default Indicator;
+

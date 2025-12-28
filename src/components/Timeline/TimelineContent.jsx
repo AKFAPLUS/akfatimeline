@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { parseDate } from "../../utils/dateUtils";
+import { parseDate, isDateDisabled } from "../../utils/dateUtils";
 import useDragAndDrop from "../../hooks/useDragAndDrop";
 import useEventDragDrop from "../../hooks/useEventDragDrop";
-import Indicator from "./Indicator";
-import EventIcon from "./EventIcon";
-import EventBadge from "./EventBadge";
-import ContextMenu from "./ContextMenu";
+import Indicator from "./Indicator.jsx";
+import EventIcon from "./EventIcon.jsx";
+import EventBadge from "./EventBadge.jsx";
+import ContextMenu from "./ContextMenu.jsx";
 // import "./Timeline.css"; // varsayalım "Timeline.css" globalde import ediliyor
 
 const TimelineContent = ({
@@ -25,6 +25,7 @@ const TimelineContent = ({
   eventsExtendOn = true,
   createNewEventOn = true,
 
+  onDragInfo,
   onExtendInfo,
   onCreateEventInfo,
   onEventRightClick,
@@ -66,6 +67,9 @@ const TimelineContent = ({
   cellContextMenuOn = false, // Cell context menu'yu aç/kapa
   cellContextMenuItems = [], // Context menu öğeleri
   onCellContextMenu = null, // Context menu açıldığında çağrılacak callback
+  
+  // Disable Dates
+  disableDates = null, // { mode: 'exclude' | 'include', dates: [], ranges: [] }
 }) => {
   // ------------------- HOOKS & STATE -------------------
   const containerRef = useRef(null);
@@ -75,12 +79,12 @@ const TimelineContent = ({
   const { handleDragStart, handleDragOver, handleDrop, handleDragEnd } = useEventDragDrop(
     events,
     setEvents,
-    setDropInfo // Doğrudan setDropInfo'yu geçiriyoruz
+    setDropInfo, // Doğrudan setDropInfo'yu geçiriyoruz
+    onDragInfo // onDragInfo callback'ini de geçiriyoruz
   );
   
 
 
-  
 
   // Extend
   // extendEvent removed - not used (extend logic handled manually)
@@ -317,14 +321,17 @@ const TimelineContent = ({
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [createNewEventOn, isCreating, mode, tempEvent, events, onCreateEventInfo, setEvents]);
+  }, [createNewEventOn, isCreating, mode, tempEvent, events, onCreateEventInfo, setEvents, totalDays, dates, preventPastEvents, minDate]);
 
   // ------------------- Drag Logic -------------------
   const handleDragStartSafe = (e, eventId) => {
+    console.log("[TimelineContent] handleDragStartSafe called:", { eventId, eventsDragOn });
     if (!eventsDragOn) {
+      console.log("[TimelineContent] Events drag is disabled, preventing drag start");
       e.preventDefault();
       return;
     }
+    console.log("[TimelineContent] Calling handleDragStart...");
     handleDragStart(e, eventId);
   };
   const handleDragEndSafe = (e) => {
@@ -476,7 +483,6 @@ const TimelineContent = ({
   
 
   
-  
   // ------------------- RENDER -------------------
   return (
     <>
@@ -598,6 +604,9 @@ const TimelineContent = ({
               // Saatlik rezervasyon kontrolü
               const isHourly = event.isHourly === true;
 
+              // Event color'ı al (event.color varsa kullan, yoksa eventStyle'den al, yoksa varsayılan)
+              const eventColor = event.color || eventStyle?.backgroundColor || '#8b5cf6';
+
               return (
                 <div
                   key={event.id}
@@ -618,6 +627,7 @@ const TimelineContent = ({
                     cursor: isHourly ? "default" : (mode === "extend" ? "col-resize" : "default"),
                     pointerEvents: isHourly ? "none" : "auto", // Saatlik rezervasyonlarda tıklama/etkileşim yok
                     ...eventStyle, // Kullanıcı tarafından tanımlanan stiller
+                    backgroundColor: eventStyle?.backgroundColor || eventColor, // Event color'ı kullan (eventStyle.backgroundColor varsa onu kullan, yoksa eventColor)
                   }}
                 >
                   {/* Event Badge */}
@@ -634,12 +644,14 @@ const TimelineContent = ({
                   {eventsDragOn && mode !== "extend" && !isHourly && (
                     <div
                       className="timeline-event-drag-handle"
-                      draggable={true}
+                      draggable={eventsDragOn}
                       onDragStart={(e) => {
                         if (mode === "extend") {
                           e.preventDefault();
                           return;
                         }
+                        console.log("[TimelineContent] Event drag start:", event.id);
+                        handleDragStart(e, event.id);
                         e.stopPropagation();
                         
                         // Tüm event elementini drag image olarak ayarla
@@ -739,6 +751,9 @@ const TimelineContent = ({
                 isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
               }
               
+              // Disabled tarih kontrolü
+              const isDisabled = disableDates ? isDateDisabled(dateObj.fullDate, disableDates) : false;
+              
               return (
               <div
                 key={`cell-${groupIndex}-${rowIndex}-${colIndex}`}
@@ -746,7 +761,7 @@ const TimelineContent = ({
                   isCellSelected(resource.id, dateObj) ? "selected" : ""
                 } ${isPastDate ? "timeline-cell-past" : ""} ${
                   isWeekend ? "timeline-cell-weekend" : ""
-                }`}
+                } ${isDisabled ? "timeline-cell-disabled" : ""}`}
                 data-date={JSON.stringify(dateObj)}
                 data-resource-id={resource.id}
                 onMouseDown={(e) => {
@@ -754,7 +769,8 @@ const TimelineContent = ({
                   if (e.button === 2 || e.which === 3) {
                     return;
                   }
-                  if (!isPastDate) {
+                  // Disabled veya geçmiş tarihe tıklamayı engelle
+                  if (!isPastDate && !isDisabled) {
                     handleCellClick(resource.id, dateObj, e);
                   }
                 }}
@@ -796,10 +812,18 @@ const TimelineContent = ({
                     setCellTooltip(null);
                   }
                 }}
-                onDragOver={(e) => handleDragOver(e)}
-                onDrop={(e) =>
-                  handleDrop(e, resource.id, parseDate(dateObj.fullDate))
-                }
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log("[TimelineContent] onDragOver called for resource:", resource.id);
+                  handleDragOver(e);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log("[TimelineContent] onDrop called for resource:", resource.id, "date:", dateObj.fullDate);
+                  handleDrop(e, resource.id, parseDate(dateObj.fullDate));
+                }}
               ></div>
               );
             })}
@@ -836,3 +860,4 @@ const TimelineContent = ({
 };
 
 export default TimelineContent;
+

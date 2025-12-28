@@ -1,11 +1,11 @@
-import Timeline from "./components/Timeline/Timeline";
-import DailyView from "./components/Timeline/DailyView";
-import ContextMenu from "./components/Timeline/ContextMenu";
-import EventDetailModal from "./components/Timeline/EventDetailModal";
-import EventIcon from "./components/Timeline/EventIcon";
-import EventBadge from "./components/Timeline/EventBadge";
-import LoadingSpinner from "./components/Timeline/LoadingSpinner";
-import AutocompleteSelect from "./components/Timeline/AutocompleteSelect";
+import Timeline from "./components/Timeline/Timeline.jsx";
+import DailyView from "./components/Timeline/DailyView.jsx";
+import ContextMenu from "./components/Timeline/ContextMenu.jsx";
+import EventDetailModal from "./components/Timeline/EventDetailModal.jsx";
+import EventIcon from "./components/Timeline/EventIcon.jsx";
+import EventBadge from "./components/Timeline/EventBadge.jsx";
+import LoadingSpinner from "./components/Timeline/LoadingSpinner.jsx";
+import AutocompleteSelect from "./components/Timeline/AutocompleteSelect.jsx";
 
 // Ana Timeline component'i default export
 export default Timeline;

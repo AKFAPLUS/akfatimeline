@@ -34,3 +34,55 @@ export const isDateInRange = (date, startDate, endDate) => {
   const end = parseDate(endDate);
   return d >= start && d <= end;
 };
+
+/**
+ * Bir tarihin disabled olup olmadığını kontrol eder.
+ * @param {string | Object | Date} date - Kontrol edilecek tarih
+ * @param {Object} disableDates - { mode: 'exclude' | 'include', dates: [], ranges: [] }
+ * @returns {boolean} - Tarih disabled ise true, değilse false
+ */
+export const isDateDisabled = (date, disableDates) => {
+  if (!disableDates || !disableDates.mode) {
+    return false; // DisableDates yoksa veya mode yoksa disabled değil
+  }
+
+  const dateObj = parseDate(date);
+  // Sadece tarih kısmını karşılaştırmak için (saat bilgisi olmadan)
+  const dateOnly = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+  
+  const { mode, dates = [], ranges = [] } = disableDates;
+  
+  // Tarihin listede veya aralıkta olup olmadığını kontrol et
+  let isInList = false;
+  
+  // Tekil tarihleri kontrol et
+  if (dates && dates.length > 0) {
+    isInList = dates.some((d) => {
+      const dObj = parseDate(d);
+      const dOnly = new Date(dObj.getFullYear(), dObj.getMonth(), dObj.getDate());
+      return dOnly.getTime() === dateOnly.getTime();
+    });
+  }
+  
+  // Tarih aralıklarını kontrol et
+  if (!isInList && ranges && ranges.length > 0) {
+    isInList = ranges.some((range) => {
+      const start = parseDate(range.start);
+      const end = parseDate(range.end);
+      const startOnly = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+      const endOnly = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+      return dateOnly >= startOnly && dateOnly <= endOnly;
+    });
+  }
+  
+  // Mode'a göre döndür
+  if (mode === 'exclude') {
+    // exclude modu: listede olan tarihler disabled
+    return isInList;
+  } else if (mode === 'include') {
+    // include modu: listede olmayan tarihler disabled
+    return !isInList;
+  }
+  
+  return false;
+};

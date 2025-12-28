@@ -1714,6 +1714,55 @@
   pointer-events: none;
 }
 
+/* Disabled Dates Styles */
+.timeline-cell-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  position: relative;
+  background: rgba(200, 200, 200, 0.2) !important;
+}
+
+.timeline-cell-disabled::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 4px,
+    rgba(150, 150, 150, 0.3) 4px,
+    rgba(150, 150, 150, 0.3) 8px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dark-mode .timeline-cell-disabled {
+  background: rgba(50, 50, 50, 0.3) !important;
+}
+
+.dark-mode .timeline-cell-disabled::after {
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 4px,
+    rgba(100, 100, 100, 0.4) 4px,
+    rgba(100, 100, 100, 0.4) 8px
+  );
+}
+
+.timeline-group-header-cell.timeline-cell-disabled {
+  background: rgba(200, 200, 200, 0.2) !important;
+}
+
+.dark-mode .timeline-group-header-cell.timeline-cell-disabled {
+  background: rgba(50, 50, 50, 0.3) !important;
+}
+
 /* Weekend Highlighting Styles - Subtle, matching group header intensity */
 /* Light mode: daha açık ve şeffaf */
 .timeline-header-day-weekend {

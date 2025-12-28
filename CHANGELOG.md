@@ -1,6 +1,38 @@
 # Changelog
 Tüm önemli değişiklikler bu dosyada belgelenir.
 
+## [1.2.0] - 2025-01-XX
+
+### Changed
+- **Package.json Export Yapısı İyileştirildi:**
+  - `main` ve `module` field'ları `src/library.js` olarak güncellendi
+  - Daha detaylı `exports` field'ı eklendi
+  - Her component için ayrı export path'leri eklendi:
+    - `akfatimeline/Timeline` - Ana Timeline component
+    - `akfatimeline/DailyView` - Daily View component
+    - `akfatimeline/ContextMenu` - Context Menu component
+    - `akfatimeline/EventDetailModal` - Event Detail Modal component
+    - `akfatimeline/EventIcon` - Event Icon component
+    - `akfatimeline/EventBadge` - Event Badge component
+    - `akfatimeline/LoadingSpinner` - Loading Spinner component
+    - `akfatimeline/AutocompleteSelect` - Autocomplete Select component
+  - CSS import için kısayol: `akfatimeline/css`
+- **Import Kolaylığı:**
+  - Artık sadece `import Timeline from 'akfatimeline'` yeterli
+  - CSS için: `import 'akfatimeline/css'` veya `import 'akfatimeline/components/Timeline/Timeline.css'`
+  - Named exports: `import { DailyView, ContextMenu } from 'akfatimeline'`
+
+### Fixed
+- Vite ve diğer modern bundler'larla uyumluluk sorunları düzeltildi
+- ES module import sorunları çözüldü
+- Default export sorunları giderildi
+
+## [1.1.1] - 2024-12-XX
+
+### Fixed
+- Build sırasındaki orphan modules uyarıları giderildi
+- Webpack config optimizasyonları
+
 ## [1.1.0] - 2024-12-XX
 
 ### Added

@@ -61,6 +61,10 @@ const TimelineEvents = ({ date, events, resourceId, onDelete }) => {
           (eventEndDate - eventStartDate) / (24 * 60 * 60 * 1000) + 1
         );
 
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/f6ab5e58-f27d-4ea2-afe4-56b661758331',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'TimelineEvents.js:65',message:'Event rendering with color',data:{eventId:event.id,eventTitle:event.title,eventColor:event.color,hasColor:!!event.color,willUseColor:event.color || '#8b5cf6'},timestamp:Date.now(),sessionId:'debug-session',runId:'run3',hypothesisId:'COLOR_RENDER'})}).catch(()=>{});
+        // #endregion
+
         return (
           <div
             key={event.id}
@@ -76,7 +80,7 @@ const TimelineEvents = ({ date, events, resourceId, onDelete }) => {
               left: "5px", // Soldan biraz boşluk
               width: `calc(${durationInDays * 100}% - 10px)`, // Sağdan ve soldan 5px boşluk için 10px çıkarıldı
               height: `calc(100% - 10px)`, // Alttan ve üstten 5px boşluk için 10px çıkarıldı
-              backgroundColor: event.color,
+              backgroundColor: event.color || '#8b5cf6',
               color: "#fff",
               fontSize: "14px",
               padding: "5px 10px",

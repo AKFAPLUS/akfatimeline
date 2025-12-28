@@ -1,6 +1,6 @@
 import React from "react";
-import TimelineHeader from "./TimelineHeader";
-import TimelineContent from "./TimelineContent";
+import TimelineHeader from "./TimelineHeader.jsx";
+import TimelineContent from "./TimelineContent.jsx";
 
 const TimelineMonthContainer = ({
   dates,

@@ -1,18 +1,76 @@
 {
   "name": "akfatimeline",
-  "version": "1.1.1",
-  "description": "A customizable timeline component for React applications",
-  "main": "src/library.js",
-  "module": "src/library.js",
+  "version": "2.1.0",
+  "description": "A customizable timeline component for React applications with disableDates feature",
+  "main": "./src/library.js",
+  "module": "./src/library.js",
+  "types": "./src/library.js",
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "CHANGELOG.md"
+  ],
   "exports": {
     ".": {
+      "types": "./src/library.js",
       "import": "./src/library.js",
       "require": "./dist/Timeline.js",
       "default": "./src/library.js"
     },
-    "./components/Timeline/Timeline.css": "./src/components/Timeline/Timeline.css"
+    "./css": "./src/components/Timeline/Timeline.css",
+    "./components/Timeline/Timeline.css": "./src/components/Timeline/Timeline.css",
+    "./Timeline": {
+      "types": "./src/components/Timeline/Timeline.jsx",
+      "import": "./src/components/Timeline/Timeline.jsx",
+      "require": "./dist/components/Timeline/Timeline.js",
+      "default": "./src/components/Timeline/Timeline.jsx"
+    },
+    "./DailyView": {
+      "types": "./src/components/Timeline/DailyView.jsx",
+      "import": "./src/components/Timeline/DailyView.jsx",
+      "require": "./dist/components/Timeline/DailyView.js",
+      "default": "./src/components/Timeline/DailyView.jsx"
+    },
+    "./ContextMenu": {
+      "types": "./src/components/Timeline/ContextMenu.jsx",
+      "import": "./src/components/Timeline/ContextMenu.jsx",
+      "require": "./dist/components/Timeline/ContextMenu.js",
+      "default": "./src/components/Timeline/ContextMenu.jsx"
+    },
+    "./EventDetailModal": {
+      "types": "./src/components/Timeline/EventDetailModal.jsx",
+      "import": "./src/components/Timeline/EventDetailModal.jsx",
+      "require": "./dist/components/Timeline/EventDetailModal.js",
+      "default": "./src/components/Timeline/EventDetailModal.jsx"
+    },
+    "./EventIcon": {
+      "types": "./src/components/Timeline/EventIcon.jsx",
+      "import": "./src/components/Timeline/EventIcon.jsx",
+      "require": "./dist/components/Timeline/EventIcon.js",
+      "default": "./src/components/Timeline/EventIcon.jsx"
+    },
+    "./EventBadge": {
+      "types": "./src/components/Timeline/EventBadge.jsx",
+      "import": "./src/components/Timeline/EventBadge.jsx",
+      "require": "./dist/components/Timeline/EventBadge.js",
+      "default": "./src/components/Timeline/EventBadge.jsx"
+    },
+    "./LoadingSpinner": {
+      "types": "./src/components/Timeline/LoadingSpinner.jsx",
+      "import": "./src/components/Timeline/LoadingSpinner.jsx",
+      "require": "./dist/components/Timeline/LoadingSpinner.js",
+      "default": "./src/components/Timeline/LoadingSpinner.jsx"
+    },
+    "./AutocompleteSelect": {
+      "types": "./src/components/Timeline/AutocompleteSelect.jsx",
+      "import": "./src/components/Timeline/AutocompleteSelect.jsx",
+      "require": "./dist/components/Timeline/AutocompleteSelect.js",
+      "default": "./src/components/Timeline/AutocompleteSelect.jsx"
+    }
   },
   "dependencies": {
+    "akfatimeline": "^2.0.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-scripts": "^5.0.1",
@@ -59,7 +117,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/AKFAPLUS/akfatimeline.git"
+    "url": "git+https://github.com/AKFAPLUS/akfatimeline.git"
   },
   "bugs": {
     "url": "https://github.com/AKFAPLUS/akfatimeline/issues"

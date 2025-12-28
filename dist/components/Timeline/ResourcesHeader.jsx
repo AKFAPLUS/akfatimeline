@@ -1,4 +1,4 @@
-// ResourcesHeader.js
+// ResourcesHeader.jsx
 import React from "react";
 import "./Timeline.css";
 
@@ -12,3 +12,4 @@ const ResourcesHeader = ({ content }) => {
 };
 
 export default ResourcesHeader;
+
