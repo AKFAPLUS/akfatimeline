@@ -1,6 +1,6 @@
 {
   "name": "akfatimeline",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "A customizable timeline component for React applications with disableDates, custom header buttons, and past date protection features",
   "main": "./src/library.js",
   "module": "./src/library.js",
