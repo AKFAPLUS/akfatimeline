@@ -17,6 +17,8 @@ const MasterHeader = ({
   minZoomLevel = 0.5,
   maxZoomLevel = 3.0,
   zoomStep = 0.25,
+  showDefaultButtons = true, // Varsayılan butonları göster/gizle
+  customButtons = [], // Özel butonlar: [{ id, label, onClick, icon?, disabled?, className? }]
 }) => {
   const formattedDate = new Date(
     selectedDate.getTime() + 24 * 60 * 60 * 1000 - selectedDate.getTimezoneOffset() * 60000
@@ -27,34 +29,52 @@ const MasterHeader = ({
   return (
     <div className="master-header-container">
       <div className="master-header-buttons">
-        <button className="master-header-btn" onClick={onMonthRetreat}>
-          1 Ay Geri
-        </button>
+        {/* Varsayılan Butonlar */}
+        {showDefaultButtons && (
+          <>
+            <button className="master-header-btn" onClick={onMonthRetreat}>
+              1 Ay Geri
+            </button>
 
-        <button className="master-header-btn" onClick={onRetreat}>
-          5 Gün Geri
-        </button>
+            <button className="master-header-btn" onClick={onRetreat}>
+              5 Gün Geri
+            </button>
 
-        <input
-  type="date"
-  className="master-header-date-picker"
-  value={formattedDate} // Seçili tarih burada gösteriliyor
-  onChange={(e) => onDateSelect(e.target.value)} // Tarih seçimi
-  onKeyDown={(e) => e.preventDefault()} // Manuel girişleri engelle
-/>
+            <input
+              type="date"
+              className="master-header-date-picker"
+              value={formattedDate} // Seçili tarih burada gösteriliyor
+              onChange={(e) => onDateSelect(e.target.value)} // Tarih seçimi
+              onKeyDown={(e) => e.preventDefault()} // Manuel girişleri engelle
+            />
 
+            <button className="master-header-btn" onClick={onAdvance}>
+              5 Gün İleri
+            </button>
 
-        <button className="master-header-btn" onClick={onAdvance}>
-          5 Gün İleri
-        </button>
+            <button className="master-header-btn" onClick={onMonthAdvance}>
+              1 Ay İleri
+            </button>
 
-        <button className="master-header-btn" onClick={onMonthAdvance}>
-          1 Ay İleri
-        </button>
+            <button className="master-header-btn" onClick={onToday}>
+              Bugün
+            </button>
+          </>
+        )}
 
-        <button className="master-header-btn" onClick={onToday}>
-          Bugün
-        </button>
+        {/* Özel Butonlar */}
+        {customButtons && customButtons.length > 0 && customButtons.map((button) => (
+          <button
+            key={button.id}
+            className={button.className || "master-header-btn"}
+            onClick={button.onClick}
+            disabled={button.disabled}
+            title={button.tooltip || button.label}
+          >
+            {button.icon && <span style={{ marginRight: button.label ? '4px' : '0' }}>{button.icon}</span>}
+            {button.label}
+          </button>
+        ))}
       </div>
 
       <select

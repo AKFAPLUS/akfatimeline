@@ -6,8 +6,14 @@ import AutocompleteSelect from "./components/Timeline/AutocompleteSelect"; // Au
 const App = () => {
   // Bugünün tarihini al ve programDate olarak kullan
   const today = new Date();
-  const programDate = today.toISOString().split('T')[0]; // YYYY-MM-DD formatı
   const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  
+  // Timeline'ın gösterileceği tarih state'i
+  const [programDate, setProgramDate] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 3); // 3 gün öncesinden başla
+    return date.toISOString().split('T')[0]; // YYYY-MM-DD formatı
+  });
 
   const [dayRange, setDayRange] = useState(30);
   const [themeType, setThemeType] = useState("dark");
@@ -27,20 +33,8 @@ const App = () => {
   // Loading State
   const [isLoading, setIsLoading] = useState(false);
   
-  // Disable Dates örneği
-  const disableDates = {
-    mode: 'exclude', // 'exclude' = belirtilen tarihler disabled, 'include' = belirtilen tarihler enabled (diğerleri disabled)
-    dates: [
-      // Tekil tarihler - string formatında (YYYY-MM-DD) veya Date objesi
-      '2025-01-20',
-      new Date(2025, 0, 25), // 25 Ocak 2025
-    ],
-    ranges: [
-      // Tarih aralıkları
-      { start: '2025-01-15', end: '2025-01-18' }, // 15-18 Ocak arası disabled
-      { start: new Date(2025, 0, 28), end: new Date(2025, 0, 30) }, // 28-30 Ocak arası disabled
-    ],
-  };
+  // Disable Dates kaldırıldı - Tüm tarihler açık
+  const disableDates = null;
   
   // Cell Tooltip için örnek fiyat verisi
   // Her gün için farklı fiyatlar tanımlanabilir
@@ -333,24 +327,45 @@ const resources = [
   };
 
   const handleToday = () => {
-    console.log("Bugüne git");
-    // Program tarihini bugüne getir
+    // Program tarihini bugüne getir (3 gün öncesinden başla)
+    const today = new Date();
+    today.setDate(today.getDate() - 3);
+    setProgramDate(today.toISOString().split('T')[0]);
   };
 
   const handleAdvance = () => {
-    console.log("5 gün ileri git");
+    // 5 gün ileri git
+    const currentDate = new Date(programDate);
+    currentDate.setDate(currentDate.getDate() + 5);
+    setProgramDate(currentDate.toISOString().split('T')[0]);
   };
 
   const handleRetreat = () => {
-    console.log("5 gün geri git");
+    // 5 gün geri git
+    const currentDate = new Date(programDate);
+    currentDate.setDate(currentDate.getDate() - 5);
+    setProgramDate(currentDate.toISOString().split('T')[0]);
   };
 
   const handleMonthAdvance = () => {
-    console.log("1 ay ileri git");
+    // 1 ay ileri git
+    const currentDate = new Date(programDate);
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    setProgramDate(currentDate.toISOString().split('T')[0]);
   };
 
   const handleMonthRetreat = () => {
-    console.log("1 ay geri git");
+    // 1 ay geri git
+    const currentDate = new Date(programDate);
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    setProgramDate(currentDate.toISOString().split('T')[0]);
+  };
+  
+  const handleDateSelect = (selectedDate) => {
+    // İstenilen tarihe git (Timeline'dan gelen tarih seçimi)
+    const date = new Date(selectedDate);
+    date.setDate(date.getDate() - 3); // 3 gün öncesinden başla
+    setProgramDate(date.toISOString().split('T')[0]);
   };
 
   const handleDropInfo = (dropInfo) => {
@@ -365,6 +380,37 @@ const resources = [
   const handleCreateEventInfo = (newEvent) => {
     console.log("Oluşturulan yeni etkinlik bilgisi:", newEvent);
   };
+  
+  // Özel Header Butonları - İstediğiniz tarih aralıklarına hızlı gitmek için
+  const customHeaderButtons = [
+    {
+      id: 'goto-dec-26-30',
+      label: '26-30 Aralık',
+      icon: '📅',
+      onClick: () => {
+        setProgramDate('2025-12-26');
+      },
+      tooltip: '26-30 Aralık 2025 tarihine git',
+    },
+    {
+      id: 'goto-jan-6-10',
+      label: '6-10 Ocak',
+      icon: '📅',
+      onClick: () => {
+        setProgramDate('2026-01-06');
+      },
+      tooltip: '6-10 Ocak 2026 tarihine git',
+    },
+    // Daha fazla özel buton ekleyebilirsiniz
+    // {
+    //   id: 'custom-button',
+    //   label: 'Özel Buton',
+    //   icon: '⭐',
+    //   onClick: () => {
+    //     console.log('Özel buton tıklandı');
+    //   },
+    // },
+  ];
   
   return (
     <div>
@@ -417,6 +463,8 @@ const resources = [
         onRetreat={handleRetreat}
         onMonthAdvance={handleMonthAdvance}
         onMonthRetreat={handleMonthRetreat}
+        showDefaultHeaderButtons={true} // Varsayılan butonları göster (false yaparak gizleyebilirsiniz)
+        customHeaderButtons={customHeaderButtons} // Özel butonlar
         eventTooltipOn={true} // Tooltip'i aktif hale getiriyoruz
         tooltipComponent={EventTooltip} // Tooltip bileşenini belirtiyoruz
         tempEventStyle={{
@@ -432,6 +480,7 @@ const resources = [
         indicatorDate={programDate} // Bugünün tarihi
         eventAlignmentMode={eventAlignmentMode}
         preventPastEvents={true} // Geçmiş tarihlere rezervasyon oluşturmayı engelle
+        minDate={new Date().toISOString().split('T')[0]} // Bugünün tarihi - geçmiş tarihler disabled olacak
         highlightWeekends={true} // Hafta sonlarını farklı renkte göster
         cellTooltipOn={true} // Cell tooltip'lerini aktif et
         cellTooltipResolver={getCellTooltipContent} // Fiyat bilgisi göster

@@ -204,6 +204,11 @@ const TimelineContent = ({
 
     const startDate = parseDate(date.fullDate);
     
+    // Disabled tarih kontrolü - disabled hücrelerde event oluşturmayı engelle
+    if (disableDates && isDateDisabled(startDate, disableDates)) {
+      return;
+    }
+    
     // Geçmiş tarih kontrolü
     if (preventPastEvents && minDate) {
       const minDateObj = parseDate(minDate);
@@ -289,12 +294,90 @@ const TimelineContent = ({
         }
       }
       
+      // Disabled tarih kontrolü - disabled hücrelere event uzamasını engelle
+      if (disableDates && dates[currentCellIndex]) {
+        const currentDate = parseDate(dates[currentCellIndex].fullDate);
+        const isCurrentDisabled = isDateDisabled(currentDate, disableDates);
+        
+        if (isCurrentDisabled) {
+          // Disabled hücreye geldiysek, son enabled hücreye kadar geri git
+          // Başlangıçtan itibaren tarayarak son enabled hücreyi bul
+          let lastEnabledIndex = startCellIndex;
+          
+          if (currentCellIndex > startCellIndex) {
+            // İleri doğru gidiyorsak, başlangıçtan currentCellIndex'e kadar tarayalım
+            for (let i = startCellIndex; i < currentCellIndex; i++) {
+              if (dates[i]) {
+                const checkDate = parseDate(dates[i].fullDate);
+                if (!isDateDisabled(checkDate, disableDates)) {
+                  lastEnabledIndex = i;
+                } else {
+                  // Disabled hücreye geldik, döngüyü kır
+                  break;
+                }
+              }
+            }
+          } else {
+            // Geri doğru gidiyorsak, currentCellIndex'ten başlangıca kadar tarayalım
+            for (let i = currentCellIndex; i < startCellIndex; i++) {
+              if (dates[i]) {
+                const checkDate = parseDate(dates[i].fullDate);
+                if (!isDateDisabled(checkDate, disableDates)) {
+                  lastEnabledIndex = i;
+                }
+              }
+            }
+          }
+          
+          currentCellIndex = lastEnabledIndex;
+        }
+      }
+      
+      // Geçmiş tarih kontrolü - geçmiş tarihlere event uzamasını engelle (disabled kontrolünden sonra)
+      if (preventPastEvents && minDate && dates[currentCellIndex]) {
+        const currentDate = parseDate(dates[currentCellIndex].fullDate);
+        const minDateObj = parseDate(minDate);
+        const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+        const minDateOnly = new Date(minDateObj.getFullYear(), minDateObj.getMonth(), minDateObj.getDate());
+        
+        // Eğer geçmiş tarihe gidiyorsak, son geçerli tarihe sabitle
+        if (currentDateOnly < minDateOnly) {
+          // Minimum tarihin cell index'ini bul
+          const minDateIndex = dates.findIndex((d) => {
+            const dDate = parseDate(d.fullDate);
+            const dDateOnly = new Date(dDate.getFullYear(), dDate.getMonth(), dDate.getDate());
+            return dDateOnly.getTime() === minDateOnly.getTime();
+          });
+          if (minDateIndex !== -1) {
+            // Başlangıç tarihinden önceki bir tarihe gidiyorsak, minimum tarihe sabitle
+            // Ama başlangıç tarihinden sonraki bir tarihe gidiyorsak, başlangıç tarihine sabitle
+            if (currentCellIndex < startCellIndex) {
+              currentCellIndex = Math.max(startCellIndex, minDateIndex);
+            } else {
+              currentCellIndex = Math.max(startCellIndex, minDateIndex);
+            }
+          } else {
+            currentCellIndex = startCellIndex; // Minimum tarih bulunamazsa başlangıç pozisyonuna dön
+          }
+        }
+      }
+      
       // Kaç gün ekleneceğini hesapla (daha hassas)
       const daysToAdd = Math.max(1, Math.abs(currentCellIndex - startCellIndex) + 1);
       
       // Yeni bitiş tarihini hesapla
       const newEndDate = new Date(tempEvent.startDate.getTime());
-      newEndDate.setDate(newEndDate.getDate() + daysToAdd - 1); // -1 çünkü başlangıç günü dahil
+      
+      // Event alignment mode'a göre bitiş tarihini ayarla
+      if (eventAlignmentMode === "full") {
+        // Full mode: Son günün tamamı dahil, bitiş tarihi bir sonraki günün başlangıcı
+        // Örnek: 1-5 Ocak seçilirse, bitiş tarihi 6 Ocak (5 Ocak'ın sonu = 6 Ocak'ın başı)
+        newEndDate.setDate(newEndDate.getDate() + daysToAdd);
+      } else {
+        // Center mode: Gün ortasından gün ortasına, bitiş tarihi son günün ortası
+        // Örnek: 1-5 Ocak seçilirse, bitiş tarihi 5 Ocak (gün ortası)
+        newEndDate.setDate(newEndDate.getDate() + daysToAdd - 1); // -1 çünkü başlangıç günü dahil
+      }
 
       setTempEvent({
         ...tempEvent,
@@ -321,7 +404,7 @@ const TimelineContent = ({
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [createNewEventOn, isCreating, mode, tempEvent, events, onCreateEventInfo, setEvents, totalDays, dates, preventPastEvents, minDate]);
+  }, [createNewEventOn, isCreating, mode, tempEvent, events, onCreateEventInfo, setEvents, totalDays, dates, preventPastEvents, minDate, disableDates]);
 
   // ------------------- Drag Logic -------------------
   const handleDragStartSafe = (e, eventId) => {
@@ -529,10 +612,23 @@ const TimelineContent = ({
             isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
           }
           
+          // Geçmiş tarih kontrolü
+          let isPastDate = false;
+          if (preventPastEvents && minDate) {
+            const cellDate = parseDate(dateObj.fullDate);
+            const minDateObj = parseDate(minDate);
+            const cellDateOnly = new Date(cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate());
+            const minDateOnly = new Date(minDateObj.getFullYear(), minDateObj.getMonth(), minDateObj.getDate());
+            isPastDate = cellDateOnly < minDateOnly;
+          }
+          
+          // Disabled tarih kontrolü
+          const isDisabled = disableDates ? isDateDisabled(dateObj.fullDate, disableDates) : false;
+          
           return (
             <div
               key={`group-header-${groupIndex}-${colIndex}`}
-              className={`timeline-group-header-cell ${isWeekend ? "timeline-cell-weekend" : ""}`}
+              className={`timeline-group-header-cell ${isWeekend ? "timeline-cell-weekend" : ""} ${isPastDate ? "timeline-cell-past" : ""} ${isDisabled ? "timeline-cell-disabled" : ""}`}
             ></div>
           );
         })}
@@ -775,6 +871,12 @@ const TimelineContent = ({
                   }
                 }}
                 onContextMenu={(e) => {
+                  // Disabled veya geçmiş tarih hücrelerde context menu'yu engelle
+                  if (isDisabled || isPastDate) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                  }
                   e.preventDefault(); // Varsayılan context menu'yu engelle
                   e.stopPropagation(); // Event bubbling'i durdur
                   if (cellContextMenuOn) {
@@ -813,12 +915,26 @@ const TimelineContent = ({
                   }
                 }}
                 onDragOver={(e) => {
+                  // Disabled veya geçmiş tarih hücrelerde drag&drop'u engelle
+                  if (isDisabled || isPastDate) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.dataTransfer.dropEffect = 'none';
+                    return false;
+                  }
                   e.preventDefault();
                   e.stopPropagation();
                   console.log("[TimelineContent] onDragOver called for resource:", resource.id);
                   handleDragOver(e);
                 }}
                 onDrop={(e) => {
+                  // Disabled veya geçmiş tarih hücrelerde drop'u engelle
+                  if (isDisabled || isPastDate) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.dataTransfer.dropEffect = 'none';
+                    return false;
+                  }
                   e.preventDefault();
                   e.stopPropagation();
                   console.log("[TimelineContent] onDrop called for resource:", resource.id, "date:", dateObj.fullDate);

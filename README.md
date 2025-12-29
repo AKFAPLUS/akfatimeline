@@ -1,73 +1,149 @@
-# AkfaTimeline
+# AkfaTimeline - React Timeline Component
 
-AkfaTimeline, React uygulamaları için tamamen özelleştirilebilir bir timeline bileşenidir. Bu bileşen; kaynak gruplama, etkinlik düzenleme, dinamik tema desteği ve daha fazlasını sunar. Modern React uygulamalarında etkin zaman çizelgeleri oluşturmayı hızlı ve kolay hale getirir.
+<div align="center">
 
-![AkfaTimeline Screenshot](https://i.hizliresim.com/pc4zva7.jpg)
+![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)
+![React](https://img.shields.io/badge/react-^19.2.3-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+
+**Modern, özelleştirilebilir ve performanslı React Timeline bileşeni**
+
+[Özellikler](#-özellikler) • [Kurulum](#-kurulum) • [Hızlı Başlangıç](#-hızlı-başlangıç) • [Dokümantasyon](#-dokümantasyon) • [Örnekler](#-örnekler)
+
+</div>
 
 ---
 
-## 🚀 Özellikler
-Kaynak Gruplama ve Özelleştirme:
+## 📋 İçindekiler
 
-Kaynakları gruplar halinde yönetebilir veya düz bir liste olarak görüntüleyebilirsiniz.
-Gruplar açılıp kapanabilir ve başlık içerikleri özelleştirilebilir.
-Kaynak ID'si veya adı arasında seçim yaparak görüntüleme düzenini değiştirebilirsiniz.
-Dinamik Etkinlik Yönetimi:
+- [Özellikler](#-özellikler)
+- [Kurulum](#-kurulum)
+- [Hızlı Başlangıç](#-hızlı-başlangıç)
+- [Dokümantasyon](#-dokümantasyon)
+  - [Temel Props](#temel-props)
+  - [Resources (Kaynaklar)](#resources-kaynaklar)
+  - [Events (Etkinlikler)](#events-etkinlikler)
+  - [Tarih Yönetimi](#tarih-yönetimi)
+  - [Disable Dates (Tarih Devre Dışı Bırakma)](#disable-dates-tarih-devre-dışı-bırakma)
+  - [Custom Header Buttons (Özel Header Butonları)](#custom-header-buttons-özel-header-butonları)
+  - [Event Alignment Mode (Etkinlik Hizalama Modu)](#event-alignment-mode-etkinlik-hizalama-modu)
+  - [Theme (Tema)](#theme-tema)
+  - [Zoom (Yakınlaştırma)](#zoom-yakınlaştırma)
+  - [Cell Tooltip (Hücre Tooltip)](#cell-tooltip-hücre-tooltip)
+  - [Cell Context Menu (Hücre Bağlam Menüsü)](#cell-context-menu-hücre-bağlam-menüsü)
+  - [Event Icons & Badges (Etkinlik İkonları ve Rozetler)](#event-icons--badges-etkinlik-ikonları-ve-rozetler)
+  - [Event Management (Etkinlik Yönetimi)](#event-management-etkinlik-yönetimi)
+  - [Keyboard Shortcuts (Klavye Kısayolları)](#keyboard-shortcuts-klavye-kısayolları)
+  - [Loading State (Yükleme Durumu)](#loading-state-yükleme-durumu)
+  - [Daily View (Günlük Görünüm)](#daily-view-günlük-görünüm)
+  - [Weekend Highlighting (Hafta Sonu Vurgulama)](#weekend-highlighting-hafta-sonu-vurgulama)
+  - [Past Date Protection (Geçmiş Tarih Koruması)](#past-date-protection-geçmiş-tarih-koruması)
+- [Örnekler](#-örnekler)
+- [API Referansı](#-api-referansı)
+- [Katkıda Bulunma](#-katkıda-bulunma)
 
-Sürükle ve Bırak: Etkinlikleri kolayca taşıyabilirsiniz.
-Uzatma: Etkinlikleri sağ kenarından uzatarak tarihlerini değiştirebilirsiniz.
-Yeni Etkinlik Oluşturma: Hücrelere tıklayarak yeni etkinlikler ekleyebilirsiniz.
-Etkinlik Tıklama ve Sağ Tıklama: Kullanıcı etkileşimlerine özel geri bildirim sağlama.
-Zaman Yönetimi ve Filtreleme:
+---
 
-Seçilebilir gün aralığı (dayRange) ile görüntülenen tarihleri dinamik olarak ayarlayın.
-Yatay kaydırma desteği ile daha geniş tarih aralıklarını yönetebilirsiniz.
-"Bugün" göstergesi ile önemli tarihleri vurgulayın.
-Tema ve Özelleştirme:
+## ✨ Özellikler
 
-Dark ve Light tema desteği ile kolay tema geçişi.
-CSS değişkenleri sayesinde bileşen tasarımını kendi markanıza göre özelleştirin.
-Callback Destekleri:
-
-onDragInfo: Sürüklenen etkinlik bilgilerini yakalayın.
-onExtendInfo: Uzatılan etkinliklerin güncellenmiş tarih bilgilerini alın.
-onCreateEventInfo: Yeni oluşturulan etkinliklerin verilerini alın.
-onEventClick ve onEventRightClick: Etkinliklere yapılan tıklamaları işleyin.
-Gelişmiş Başlık ve Kaynak Yönetimi:
-
-Master başlık görünürlüğünü (masterHeaderView) kontrol edin.
-Kaynak başlığını (resourceHeaderContent) tamamen özelleştirin.
-Yatay Kaydırma ve Responsive Yapı:
-
-Dinamik hücre genişlikleri ve yatay kaydırma desteği.
-Responsive tasarım ile her ekran boyutunda mükemmel görünüm.
-Kolay Entegrasyon: Kullanıcı dostu API ile bileşeni dakikalar içinde entegre edin.
+- 🎨 **Glassmorphism Tema**: Modern, şeffaf cam efekti ile tasarım
+- 🌓 **Light/Dark Mode**: Açık ve koyu tema desteği
+- 📅 **Esnek Tarih Yönetimi**: Tarih formatları (Date, string, "dd/mm/yyyy", "YYYY-MM-DD")
+- 🚫 **Disable Dates**: Tarih aralıklarını devre dışı bırakma (exclude/include modları)
+- 🎯 **Event Yönetimi**: Drag & Drop, uzatma, oluşturma, silme, kopyalama
+- 🎨 **Özelleştirilebilir Event Stilleri**: Her event için özel stil
+- 🏷️ **Event Icons & Badges**: Event'lere ikon ve rozet ekleme
+- 🔍 **Zoom**: Yakınlaştırma/uzaklaştırma desteği
+- ⌨️ **Klavye Kısayolları**: Hızlı navigasyon ve işlemler
+- 📱 **Touch Gestures**: Mobil cihazlarda swipe desteği
+- 🎛️ **Custom Header Buttons**: Özel butonlar ekleme
+- 📊 **Daily View**: Günlük detaylı görünüm
+- 💡 **Cell Tooltips**: Hücrelerde özel tooltip'ler
+- 🎪 **Context Menu**: Sağ tık menüsü
+- ⚡ **Performans Optimizasyonu**: Memoization ve callback optimizasyonları
 
 ---
 
 ## 📦 Kurulum
 
-Projeye eklemek için aşağıdaki komutu çalıştırın:
-
 ```bash
 npm install akfatimeline
+```
 
+veya
 
-🛠️ Kullanım Şekli
-AkfaTimeline'ı kullanmaya başlamak için aşağıdaki örnek kodu inceleyebilirsiniz. Bu örnek, kaynaklar, etkinlikler ve temel ayarlarla bir timeline oluşturur.
+```bash
+yarn add akfatimeline
+```
 
-1. Bileşeni İçeri Aktarın
-İlk olarak, AkfaTimeline bileşenini projenize dahil edin:
+---
 
-jsx
+## 🚀 Hızlı Başlangıç
 
-import React from "react";
-import Timeline from "akfatimeline";
-2. Verilerinizi Hazırlayın
-Timeline için kaynaklar ve etkinlikler verisi tanımlayın:
+```jsx
+import React from 'react';
+import Timeline from 'akfatimeline';
+import 'akfatimeline/css'; // CSS'i import edin
 
-jsx
+const App = () => {
+  const resources = [
+    {
+      groupName: "Odalar",
+      resources: [
+        { id: "room-101", name: "Oda 101" },
+        { id: "room-102", name: "Oda 102" },
+      ],
+    },
+  ];
 
+  const events = [
+    {
+      id: "event-1",
+      title: "Rezervasyon",
+      startDate: new Date(2025, 0, 15),
+      endDate: new Date(2025, 0, 18),
+      resourceId: "room-101",
+    },
+  ];
+
+  return (
+    <Timeline
+      resources={resources}
+      events={events}
+      programDate="2025-01-15"
+      dayRange={30}
+      themeType="dark"
+    />
+  );
+};
+
+export default App;
+```
+
+---
+
+## 📚 Dokümantasyon
+
+### Temel Props
+
+#### `resources` (Zorunlu)
+Timeline'da gösterilecek kaynaklar (odalar, araçlar, vb.).
+
+**Format:**
+```javascript
+const resources = [
+  {
+    groupName: "Grup Adı", // Grup başlığı
+    resources: [
+      { id: "resource-1", name: "Kaynak 1" },
+      { id: "resource-2", name: "Kaynak 2" },
+    ],
+  },
+];
+```
+
+**Örnek:**
+```javascript
 const resources = [
   {
     groupName: "Luxury Rooms",
@@ -77,848 +153,1256 @@ const resources = [
     ],
   },
   {
-    groupName: "Family Suites",
+    groupName: "Deluxe Rooms",
     resources: [
-      { id: "fam-201", name: "Suite 201" },
-      { id: "fam-202", name: "Suite 202" },
+      { id: "deluxe-201", name: "Room 201" },
+      { id: "deluxe-202", name: "Room 202" },
     ],
   },
 ];
+```
 
+#### `events` (Zorunlu)
+Timeline'da gösterilecek etkinlikler/rezervasyonlar.
+
+**Format:**
+```javascript
 const events = [
   {
-    id: "lux-101-1",
-    title: "Room 101 Event",
-    startDate: new Date("2025-01-01"),
-    endDate: new Date("2025-01-08"),
-    resourceId: "lux-101",
-    color: "#ff5733",
-  },
-  {
-    id: "fam-201-1",
-    title: "Suite 201 Event",
-    startDate: new Date("2025-01-03"),
-    endDate: new Date("2025-01-06"),
-    resourceId: "fam-201",
-    color: "#33a1ff",
+    id: "unique-id", // Benzersiz ID (zorunlu)
+    title: "Event Başlığı", // Event başlığı (zorunlu)
+    startDate: Date | string, // Başlangıç tarihi (zorunlu)
+    endDate: Date | string, // Bitiş tarihi (zorunlu)
+    resourceId: "resource-id", // Hangi kaynağa ait (zorunlu)
+    // Opsiyonel alanlar:
+    color: "#ff0000", // Özel renk
+    description: "Açıklama",
+    status: "completed" | "in-progress" | "cancelled",
+    // ... diğer özel alanlar
   },
 ];
-3. Timeline Bileşenini Kullanın
-Timeline bileşenini kullanarak verilerinizi gösterin:
+```
 
-jsx
+**Tarih Formatları:**
+- `Date` objesi: `new Date(2025, 0, 15)`
+- String (YYYY-MM-DD): `"2025-01-15"`
+- String (dd/mm/yyyy): `"15/01/2025"`
 
-const App = () => {
-  const resourceSettings = {
+**Örnek:**
+```javascript
+const events = [
+  {
+    id: "event-1",
+    title: "3 Gece",
+    startDate: new Date(2025, 0, 15),
+    endDate: new Date(2025, 0, 18),
+    resourceId: "lux-101",
+    color: "#3b82f6",
+  },
+  {
+    id: "event-2",
+    title: "Rezervasyon",
+    startDate: "2025-01-20",
+    endDate: "2025-01-25",
+    resourceId: "lux-102",
+    status: "in-progress",
+  },
+];
+```
+
+#### `programDate` (Opsiyonel)
+Timeline'ın başlangıç tarihi.
+
+**Format:** `string` (YYYY-MM-DD) veya `Date`
+
+**Varsayılan:** Bugünün tarihi
+
+**Örnek:**
+```javascript
+programDate="2025-01-15"
+// veya
+programDate={new Date(2025, 0, 15)}
+```
+
+#### `dayRange` (Opsiyonel)
+Ekranda gösterilecek gün sayısı.
+
+**Format:** `number`
+
+**Varsayılan:** `30`
+
+**Örnek:**
+```javascript
+const [dayRange, setDayRange] = useState(30);
+
+<Timeline
+  dayRange={dayRange}
+  setDayRange={setDayRange}
+/>
+```
+
+#### `themeType` (Opsiyonel)
+Tema tipi.
+
+**Format:** `"light"` | `"dark"`
+
+**Varsayılan:** `"light"`
+
+**Örnek:**
+```javascript
+<Timeline themeType="dark" />
+```
+
+---
+
+### Resources (Kaynaklar)
+
+#### `resourceSettings` (Opsiyonel)
+Kaynak görünüm ayarları.
+
+**Format:**
+```javascript
+{
+  showIdAsName: boolean, // ID'yi isim olarak göster
+  isGrouped: boolean,    // Gruplu gösterim
+  isCollapsible: boolean // Grupları açıp kapatma
+}
+```
+
+**Varsayılan:**
+```javascript
+{
+  showIdAsName: false,
+  isGrouped: true,
+  isCollapsible: true,
+}
+```
+
+**Örnek:**
+```javascript
+<Timeline
+  resourceSettings={{
     showIdAsName: false,
     isGrouped: true,
     isCollapsible: true,
-  };
+  }}
+/>
+```
 
-  return (
-    <Timeline
-      resources={resources} // Kaynak listesi
-      events={events} // Etkinlik listesi
-      programDate="2025-01-01" // Timeline başlangıç tarihi
-      resourceSettings={resourceSettings} // Kaynak ayarları
-      indicatorOn={true} // Bugün göstergesi
-      horizontalScrollOn={true} // Yatay kaydırma
+#### `resourceHeaderContent` (Opsiyonel)
+Kaynak başlık içeriği. String veya React component olabilir.
+
+**Format:** `string` | `React.Component`
+
+**Varsayılan:** `"Akfa Timeline"`
+
+**Örnek:**
+```javascript
+// String
+<Timeline resourceHeaderContent="Rezervasyonlar" />
+
+// React Component
+<Timeline
+  resourceHeaderContent={
+    <AutocompleteSelect
+      options={[...]}
+      onChange={handleChange}
     />
-  );
+  }
+/>
+```
+
+---
+
+### Events (Etkinlikler)
+
+#### `eventsDragOn` (Opsiyonel)
+Event'leri sürükle-bırak özelliğini aç/kapa.
+
+**Format:** `boolean`
+
+**Varsayılan:** `true`
+
+#### `eventsExtendOn` (Opsiyonel)
+Event'leri uzatma özelliğini aç/kapa.
+
+**Format:** `boolean`
+
+**Varsayılan:** `true`
+
+#### `createNewEventOn` (Opsiyonel)
+Yeni event oluşturma özelliğini aç/kapa.
+
+**Format:** `boolean`
+
+**Varsayılan:** `true`
+
+#### `onDragInfo` (Opsiyonel)
+Event sürüklendiğinde çağrılacak callback.
+
+**Format:** `(dragInfo) => void`
+
+**Örnek:**
+```javascript
+const handleDragInfo = (dragInfo) => {
+  console.log("Event sürüklendi:", dragInfo);
+  // dragInfo: { eventId, newResourceId, newStartDate, newEndDate }
 };
 
-export default App;
-4. CSS ve Temalar
-AkfaTimeline varsayılan stillerle birlikte gelir. Kendi temalarınızı uygulamak için CSS değişkenlerini kullanabilirsiniz.
+<Timeline onDragInfo={handleDragInfo} />
+```
 
-css
+#### `onExtendInfo` (Opsiyonel)
+Event uzatıldığında çağrılacak callback.
 
-:root {
-  --background-color: #ffffff;
-  --timeline-event-background-color: #ff5733;
-  --timeline-event-text-color: #fff;
-}
-🧩 Callback Kullanımı
-Etkinlikler üzerinde işlem yapmak için callback'leri kullanabilirsiniz. Örneğin:
+**Format:** `(extendInfo) => void`
 
-jsx
+**Örnek:**
+```javascript
+const handleExtendInfo = (extendInfo) => {
+  console.log("Event uzatıldı:", extendInfo);
+  // extendInfo: { eventId, newEndDate }
+};
+
+<Timeline onExtendInfo={handleExtendInfo} />
+```
+
+#### `onCreateEventInfo` (Opsiyonel)
+Yeni event oluşturulduğunda çağrılacak callback.
+
+**Format:** `(newEvent) => void`
+
+**Örnek:**
+```javascript
+const handleCreateEventInfo = (newEvent) => {
+  console.log("Yeni event:", newEvent);
+  // newEvent: { id, title, startDate, endDate, resourceId }
+};
+
+<Timeline onCreateEventInfo={handleCreateEventInfo} />
+```
+
+#### `onEventClick` (Opsiyonel)
+Event'e tıklandığında çağrılacak callback.
+
+**Format:** `(event, eventObject) => void`
+
+**Örnek:**
+```javascript
+const handleEventClick = (event, e) => {
+  console.log("Event tıklandı:", event);
+  // event: Event objesi
+  // e: React event objesi
+};
+
+<Timeline onEventClick={handleEventClick} />
+```
+
+#### `onEventRightClick` (Opsiyonel)
+Event'e sağ tıklandığında çağrılacak callback.
+
+**Format:** `(event, eventObject) => void`
+
+#### `eventStyleResolver` (Opsiyonel)
+Her event için özel stil döndüren fonksiyon.
+
+**Format:** `(event) => object`
+
+**Örnek:**
+```javascript
+const eventStyleResolver = (event) => {
+  switch (event.status) {
+    case "completed":
+      return {
+        backgroundColor: "#28a745",
+        color: "#fff",
+        border: "1px solid #28a745",
+      };
+    case "in-progress":
+      return {
+        backgroundColor: "#ffc107",
+        color: "#000",
+        border: "1px solid #ffc107",
+      };
+    default:
+      return {};
+  }
+};
+
+<Timeline eventStyleResolver={eventStyleResolver} />
+```
+
+#### `tempEventStyle` (Opsiyonel)
+Yeni oluşturulan event'in geçici stili.
+
+**Format:** `object`
+
+**Örnek:**
+```javascript
+<Timeline
+  tempEventStyle={{
+    backgroundColor: "rgba(235, 0, 235, 0.8)",
+    color: "#fff",
+    borderRadius: "40px",
+  }}
+/>
+```
+
+---
+
+### Tarih Yönetimi
+
+#### `onToday` (Opsiyonel)
+"Bugün" butonuna tıklandığında çağrılacak callback.
+
+**Format:** `() => void`
+
+#### `onAdvance` (Opsiyonel)
+"5 Gün İleri" butonuna tıklandığında çağrılacak callback.
+
+**Format:** `() => void`
+
+#### `onRetreat` (Opsiyonel)
+"5 Gün Geri" butonuna tıklandığında çağrılacak callback.
+
+**Format:** `() => void`
+
+#### `onMonthAdvance` (Opsiyonel)
+"1 Ay İleri" butonuna tıklandığında çağrılacak callback.
+
+**Format:** `() => void`
+
+#### `onMonthRetreat` (Opsiyonel)
+"1 Ay Geri" butonuna tıklandığında çağrılacak callback.
+
+**Format:** `() => void`
+
+**Örnek:**
+```javascript
+const handleToday = () => {
+  const today = new Date();
+  today.setDate(today.getDate() - 3);
+  setProgramDate(today.toISOString().split('T')[0]);
+};
+
+const handleAdvance = () => {
+  const currentDate = new Date(programDate);
+  currentDate.setDate(currentDate.getDate() + 5);
+  setProgramDate(currentDate.toISOString().split('T')[0]);
+};
 
 <Timeline
-  events={events}
-  onEventClick={(event) => console.log("Event Clicked:", event)}
-  onDragInfo={(dragData) => console.log("Dragged Event Info:", dragData)}
-  onExtendInfo={(extendData) => console.log("Extended Event Info:", extendData)}
+  programDate={programDate}
+  onToday={handleToday}
+  onAdvance={handleAdvance}
+  onRetreat={handleRetreat}
+  onMonthAdvance={handleMonthAdvance}
+  onMonthRetreat={handleMonthRetreat}
+/>
+```
+
+---
+
+### Disable Dates (Tarih Devre Dışı Bırakma)
+
+Belirli tarihleri veya tarih aralıklarını devre dışı bırakma özelliği. İki mod destekler: `exclude` ve `include`.
+
+#### `disableDates` (Opsiyonel)
+
+**Format:**
+```javascript
+{
+  mode: 'exclude' | 'include',
+  dates: Array<string | Date>,      // Tekil tarihler
+  ranges: Array<{                   // Tarih aralıkları
+    start: string | Date,
+    end: string | Date
+  }>
+}
+```
+
+**Modlar:**
+- `exclude`: Belirtilen tarihler disabled, diğerleri enabled
+- `include`: Belirtilen tarihler enabled, diğerleri disabled
+
+**Tarih Formatları:**
+- String (YYYY-MM-DD): `"2025-01-15"`
+- String (dd/mm/yyyy): `"15/01/2025"`
+- Date objesi: `new Date(2025, 0, 15)`
+
+**Örnek 1: Belirli tarihleri disabled yap**
+```javascript
+const disableDates = {
+  mode: 'exclude',
+  dates: [
+    '2025-01-20',
+    new Date(2025, 0, 25),
+  ],
+  ranges: [
+    { start: '2025-01-15', end: '2025-01-18' },
+  ],
+};
+
+<Timeline disableDates={disableDates} />
+```
+
+**Örnek 2: Sadece belirli tarihleri enabled yap**
+```javascript
+const disableDates = {
+  mode: 'include',
+  ranges: [
+    { start: '2025-12-26', end: '2025-12-30' },
+    { start: '2026-01-06', end: '2026-01-10' },
+  ],
+};
+
+<Timeline disableDates={disableDates} />
+// Sadece 26-30 Aralık ve 6-10 Ocak enabled, diğerleri disabled
+```
+
+**Özellikler:**
+- Disabled tarihler blok görünümde gösterilir
+- Disabled tarihlerde tıklama engellenir
+- Disabled tarihlere event taşınamaz
+- Disabled tarihlerde event oluşturulamaz
+- Event oluştururken disabled tarihlere uzaması engellenir
+
+---
+
+### Custom Header Buttons (Özel Header Butonları)
+
+Timeline header'ına özel butonlar ekleme ve varsayılan butonları kontrol etme.
+
+#### `showDefaultHeaderButtons` (Opsiyonel)
+Varsayılan butonları göster/gizle.
+
+**Format:** `boolean`
+
+**Varsayılan:** `true`
+
+#### `customHeaderButtons` (Opsiyonel)
+Özel butonlar array'i.
+
+**Format:**
+```javascript
+Array<{
+  id: string,                    // Benzersiz ID (zorunlu)
+  label: string,                 // Buton metni (zorunlu)
+  onClick: () => void,           // Tıklama handler'ı (zorunlu)
+  icon?: string,                 // İkon (opsiyonel)
+  disabled?: boolean,            // Disabled durumu (opsiyonel)
+  className?: string,            // Özel CSS class (opsiyonel)
+  tooltip?: string,             // Tooltip metni (opsiyonel)
+}>
+```
+
+**Örnek:**
+```javascript
+const customHeaderButtons = [
+  {
+    id: 'goto-dec-26',
+    label: '26-30 Aralık',
+    icon: '📅',
+    onClick: () => {
+      setProgramDate('2025-12-26');
+    },
+    tooltip: '26-30 Aralık 2025 tarihine git',
+  },
+  {
+    id: 'goto-jan-6',
+    label: '6-10 Ocak',
+    icon: '📅',
+    onClick: () => {
+      setProgramDate('2026-01-06');
+    },
+  },
+];
+
+<Timeline
+  showDefaultHeaderButtons={true}  // Varsayılan butonları göster
+  customHeaderButtons={customHeaderButtons}  // Özel butonları ekle
 />
 
+// Veya sadece özel butonları göster
+<Timeline
+  showDefaultHeaderButtons={false}  // Varsayılan butonları gizle
+  customHeaderButtons={customHeaderButtons}
+/>
+```
 
+---
 
+### Event Alignment Mode (Etkinlik Hizalama Modu)
 
-Örnek App.js dosyası 
+Event'lerin timeline'da nasıl hizalanacağını belirler.
 
+#### `eventAlignmentMode` (Opsiyonel)
 
-// Gerekli kütüphaneleri import ediyoruz
-import React, { useState } from "react";
-// Timeline bileşenini import ediyoruz
-import Timeline from "./components/Timeline/Timeline";
+**Format:** `"center"` | `"full"`
+
+**Varsayılan:** `"center"`
+
+**Modlar:**
+- `"center"`: Event'ler gün ortasından başlar ve gün ortasında biter
+- `"full"`: Event'ler gün başından başlar ve gün sonunda biter
+
+**Örnek:**
+```javascript
+<Timeline eventAlignmentMode="full" />
+```
+
+**Fark:**
+- `center` modunda: 1-5 Ocak arası event, 1 Ocak ortasından 5 Ocak ortasına kadar uzanır
+- `full` modunda: 1-5 Ocak arası event, 1 Ocak başından 5 Ocak sonuna kadar uzanır
+
+---
+
+### Theme (Tema)
+
+#### `themeType` (Opsiyonel)
+
+**Format:** `"light"` | `"dark"`
+
+**Varsayılan:** `"light"`
+
+**Özellikler:**
+- Glassmorphism tasarım
+- Şeffaf cam efekti
+- Backdrop filter blur
+- Light ve dark mode desteği
+
+**Örnek:**
+```javascript
+const [themeType, setThemeType] = useState("dark");
+
+<Timeline themeType={themeType} />
+```
+
+---
+
+### Zoom (Yakınlaştırma)
+
+#### `zoomLevel` (Opsiyonel)
+Zoom seviyesi.
+
+**Format:** `number`
+
+**Varsayılan:** `1.0` (%100)
+
+#### `setZoomLevel` (Opsiyonel)
+Zoom seviyesini değiştiren fonksiyon.
+
+**Format:** `(level: number) => void` veya `React.Dispatch<React.SetStateAction<number>>`
+
+#### `zoomOn` (Opsiyonel)
+Zoom özelliğini aç/kapa.
+
+**Format:** `boolean`
+
+**Varsayılan:** `true`
+
+#### `minZoomLevel` (Opsiyonel)
+Minimum zoom seviyesi.
+
+**Format:** `number`
+
+**Varsayılan:** `0.5` (%50)
+
+#### `maxZoomLevel` (Opsiyonel)
+Maksimum zoom seviyesi.
+
+**Format:** `number`
+
+**Varsayılan:** `3.0` (%300)
+
+#### `zoomStep` (Opsiyonel)
+Her zoom adımında değişecek miktar.
+
+**Format:** `number`
+
+**Varsayılan:** `0.25`
+
+**Örnek:**
+```javascript
+const [zoomLevel, setZoomLevel] = useState(1.0);
+
+<Timeline
+  zoomLevel={zoomLevel}
+  setZoomLevel={setZoomLevel}
+  zoomOn={true}
+  minZoomLevel={0.5}
+  maxZoomLevel={3.0}
+  zoomStep={0.25}
+/>
+```
+
+---
+
+### Cell Tooltip (Hücre Tooltip)
+
+Hücrelerin üzerine gelindiğinde gösterilecek özel tooltip'ler.
+
+#### `cellTooltipOn` (Opsiyonel)
+Cell tooltip'lerini aktif et.
+
+**Format:** `boolean`
+
+**Varsayılan:** `false`
+
+#### `cellTooltipResolver` (Opsiyonel)
+Her hücre için tooltip içeriği döndüren fonksiyon.
+
+**Format:** `(resource, dateObj) => React.ReactNode | string | null`
+
+**Örnek:**
+```javascript
+const getCellTooltipContent = (resource, dateObj) => {
+  const date = new Date(dateObj.fullDate);
+  const dateString = date.toISOString().split('T')[0];
+  
+  // Fiyat hesaplama
+  const price = calculatePrice(resource.id, dateString);
+  
+  return (
+    <div>
+      <div style={{ fontWeight: 'bold' }}>{resource.name}</div>
+      <div>{dateObj.display}</div>
+      <div>Fiyat: {price}₺</div>
+    </div>
+  );
+};
+
+<Timeline
+  cellTooltipOn={true}
+  cellTooltipResolver={getCellTooltipContent}
+/>
+```
+
+---
+
+### Cell Context Menu (Hücre Bağlam Menüsü)
+
+Hücrelere sağ tıklandığında gösterilecek menü.
+
+#### `cellContextMenuOn` (Opsiyonel)
+Cell context menu'yu aç/kapa.
+
+**Format:** `boolean`
+
+**Varsayılan:** `false`
+
+#### `cellContextMenuItems` (Opsiyonel)
+Context menu öğeleri.
+
+**Format:**
+```javascript
+Array<{
+  id: string,                    // Benzersiz ID (zorunlu)
+  label: string,                // Menü metni (zorunlu)
+  icon?: string,                // İkon (opsiyonel)
+  onClick: (resource, date) => void,  // Tıklama handler'ı (zorunlu)
+  disabled?: boolean,           // Disabled durumu (opsiyonel)
+  separator?: boolean,          // Ayırıcı çizgi (opsiyonel)
+  danger?: boolean,            // Tehlikeli işlem (kırmızı renk) (opsiyonel)
+  tooltip?: string,            // Tooltip (opsiyonel)
+  hidden?: boolean,             // Gizle (opsiyonel)
+}>
+```
+
+**Örnek:**
+```javascript
+const cellContextMenuItems = [
+  {
+    id: 'daily-timeline',
+    label: 'Günlük Timeline Görüntüsü Oluştur',
+    icon: '📊',
+    onClick: (resource, date) => {
+      console.log('Daily Timeline:', { resource, date });
+    },
+    tooltip: 'Seçili resource ve tarih için günlük timeline görüntüsü oluştur',
+  },
+  {
+    id: 'separator-1',
+    separator: true,
+  },
+  {
+    id: 'view-details',
+    label: 'Detayları Görüntüle',
+    icon: '👁️',
+    onClick: (resource, date) => {
+      console.log('View Details:', { resource, date });
+    },
+  },
+  {
+    id: 'create-event',
+    label: 'Yeni Rezervasyon Oluştur',
+    icon: '➕',
+    onClick: (resource, date) => {
+      const dateObj = new Date(date.fullDate);
+      alert(`"${resource.name}" için ${dateObj.toLocaleDateString('tr-TR')} tarihinde yeni rezervasyon oluşturulacak.`);
+    },
+  },
+];
+
+<Timeline
+  cellContextMenuOn={true}
+  cellContextMenuItems={cellContextMenuItems}
+  onCellContextMenu={(resource, date, event) => {
+    console.log('Context menu opened:', { resource, date, event });
+  }}
+/>
+```
+
+---
+
+### Event Icons & Badges (Etkinlik İkonları ve Rozetler)
+
+Event'lere ikon ve rozet ekleme özelliği.
+
+#### `eventIconsOn` (Opsiyonel)
+Event ikonlarını göster/gizle.
+
+**Format:** `boolean`
+
+**Varsayılan:** `false`
+
+#### `eventIconResolver` (Opsiyonel)
+Her event için ikon tipi döndüren fonksiyon.
+
+**Format:** `(event) => string | null`
+
+**Desteklenen İkon Tipleri:**
+- `'balance-warning'`: Bakiye uyarısı
+- `'important-note'`: Önemli not
+- `'payment-pending'`: Ödeme bekliyor
+- `'completed'`: Tamamlandı
+- `'in-progress'`: Devam ediyor
+- `'cancelled'`: İptal
+- `'pending'`: Beklemede
+
+**Örnek:**
+```javascript
+const eventIconResolver = (event) => {
+  if (event.balanceWarning || (event.balance && event.balance > 0)) {
+    return 'balance-warning';
+  }
+  if (event.hasImportantNote || event.note) {
+    return 'important-note';
+  }
+  if (event.paymentPending) {
+    return 'payment-pending';
+  }
+  switch (event.status) {
+    case "Completed":
+      return 'completed';
+    case "In-progress":
+      return 'in-progress';
+    case "Cancelled":
+      return 'cancelled';
+    default:
+      return null;
+  }
+};
+
+<Timeline
+  eventIconsOn={true}
+  eventIconResolver={eventIconResolver}
+/>
+```
+
+#### `eventBadgesOn` (Opsiyonel)
+Event badge'lerini göster/gizle.
+
+**Format:** `boolean`
+
+**Varsayılan:** `false`
+
+#### `eventBadgeResolver` (Opsiyonel)
+Her event için badge bilgisi döndüren fonksiyon.
+
+**Format:** `(event) => { text, type, position, style? } | null`
+
+**Örnek:**
+```javascript
+const eventBadgeResolver = (event) => {
+  if (event.isUrgent) {
+    return {
+      text: 'ACİL',
+      type: 'urgent',
+      position: 'top-right',
+    };
+  }
+  if (event.isImportant) {
+    return {
+      text: 'ÖNEMLİ',
+      type: 'important',
+      position: 'top-right',
+    };
+  }
+  if (event.isNew) {
+    return {
+      text: 'YENİ',
+      type: 'new',
+      position: 'top-left',
+    };
+  }
+  return null;
+};
+
+<Timeline
+  eventBadgesOn={true}
+  eventBadgeResolver={eventBadgeResolver}
+/>
+```
+
+---
+
+### Event Management (Etkinlik Yönetimi)
+
+Event'leri yönetme özellikleri (silme, güncelleme, kopyalama, yapıştırma).
+
+#### `eventManagementOn` (Opsiyonel)
+Event yönetimi özelliklerini aktif et.
+
+**Format:** `boolean`
+
+**Varsayılan:** `false`
+
+#### `onEventDelete` (Opsiyonel)
+Event silindiğinde çağrılacak callback.
+
+**Format:** `(eventIds: string[]) => void`
+
+#### `onEventUpdate` (Opsiyonel)
+Event güncellendiğinde çağrılacak callback.
+
+**Format:** `(events: Event[]) => void`
+
+#### `onEventCopy` (Opsiyonel)
+Event kopyalandığında çağrılacak callback.
+
+**Format:** `(eventIds: string[]) => void`
+
+#### `onEventPaste` (Opsiyonel)
+Event yapıştırıldığında çağrılacak callback.
+
+**Format:** `(events: Event[]) => void`
+
+**Özellikler:**
+- Çift tıklama ile event düzenleme modal'ı açılır
+- Sağ tıklama ile event seçimi
+- Ctrl+Click ile çoklu seçim
+- Delete tuşu ile seçili event'leri silme
+- Ctrl+C ile kopyalama
+- Ctrl+V ile yapıştırma
+
+**Örnek:**
+```javascript
+<Timeline
+  eventManagementOn={true}
+  onEventDelete={(eventIds) => {
+    console.log('Silinen event\'ler:', eventIds);
+  }}
+  onEventUpdate={(events) => {
+    console.log('Güncellenen event\'ler:', events);
+  }}
+  onEventCopy={(eventIds) => {
+    console.log('Kopyalanan event\'ler:', eventIds);
+  }}
+  onEventPaste={(events) => {
+    console.log('Yapıştırılan event\'ler:', events);
+  }}
+/>
+```
+
+---
+
+### Keyboard Shortcuts (Klavye Kısayolları)
+
+Klavye kısayolları ile hızlı navigasyon ve işlemler.
+
+#### `keyboardShortcutsOn` (Opsiyonel)
+Keyboard shortcuts'ları aktif et.
+
+**Format:** `boolean`
+
+**Varsayılan:** `false`
+
+#### `keyboardShortcutsConfig` (Opsiyonel)
+Klavye kısayolu callback'leri.
+
+**Format:**
+```javascript
+{
+  onNavigateLeft?: () => void,
+  onNavigateRight?: () => void,
+  onNavigateUp?: () => void,
+  onNavigateDown?: () => void,
+  onDelete?: () => void,
+  onUndo?: () => void,
+  onRedo?: () => void,
+  onCopy?: () => void,
+  onPaste?: () => void,
+  onZoomIn?: () => void,
+  onZoomOut?: () => void,
+}
+```
+
+#### `keyboardShortcutsKeyMap` (Opsiyonel)
+Özelleştirilebilir tuş haritası.
+
+**Format:** `object`
+
+**Örnek:**
+```javascript
+<Timeline
+  keyboardShortcutsOn={true}
+  keyboardShortcutsConfig={{
+    onNavigateLeft: () => handleRetreat(),
+    onNavigateRight: () => handleAdvance(),
+    onDelete: () => {
+      // Seçili event'leri sil
+    },
+  }}
+/>
+```
+
+---
+
+### Loading State (Yükleme Durumu)
+
+Timeline yüklenirken gösterilecek loading göstergesi.
+
+#### `isLoading` (Opsiyonel)
+Timeline yükleniyor mu?
+
+**Format:** `boolean`
+
+**Varsayılan:** `false`
+
+#### `loadingType` (Opsiyonel)
+Loading tipi.
+
+**Format:** `'spinner'` | `'dots'` | `'pulse'`
+
+**Varsayılan:** `'spinner'`
+
+**Örnek:**
+```javascript
+const [isLoading, setIsLoading] = useState(false);
+
+<Timeline
+  isLoading={isLoading}
+  loadingType="spinner"
+/>
+```
+
+---
+
+### Daily View (Günlük Görünüm)
+
+Belirli bir kaynak ve tarih için günlük detaylı görünüm.
+
+#### `dailyViewOn` (Opsiyonel)
+Daily view özelliğini aç/kapa.
+
+**Format:** `boolean`
+
+**Varsayılan:** `true`
+
+**Kullanım:**
+Cell context menu'den "Günlük Timeline Görüntüsü Oluştur" seçeneği ile açılır.
+
+---
+
+### Weekend Highlighting (Hafta Sonu Vurgulama)
+
+Hafta sonlarını farklı renkte gösterme.
+
+#### `highlightWeekends` (Opsiyonel)
+Hafta sonlarını farklı renkte göster.
+
+**Format:** `boolean`
+
+**Varsayılan:** `false`
+
+**Örnek:**
+```javascript
+<Timeline highlightWeekends={true} />
+```
+
+---
+
+### Past Date Protection (Geçmiş Tarih Koruması)
+
+Geçmiş tarihlere rezervasyon oluşturmayı engelleme.
+
+#### `preventPastEvents` (Opsiyonel)
+Geçmiş tarihlere rezervasyon oluşturmayı engelle.
+
+**Format:** `boolean`
+
+**Varsayılan:** `false`
+
+#### `minDate` (Opsiyonel)
+Minimum tarih (eğer belirtilmezse indicatorDate kullanılır).
+
+**Format:** `Date` | `string`
+
+**Örnek:**
+```javascript
+<Timeline
+  preventPastEvents={true}
+  minDate={new Date()} // Bugünden önceki tarihler engellenir
+/>
+```
+
+---
+
+### Diğer Props
+
+#### `masterHeaderView` (Opsiyonel)
+Master header'ı göster/gizle.
+
+**Format:** `boolean`
+
+**Varsayılan:** `true`
+
+#### `indicatorOn` (Opsiyonel)
+Bugünün tarihini gösteren indicator'ı göster/gizle.
+
+**Format:** `boolean`
+
+**Varsayılan:** `false`
+
+#### `indicatorDate` (Opsiyonel)
+Indicator'ın gösterileceği tarih.
+
+**Format:** `Date` | `string`
+
+**Varsayılan:** `new Date()`
+
+#### `horizontalScrollOn` (Opsiyonel)
+Yatay scroll özelliğini aç/kapa.
+
+**Format:** `boolean`
+
+**Varsayılan:** `false`
+
+#### `eventTooltipOn` (Opsiyonel)
+Event tooltip'lerini göster/gizle.
+
+**Format:** `boolean`
+
+**Varsayılan:** `true`
+
+#### `tooltipComponent` (Opsiyonel)
+Özelleştirilebilir Tooltip bileşeni.
+
+**Format:** `React.Component`
+
+**Örnek:**
+```javascript
+import EventTooltip from 'akfatimeline/EventTooltip';
+
+<Timeline
+  eventTooltipOn={true}
+  tooltipComponent={EventTooltip}
+/>
+```
+
+---
+
+## 📖 Örnekler
+
+### Basit Kullanım
+
+```jsx
+import React from 'react';
+import Timeline from 'akfatimeline';
+import 'akfatimeline/css';
 
 const App = () => {
-  // Timeline başlangıç tarihi (zorunlu, format: "YYYY-MM-DD")
-  const programDate = "2025-01-02";
-
-  // Timeline için etkinliklerin veri listesi
-  const events = [
-    {
-      id: "lux-101-1", // Benzersiz etkinlik kimliği (zorunlu)
-      title: "Room 101 Event", // Etkinlik adı (zorunlu)
-      startDate: new Date("2025-01-01"), // Başlangıç tarihi (zorunlu, JS Date formatı)
-      endDate: new Date("2025-01-08"), // Bitiş tarihi (zorunlu, JS Date formatı)
-      resourceId: "lux-101", // Hangi kaynağa ait olduğunu belirten ID (zorunlu)
-      color: "#ff5733", // Etkinlik için özel renk (isteğe bağlı)
-      totalAmount: 500, // Ek alan: Toplam borç (isteğe bağlı)
-      amountPaid: 200, // Ek alan: Ödenen miktar (isteğe bağlı)
-      status: "Confirmed", // Ek alan: Rezervasyon durumu (isteğe bağlı)
-      note: "Misafirler özel talep olarak ekstra yastık istediler.", // Not (isteğe bağlı)
-    },
-    {
-      id: "lux-102-1",
-      title: "Room 102 Event",
-      startDate: new Date("2025-01-02"),
-      endDate: new Date("2025-01-04"),
-      resourceId: "lux-102",
-      color: "#33a1ff",
-    },
-    {
-      id: "lux-103-1",
-      title: "Room 103 Event",
-      startDate: new Date("2025-01-01"),
-      endDate: new Date("2025-01-02"),
-      resourceId: "lux-103",
-      color: "#33ff57",
-    },
-    {
-      id: "fam-201-1",
-      title: "Suite 201 Event",
-      startDate: new Date("2025-01-01"),
-      endDate: new Date("2025-01-02"),
-      resourceId: "fam-201",
-      color: "#ff33a1",
-    },
-    {
-      id: "fam-202-1",
-      title: "Suite 202 Event",
-      startDate: new Date("2025-01-03"),
-      endDate: new Date("2025-01-05"),
-      resourceId: "fam-202",
-      color: "#a1ff33",
-    },
-    {
-      id: "bus-301-1",
-      title: "Room 301 Event",
-      startDate: new Date("2025-01-02"),
-      endDate: new Date("2025-01-04"),
-      resourceId: "bus-301",
-      color: "#ff9a00",
-    },
-    {
-      id: "vip-401-1",
-      title: "VIP 401 Event",
-      startDate: new Date("2025-01-04"),
-      endDate: new Date("2025-01-06"),
-      resourceId: "vip-401",
-      color: "#800080",
-    },
-    {
-      id: "vip-402-1",
-      title: "VIP 402 Event",
-      startDate: new Date("2025-01-05"),
-      endDate: new Date("2025-01-06"),
-      resourceId: "vip-402",
-      color: "#008080",
-    },
-    // Diğer etkinlikler...
-  ];
-
-  // Kaynakların listesi (zorunlu, grup ve kaynak bilgisi içermeli)
   const resources = [
     {
-      groupName: "Luxury Rooms", // Grup adı (zorunlu)
+      groupName: "Odalar",
       resources: [
-        { id: "lux-101", name: "Room 101" }, // Kaynak ID ve adı (zorunlu)
-        { id: "lux-102", name: "Room 102" },
-        { id: "lux-103", name: "Room 103" },
-        { id: "lux-104", name: "Room 104" },
-            ],
-    },
-    {
-      groupName: "Family Suites",
-      resources: [
-        { id: "fam-201", name: "Suite 201" },
-        { id: "fam-202", name: "Suite 202" },
-        { id: "fam-203", name: "Suite 203" },
-        { id: "fam-204", name: "Suite 204" },
-      ],
-    },
-    {
-      groupName: "Business Class",
-      resources: [
-        { id: "bus-301", name: "Room 301" },
-        { id: "bus-302", name: "Room 302" },
-        { id: "bus-303", name: "Room 303" },
-        { id: "bus-304", name: "Room 304" },
-      ],
-    },
-    {
-      groupName: "VIP Exclusive",
-      resources: [
-        { id: "vip-401", name: "VIP 401" },
-        { id: "vip-402", name: "VIP 402" },
-        { id: "vip-403", name: "VIP 403" },
-        { id: "vip-404", name: "VIP 404" },
-
+        { id: "room-101", name: "Oda 101" },
+        { id: "room-102", name: "Oda 102" },
       ],
     },
   ];
 
-  // Kaynak ayarları (isteğe bağlı, varsayılan ayarlar mevcut)
-  const resourceSettings = {
-    showIdAsName: false, // true: Kaynak ID gösterir, false: Kaynak adı gösterir
-    isGrouped: true, // true: Kaynakları gruplar halinde gösterir
-    isCollapsible: true, // true: Gruplar açılıp kapatılabilir
-  };
-
-  // Drag-and-drop işlemleri için gerekli callback ve state'ler
-  const [dropInfo, setDropInfo] = useState(null); // Sürükle-bırak sonrası bilgi saklar
-  const handleDragInfo = (dragData) => {
-    console.log("Dragged Event Info:", dragData);
-  };
-
-  // Etkinlik genişletme (extend) işlemi callback'i
-  const handleExtendInfo = (extendData) => {
-    console.log("Extended Event Info:", extendData);
-  };
-
-  // Yeni etkinlik oluşturma işlemi callback'i
-  const handleCreateEventInfo = (newEventData) => {
-    console.log("New Event Created:", newEventData);
-  };
-
-  // Etkinlik tıklama işlemi callback'i
-  const handleEventClick = (evt, ev) => {
-    console.log("Event clicked:", evt);
-  };
-
-  // Etkinlik sağ tıklama işlemi callback'i
-  const handleEventRightClick = (evt, ev) => {
-    ev.preventDefault(); // Varsayılan sağ tık menüsünü engeller
-    console.log("Event right-clicked:", evt);
-  };
-
-  // Diğer özellikler ve kontrol mekanizmaları
-  const eventsDragOn = true; // true: Etkinlik sürükle-bırak özelliği aktif
-  const eventsExtendOn = true; // true: Etkinlik genişletme özelliği aktif
-  const createNewEventOn = true; // true: Yeni etkinlik oluşturma özelliği aktif
-  const horizontalScrollOn = true; // true: Yatay kaydırma özelliği aktif
-  const [masterHeaderView, setMasterHeaderView] = useState(true); // true: Master Header gösterilir
-  const [resourceHeaderContent, setResourceHeaderContent] = useState("Akfa Timeline"); // Resources başlık içeriği
+  const events = [
+    {
+      id: "event-1",
+      title: "Rezervasyon",
+      startDate: new Date(2025, 0, 15),
+      endDate: new Date(2025, 0, 18),
+      resourceId: "room-101",
+    },
+  ];
 
   return (
     <Timeline
-      // Kaynak verileri (zorunlu)
       resources={resources}
-      // Kaynak ayarları (isteğe bağlı)
-      resourceSettings={resourceSettings}
-      // Timeline başlangıç tarihi (zorunlu)
-      programDate={programDate}
-      // Etkinlik verileri (zorunlu)
       events={events}
-      externalEvents={events}
-      // Drop bilgisi için callback ve state
-      setDropInfo={setDropInfo}
-      dropInfo={dropInfo}
-      // Bugün göstergesi (isteğe bağlı)
-      indicatorOn={true}
-      // Sürükle-bırak ve genişletme özellikleri (isteğe bağlı)
-      eventsDragOn={eventsDragOn}
-      eventsExtendOn={eventsExtendOn}
-      createNewEventOn={createNewEventOn}
-      // Callback'ler
-      onDragInfo={handleDragInfo}
-      onExtendInfo={handleExtendInfo}
-      onCreateEventInfo={handleCreateEventInfo}
-      onEventClick={handleEventClick}
-      onEventRightClick={handleEventRightClick}
-      // Yatay kaydırma özelliği (isteğe bağlı)
-      horizontalScrollOn={horizontalScrollOn}
-      // Master Header görünürlüğü ve Resources başlığı içeriği
-      masterHeaderView={masterHeaderView}
-      resourceHeaderContent={resourceHeaderContent}
+      programDate="2025-01-15"
+      dayRange={30}
+      themeType="dark"
     />
   );
 };
 
 export default App;
+```
+
+### Gelişmiş Kullanım
+
+```jsx
+import React, { useState } from 'react';
+import Timeline from 'akfatimeline';
+import EventTooltip from 'akfatimeline/EventTooltip';
+import 'akfatimeline/css';
+
+const App = () => {
+  const [programDate, setProgramDate] = useState('2025-01-15');
+  const [dayRange, setDayRange] = useState(30);
+  const [zoomLevel, setZoomLevel] = useState(1.0);
+  const [themeType, setThemeType] = useState('dark');
+
+  const resources = [
+    {
+      groupName: "Luxury Rooms",
+      resources: [
+        { id: "lux-101", name: "Room 101" },
+        { id: "lux-102", name: "Room 102" },
+      ],
+    },
+  ];
+
+  const events = [
+    {
+      id: "event-1",
+      title: "3 Gece",
+      startDate: new Date(2025, 0, 15),
+      endDate: new Date(2025, 0, 18),
+      resourceId: "lux-101",
+      status: "in-progress",
+    },
+  ];
+
+  const disableDates = {
+    mode: 'exclude',
+    ranges: [
+      { start: '2025-01-20', end: '2025-01-25' },
+    ],
+  };
+
+  const customHeaderButtons = [
+    {
+      id: 'goto-jan-15',
+      label: '15 Ocak',
+      icon: '📅',
+      onClick: () => setProgramDate('2025-01-15'),
+    },
+  ];
+
+  const eventStyleResolver = (event) => {
+    switch (event.status) {
+      case "completed":
+        return { backgroundColor: "#28a745", color: "#fff" };
+      case "in-progress":
+        return { backgroundColor: "#ffc107", color: "#000" };
+      default:
+        return {};
+    }
+  };
+
+  return (
+    <Timeline
+      resources={resources}
+      events={events}
+      programDate={programDate}
+      dayRange={dayRange}
+      setDayRange={setDayRange}
+      themeType={themeType}
+      zoomLevel={zoomLevel}
+      setZoomLevel={setZoomLevel}
+      disableDates={disableDates}
+      showDefaultHeaderButtons={true}
+      customHeaderButtons={customHeaderButtons}
+      eventStyleResolver={eventStyleResolver}
+      eventAlignmentMode="full"
+      highlightWeekends={true}
+      preventPastEvents={true}
+      cellTooltipOn={true}
+      cellTooltipResolver={(resource, date) => `Fiyat: 150₺`}
+      eventTooltipOn={true}
+      tooltipComponent={EventTooltip}
+      onEventClick={(event) => console.log('Event clicked:', event)}
+      onDragInfo={(info) => console.log('Event dragged:', info)}
+      onExtendInfo={(info) => console.log('Event extended:', info)}
+      onCreateEventInfo={(event) => console.log('Event created:', event)}
+    />
+  );
+};
+
+export default App;
+```
 
 ---
 
-##  🎨 CSS Özelleştirme
-AkfaTimeline, CSS değişkenleri ile kolayca özelleştirilebilir.
-
-/* src/components/Timeline/Timeline.css */
-
-/* 
-  Temel: "sales sayfası" temasıyla uyumlu renkler, 
-  light vs. dark tanımları 
-*/
-
-:root {
-  /* Light Tema Varsayılan Renkler */
-  --background-color: #f5f5f2;       /* Açık tema arka plan */
-  --text-color: #666;               /* Açık tema yazı rengi */
-  --border-color: #bbb;             /* Daha yumuşak border */
-
-  /* Header */
-  --header-background-color: #f5f5f2;  /* Üst header, tablo header */
-  --header-text-color: #666;
-
-  /* Resources */
-  --resource-background-color: #f5f5f2;  
-  --resource-text-color: #666;
-  --group-header-background-color: #dadada;
-
-  /* Timeline */
-  --timeline-header-background-color: #f5f5f2;
-  --timeline-cell-border-color: #ccc;
-  --timeline-event-background-color: #fff;
-  --timeline-event-border-color: #666;
-  --timeline-event-text-color: #666;
-
-  /* Scrollbar */
-  --scrollbar-thumb-background: #aaa;
-  --scrollbar-thumb-hover-background: #888;
-
-  --resource-width: 150px;
-  --cell-height: 40px;
-  --header-height: 60px;
-  --time-slot-height: 20px;
-  --container-height: 480px;
-
-  --timeline-new-event-background-color: #ff5722;
-  --timeline-new-event-text-color: #fff;
-
-  --timeline-event-background-color: #ff7f50; 
-  --timeline-event-text-color: #fff;
-  --timeline-event-border-color: #fff;
-
-  --timeline-cell-selected-bg: rgba(25,118,210,0.2);
-
-  user-select: none; /* Metin seçimini engelle */
-}
-
-/* Koyu Tema */
-.dark-mode {
-  /* Koyu tema */
-  --background-color: #16202a;               /* Koyu tema arka plan */
-  --text-color: #ddd;                        /* Koyu tema yazı rengi */
-  --border-color: #444;
-
-  --header-background-color: #16202a;
-  --header-text-color: #bbb;
-
-  --resource-background-color: #16202a;
-  --resource-text-color: #bbb;
-  --group-header-background-color: #0d141b;
-
-  --timeline-header-background-color: #16202a;
-  --timeline-cell-border-color: #444;
-  --timeline-event-background-color: #2a2a2a;
-  --timeline-event-border-color: #222;
-  --timeline-event-text-color: #ddd;
-
-  --scrollbar-thumb-background: #555;
-  --scrollbar-thumb-hover-background: #888;
-
-  --timeline-new-event-background-color: #a83e20;
-  --timeline-new-event-text-color: #eee;
-
-  --timeline-event-background-color: #a83e20;
-  --timeline-event-text-color: #fff;
-  --timeline-event-border-color: #222;
-
-  --timeline-cell-selected-bg: rgba(76,175,80,0.2);
-}
-
-/* Genel Timeline Konteyner */
-.timeline-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  overflow: hidden;
-  box-sizing: border-box;
-  background-color: var(--background-color);
-  color: var(--text-color);
-}
-
-/* Master Header */
-.timeline-master-header {
-  width: 100%;
-  background-color: var(--header-background-color);
-  color: var(--header-text-color);
-  border-bottom: 1px solid var(--border-color);
-  z-index: 10;
-  padding: 10px;
-  box-sizing: border-box;
-}
-
-/* Timeline Body */
-.timeline-body {
-  display: flex;
-  flex: 1;
-}
-
-/* Sol Kısım: Resources */
-.timeline-resources-container {
-  width: var(--resource-width);
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid var(--border-color);
-  position: sticky;
-  left: 0;
-  top: var(--header-height);
-  z-index: 2;
-  background-color: var(--resource-background-color);
-  overflow-y: auto;
-}
-
-/* Resources Header */
-.resources-header {
-  background-color: var(--header-background-color);
-  color: var(--resource-text-color);
-  text-align: center;
-  width: var(--resource-width);
-  font-weight: bold;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: calc(var(--header-height) * 2); /* Üst üste iki header yüksekliği */
-  border-right: 1px solid var(--border-color);
-  box-sizing: border-box;
-}
-
-/* Grup Başlığı Hücreleri */
-.group-header-row {
-  display: flex;
-  height: var(--cell-height);
-  background-color: var(--group-header-background-color);
-  color: var(--resource-text-color);
-  font-weight: bold;
-}
-
-.group-header-cell {
-  flex: 1;
-  border: 1px solid var(--border-color);
-  text-align: center;
-  background-color: var(--group-header-background-color);
-  color: var(--resource-text-color);
-  height: var(--cell-height);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Resource Grupları */
-.resource-group {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Resource Grup Header */
-.resource-group-header {
-  background-color: var(--group-header-background-color);
-  color: var(--resource-text-color);
-  font-weight: bold;
-  height: var(--cell-height);
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 0px;
-  cursor: pointer;
-  border: 1px solid var(--border-color);
-}
-
-/* Resource Hücreleri */
-.resource-cell {
-  padding: 0;
-  text-align: left;
-  background-color: var(--resource-background-color);
-  color: var(--resource-text-color);
-  height: var(--cell-height);
-  display: flex;
-  align-items: center;
-  border: 0.3px solid var(--border-color);
-  box-sizing: border-box;
-}
-
-/* Sağ Kısım: Timeline */
-.timeline-scrollable-container {
-  flex: 1;
-  overflow-x: auto;
-  overflow-y: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-/* Header ve Content Wrapper */
-.timeline-header-content-wrapper {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Timeline Header */
-.timeline-header {
-  display: flex;
-  background-color: var(--timeline-header-background-color);
-  color: var(--header-text-color);
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  height: var(--header-height);
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-/* Timeline Content */
-.timeline-content {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Grup Container */
-.group-container {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Resource Satırları */
-.resource-row {
-  display: flex;
-  box-sizing: border-box;
-  position: relative;
-  height: var(--cell-height);
-  border: 1px solid var(--border-color);
-  margin-top: -1px;
-  overflow: hidden;
-}
-
-/* Timeline Hücreleri */
-.timeline-cell {
-  flex: 1;
-  border: 1px solid var(--timeline-cell-border-color);
-  height: 100%;
-  box-sizing: border-box;
-}
-
-/* Hücre Seçili Durumu */
-.timeline-cell.selected {
-  background-color: rgba(25, 118, 210, 0.2); /* satır içi/hover */
-}
-
-/* Event Stilleri */
-.event {
-  position: absolute;
-  background-color: var(--timeline-event-background-color);
-  color: var(--timeline-event-text-color);
-  font-size: 12px;
-  padding: 2px 5px;
-  border-radius: 4px;
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  box-sizing: border-box;
-  z-index: 10;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  border: 1px solid var(--timeline-event-border-color);
-  cursor: pointer;
-}
-
-/* Event Time Stili */
-.event-time {
-  font-size: 10px;
-  margin-top: 2px;
-}
-
-/* Scrollbar için */
-.timeline-scrollable-container::-webkit-scrollbar {
-  height: 10px;
-}
-
-.timeline-scrollable-container::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb-background);
-  border-radius: 5px;
-}
-
-.timeline-scrollable-container::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-hover-background);
-}
-
-.resources-header {
-  background-color: var(--header-background-color);
-  color: var(--resource-text-color);
-  text-align: center;
-  width: var(--resource-width);
-  font-weight: bold;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 80px;
-  border-right: 1px solid var(--border-color);
-  box-sizing: border-box;
-}
-
-/* TimelineHeader Container */
-.timeline-header-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Ay + Yıl satırı */
-.timeline-header-month-row {
-  display: flex;
-  background-color: var(--header-background-color);
-  color: var(--header-text-color);
-  font-weight: bold;
-  font-size: 16px;
-  height: 40px;
-  line-height: 40px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-/* Ay + Yıl hücreleri */
-.timeline-header-month-cell {
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* border-right => dynamic, inline style if needed */
-  box-sizing: border-box;
-}
-
-/* Günlük Hücreler (tarih satırı) */
-.timeline-header-day-row {
-  display: flex;
-  background-color: var(--timeline-header-background-color);
-  color: var(--header-text-color);
-  /* border-bottom: 1px solid var(--border-color); if needed */
-}
-
-/* Günlük hücre (her gün) */
-.timeline-header-day-cell {
-  height: 40px;
-  line-height: 40px;
-  font-size: 14px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: center;
-  box-sizing: border-box;
-}
-
-
-/* src/components/Timeline/Timeline.css */
-/* Ekleme: MasterHeader stili */
-
-/* Kapsayıcı */
-.master-header-container {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-
-  background-color: var(--header-background-color);
-  color: var(--header-text-color);
-
-  /* eğer border vs. istersen
-  border-bottom: 1px solid var(--border-color);
-  */
-}
-
-/* Butonlar */
-.master-header-btn {
-  background-color: transparent;
-  color: var(--header-text-color);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  padding: 6px 12px;
-  margin-right: 10px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.master-header-btn:hover {
-  background-color: rgba(25, 118, 210, 0.2); /* Light tema hover */
-}
-
-.dark-mode .master-header-btn:hover {
-  background-color: rgba(76, 175, 80, 0.2); /* Koyu tema hover */
-}
-
-.master-header-btn:focus {
-  outline: none;
-}
-
-/* Select */
-.master-header-select {
-  margin-left: 10px;
-  background-color: transparent;
-  color: var(--header-text-color);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.master-header-select:focus {
-  outline: none;
-}
-
-
-/* Container */
-.timeline-content-container {
-  position: relative;
-  width: 100%;
-  height: auto; /* or as needed */
-  display: flex;
-  flex-direction: column;
-}
-
-/* Group container */
-.timeline-group-container {
-  margin-bottom: 0px;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Group header row */
-.timeline-group-header-row {
-  display: flex;
-  margin-top: -0.08rem;
-}
-
-.timeline-group-header-cell {
-  flex: 1;
-  height: 2.58rem;
-  background-color: var(--group-header-background-color);
-  border: 1px solid var(--border-color);
-  
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Resource row */
-.timeline-resource-row {
-  display: flex;
-  position: relative;
-  height: var(--cell-height, 40px);
-  border: 1px solid var(--border-color);
-  box-sizing: border-box;
-}
-
-/* Each day cell */
-.timeline-cell {
-  flex: 1;
-  height: 100%;
-  position: relative;
-  border-left: 1px solid var(--border-color);
-  border-right: 1px solid var(--border-color);
-  box-sizing: border-box;
-  cursor: pointer;
-}
-
-/* "selected" day cell */
-.timeline-cell.selected {
-  background-color: var(--timeline-cell-selected-bg, rgba(25,118,210,0.2));
-}
-
-/* Event */
-.timeline-event {
-  position: absolute;
-  background-color: var(--timeline-event-background-color, #0093ce);
-  color: var(--timeline-event-text-color, #fff);
-  font-size: 14px;
-  padding: 5px;
-  border-radius: 20px;
-  box-sizing: border-box;
-  z-index: 10;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  border: 1px solid var(--timeline-event-border-color, #fff);
-  top: 5px; /* or a variable offset if you want */
-  /* "left" and "width" are inline from JS */
-}
-
-/* Extend handle */
-.timeline-event-extend-handle {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 10px;
-  height: 100%;
-  background-color: rgba(0,0,0,0.2);
-  cursor: col-resize;
-  z-index: 20;
-}
-
-/* Temp event (while creating) */
-.timeline-temp-event {
-  position: absolute;
-  background-color: var(--timeline-new-event-background-color, #0093ce);
-  color: var(--timeline-new-event-text-color, #fff);
-  opacity: 0.7;
-  border-radius: 20px;
-  z-index: 9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  /* "left"/"width" from JS: " ...calculatePosition(tempEvent, dates)" */
-  top: 5px;
-}
-
+## 📋 API Referansı
+
+### Timeline Component Props
+
+| Prop | Tip | Varsayılan | Açıklama |
+|------|-----|------------|----------|
+| `resources` | `Array` | - | Kaynaklar (zorunlu) |
+| `events` | `Array` | - | Etkinlikler (zorunlu) |
+| `programDate` | `string \| Date` | Bugün | Başlangıç tarihi |
+| `dayRange` | `number` | `30` | Gösterilecek gün sayısı |
+| `themeType` | `"light" \| "dark"` | `"light"` | Tema tipi |
+| `eventAlignmentMode` | `"center" \| "full"` | `"center"` | Event hizalama modu |
+| `disableDates` | `object` | `null` | Disable dates config |
+| `showDefaultHeaderButtons` | `boolean` | `true` | Varsayılan butonları göster |
+| `customHeaderButtons` | `Array` | `[]` | Özel header butonları |
+| `zoomLevel` | `number` | `1.0` | Zoom seviyesi |
+| `zoomOn` | `boolean` | `true` | Zoom özelliğini aç/kapa |
+| `cellTooltipOn` | `boolean` | `false` | Cell tooltip'leri aç/kapa |
+| `cellContextMenuOn` | `boolean` | `false` | Cell context menu aç/kapa |
+| `eventIconsOn` | `boolean` | `false` | Event ikonlarını göster |
+| `eventBadgesOn` | `boolean` | `false` | Event badge'lerini göster |
+| `eventManagementOn` | `boolean` | `false` | Event yönetimi aç/kapa |
+| `keyboardShortcutsOn` | `boolean` | `false` | Klavye kısayolları aç/kapa |
+| `isLoading` | `boolean` | `false` | Loading durumu |
+| `highlightWeekends` | `boolean` | `false` | Hafta sonu vurgulama |
+| `preventPastEvents` | `boolean` | `false` | Geçmiş tarih koruması |
 
 ---
 
-##  🎨 🛡 Lisans
-Bu proje MIT Lisansı ile lisanslanmıştır.
+## 🤝 Katkıda Bulunma
 
+Katkılarınızı bekliyoruz! Lütfen [GitHub Issues](https://github.com/AKFAPLUS/akfatimeline/issues) üzerinden geri bildirimde bulunun.
 
-🤝 Katkıda Bulunun
-Projeyi geliştirmek veya bir hata bildirmek için aşağıdaki adımları izleyebilirsiniz:
+---
 
-Bu projeyi forklayın.
-Yeni bir dal oluşturun: git checkout -b feature-isim
-Değişikliklerinizi yapın.
-Değişikliklerinizi gönderin: git push origin feature-isim
-Pull Request oluşturun.
-📞 İletişim
-Sorularınız için ahmetkursadaydogan@gmail.com adresine ulaşabilirsiniz. Daha fazla bilgi için GitHub Issues sayfasını ziyaret edin.
+## 📄 Lisans
 
+MIT License
 
-📚 Kaynaklar ve Referanslar
-React Documentation
-React-Window
-NPM AkfaTimeline
+---
 
+## 👨‍💻 Yazar
+
+**Ahmet Kürşad Aydoğan**
+
+- GitHub: [@AKFAPLUS](https://github.com/AKFAPLUS)
+- Repository: [akfatimeline](https://github.com/AKFAPLUS/akfatimeline)
+
+---
+
+## 🙏 Teşekkürler
+
+AkfaTimeline'ı kullandığınız için teşekkür ederiz! Sorularınız için [GitHub Issues](https://github.com/AKFAPLUS/akfatimeline/issues) üzerinden iletişime geçebilirsiniz.

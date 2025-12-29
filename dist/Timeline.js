@@ -1718,15 +1718,20 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* AkfaTimeline - Glassmorphism Theme 
   }
 }
 
-/* Past Date Protection Styles */
+/* Past Date Protection Styles - Disabled gibi görünüm */
 .timeline-cell-past {
-  opacity: 0.4;
-  cursor: not-allowed;
-  pointer-events: none;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
   position: relative;
+  background: var(--group-header-bg, rgba(176, 175, 175, 0.8)) !important;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border-color: var(--border-strong) !important;
+  opacity: 0.7;
+  z-index: 0;
 }
 
-.timeline-cell-past::after {
+.timeline-cell-past::before {
   content: '';
   position: absolute;
   top: 0;
@@ -1736,60 +1741,97 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* AkfaTimeline - Glassmorphism Theme 
   background: repeating-linear-gradient(
     45deg,
     transparent,
-    transparent 5px,
-    rgba(0, 0, 0, 0.1) 5px,
-    rgba(0, 0, 0, 0.1) 10px
-  );
-  pointer-events: none;
-}
-
-/* Disabled Dates Styles */
-.timeline-cell-disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  pointer-events: none;
-  position: relative;
-  background: rgba(200, 200, 200, 0.2) !important;
-}
-
-.timeline-cell-disabled::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: repeating-linear-gradient(
-    45deg,
-    transparent,
-    transparent 4px,
-    rgba(150, 150, 150, 0.3) 4px,
-    rgba(150, 150, 150, 0.3) 8px
+    transparent 6px,
+    rgba(0, 0, 0, 0.1) 6px,
+    rgba(0, 0, 0, 0.1) 12px
   );
   pointer-events: none;
   z-index: 1;
+  opacity: 0.5;
 }
 
-.dark-mode .timeline-cell-disabled {
-  background: rgba(50, 50, 50, 0.3) !important;
+.dark-mode .timeline-cell-past {
+  background: var(--group-header-bg, rgba(16, 16, 26, 0.8)) !important;
+  opacity: 0.6;
 }
 
-.dark-mode .timeline-cell-disabled::after {
+.dark-mode .timeline-cell-past::before {
   background: repeating-linear-gradient(
     45deg,
     transparent,
-    transparent 4px,
-    rgba(100, 100, 100, 0.4) 4px,
-    rgba(100, 100, 100, 0.4) 8px
+    transparent 6px,
+    rgba(255, 255, 255, 0.1) 6px,
+    rgba(255, 255, 255, 0.1) 12px
   );
 }
 
+/* Grup header cell'lerde de geçmiş tarih stili */
+.timeline-group-header-cell.timeline-cell-past {
+  background: var(--group-header-bg, rgba(176, 175, 175, 0.8)) !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+.dark-mode .timeline-group-header-cell.timeline-cell-past {
+  background: var(--group-header-bg, rgba(16, 16, 26, 0.8)) !important;
+}
+
+/* Disabled Dates Styles - Blok şeklinde, grup header gibi */
+.timeline-cell-disabled {
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  position: relative;
+  background: var(--group-header-bg, rgba(176, 175, 175, 0.8)) !important;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border-color: var(--border-strong) !important;
+  opacity: 0.7;
+  z-index: 0;
+}
+
+.timeline-cell-disabled::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 6px,
+    rgba(0, 0, 0, 0.1) 6px,
+    rgba(0, 0, 0, 0.1) 12px
+  );
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.5;
+}
+
+.dark-mode .timeline-cell-disabled {
+  background: var(--group-header-bg, rgba(16, 16, 26, 0.8)) !important;
+  opacity: 0.6;
+}
+
+.dark-mode .timeline-cell-disabled::before {
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 6px,
+    rgba(255, 255, 255, 0.1) 6px,
+    rgba(255, 255, 255, 0.1) 12px
+  );
+}
+
+/* Grup header cell'lerde de disabled stili */
 .timeline-group-header-cell.timeline-cell-disabled {
-  background: rgba(200, 200, 200, 0.2) !important;
+  background: var(--group-header-bg, rgba(176, 175, 175, 0.8)) !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
 }
 
 .dark-mode .timeline-group-header-cell.timeline-cell-disabled {
-  background: rgba(50, 50, 50, 0.3) !important;
+  background: var(--group-header-bg, rgba(16, 16, 26, 0.8)) !important;
 }
 
 /* Weekend Highlighting Styles - Subtle, matching group header intensity */
@@ -3083,7 +3125,10 @@ const MasterHeader = _ref => {
     zoomOn = true,
     minZoomLevel = 0.5,
     maxZoomLevel = 3.0,
-    zoomStep = 0.25
+    zoomStep = 0.25,
+    showDefaultButtons = true,
+    // Varsayılan butonları göster/gizle
+    customButtons = [] // Özel butonlar: [{ id, label, onClick, icon?, disabled?, className? }]
   } = _ref;
   const formattedDate = new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000 - selectedDate.getTimezoneOffset() * 60000).toISOString().split("T")[0]; // YYYY-MM-DD formatı
 
@@ -3091,7 +3136,7 @@ const MasterHeader = _ref => {
     className: "master-header-container"
   }, /*#__PURE__*/external_react_default().createElement("div", {
     className: "master-header-buttons"
-  }, /*#__PURE__*/external_react_default().createElement("button", {
+  }, showDefaultButtons && /*#__PURE__*/external_react_default().createElement((external_react_default()).Fragment, null, /*#__PURE__*/external_react_default().createElement("button", {
     className: "master-header-btn",
     onClick: onMonthRetreat
   }, "1 Ay Geri"), /*#__PURE__*/external_react_default().createElement("button", {
@@ -3114,7 +3159,17 @@ const MasterHeader = _ref => {
   }, "1 Ay \u0130leri"), /*#__PURE__*/external_react_default().createElement("button", {
     className: "master-header-btn",
     onClick: onToday
-  }, "Bug\xFCn")), /*#__PURE__*/external_react_default().createElement("select", {
+  }, "Bug\xFCn")), customButtons && customButtons.length > 0 && customButtons.map(button => /*#__PURE__*/external_react_default().createElement("button", {
+    key: button.id,
+    className: button.className || "master-header-btn",
+    onClick: button.onClick,
+    disabled: button.disabled,
+    title: button.tooltip || button.label
+  }, button.icon && /*#__PURE__*/external_react_default().createElement("span", {
+    style: {
+      marginRight: button.label ? '4px' : '0'
+    }
+  }, button.icon), button.label))), /*#__PURE__*/external_react_default().createElement("select", {
     className: "master-header-select",
     value: dayRange,
     onChange: e => setDayRange(parseInt(e.target.value, 10))
@@ -3218,8 +3273,17 @@ const parseDate = dateInput => {
     return dateInput;
   }
   if (typeof dateInput === 'string') {
-    const [day, month, year] = dateInput.split("/").map(Number);
-    return new Date(year, month - 1, day);
+    // YYYY-MM-DD formatını kontrol et (ISO format)
+    if (dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      return new Date(dateInput + 'T00:00:00');
+    }
+    // dd/mm/yyyy formatını kontrol et
+    if (dateInput.includes('/')) {
+      const [day, month, year] = dateInput.split("/").map(Number);
+      return new Date(year, month - 1, day);
+    }
+    // Diğer string formatlarını Date constructor'a bırak
+    return new Date(dateInput);
   } else if (typeof dateInput === 'object' && dateInput.fullDate instanceof Date) {
     return new Date(dateInput.fullDate.getTime() + dateInput.fullDate.getTimezoneOffset() * 60000);
   } else {
@@ -4020,6 +4084,11 @@ const TimelineContent = _ref => {
     }
     const startDate = parseDate(date.fullDate);
 
+    // Disabled tarih kontrolü - disabled hücrelerde event oluşturmayı engelle
+    if (disableDates && isDateDisabled(startDate, disableDates)) {
+      return;
+    }
+
     // Geçmiş tarih kontrolü
     if (preventPastEvents && minDate) {
       const minDateObj = parseDate(minDate);
@@ -4102,13 +4171,87 @@ const TimelineContent = _ref => {
         }
       }
 
+      // Disabled tarih kontrolü - disabled hücrelere event uzamasını engelle
+      if (disableDates && dates[currentCellIndex]) {
+        const currentDate = parseDate(dates[currentCellIndex].fullDate);
+        const isCurrentDisabled = isDateDisabled(currentDate, disableDates);
+        if (isCurrentDisabled) {
+          // Disabled hücreye geldiysek, son enabled hücreye kadar geri git
+          // Başlangıçtan itibaren tarayarak son enabled hücreyi bul
+          let lastEnabledIndex = startCellIndex;
+          if (currentCellIndex > startCellIndex) {
+            // İleri doğru gidiyorsak, başlangıçtan currentCellIndex'e kadar tarayalım
+            for (let i = startCellIndex; i < currentCellIndex; i++) {
+              if (dates[i]) {
+                const checkDate = parseDate(dates[i].fullDate);
+                if (!isDateDisabled(checkDate, disableDates)) {
+                  lastEnabledIndex = i;
+                } else {
+                  // Disabled hücreye geldik, döngüyü kır
+                  break;
+                }
+              }
+            }
+          } else {
+            // Geri doğru gidiyorsak, currentCellIndex'ten başlangıca kadar tarayalım
+            for (let i = currentCellIndex; i < startCellIndex; i++) {
+              if (dates[i]) {
+                const checkDate = parseDate(dates[i].fullDate);
+                if (!isDateDisabled(checkDate, disableDates)) {
+                  lastEnabledIndex = i;
+                }
+              }
+            }
+          }
+          currentCellIndex = lastEnabledIndex;
+        }
+      }
+
+      // Geçmiş tarih kontrolü - geçmiş tarihlere event uzamasını engelle (disabled kontrolünden sonra)
+      if (preventPastEvents && minDate && dates[currentCellIndex]) {
+        const currentDate = parseDate(dates[currentCellIndex].fullDate);
+        const minDateObj = parseDate(minDate);
+        const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+        const minDateOnly = new Date(minDateObj.getFullYear(), minDateObj.getMonth(), minDateObj.getDate());
+
+        // Eğer geçmiş tarihe gidiyorsak, son geçerli tarihe sabitle
+        if (currentDateOnly < minDateOnly) {
+          // Minimum tarihin cell index'ini bul
+          const minDateIndex = dates.findIndex(d => {
+            const dDate = parseDate(d.fullDate);
+            const dDateOnly = new Date(dDate.getFullYear(), dDate.getMonth(), dDate.getDate());
+            return dDateOnly.getTime() === minDateOnly.getTime();
+          });
+          if (minDateIndex !== -1) {
+            // Başlangıç tarihinden önceki bir tarihe gidiyorsak, minimum tarihe sabitle
+            // Ama başlangıç tarihinden sonraki bir tarihe gidiyorsak, başlangıç tarihine sabitle
+            if (currentCellIndex < startCellIndex) {
+              currentCellIndex = Math.max(startCellIndex, minDateIndex);
+            } else {
+              currentCellIndex = Math.max(startCellIndex, minDateIndex);
+            }
+          } else {
+            currentCellIndex = startCellIndex; // Minimum tarih bulunamazsa başlangıç pozisyonuna dön
+          }
+        }
+      }
+
       // Kaç gün ekleneceğini hesapla (daha hassas)
       const daysToAdd = Math.max(1, Math.abs(currentCellIndex - startCellIndex) + 1);
 
       // Yeni bitiş tarihini hesapla
       const newEndDate = new Date(tempEvent.startDate.getTime());
-      newEndDate.setDate(newEndDate.getDate() + daysToAdd - 1); // -1 çünkü başlangıç günü dahil
 
+      // Event alignment mode'a göre bitiş tarihini ayarla
+      if (eventAlignmentMode === "full") {
+        // Full mode: Son günün tamamı dahil, bitiş tarihi bir sonraki günün başlangıcı
+        // Örnek: 1-5 Ocak seçilirse, bitiş tarihi 6 Ocak (5 Ocak'ın sonu = 6 Ocak'ın başı)
+        newEndDate.setDate(newEndDate.getDate() + daysToAdd);
+      } else {
+        // Center mode: Gün ortasından gün ortasına, bitiş tarihi son günün ortası
+        // Örnek: 1-5 Ocak seçilirse, bitiş tarihi 5 Ocak (gün ortası)
+        newEndDate.setDate(newEndDate.getDate() + daysToAdd - 1); // -1 çünkü başlangıç günü dahil
+      }
       setTempEvent(TimelineContent_objectSpread(TimelineContent_objectSpread({}, tempEvent), {}, {
         endDate: newEndDate,
         title: "".concat(daysToAdd, " Gece")
@@ -4130,7 +4273,7 @@ const TimelineContent = _ref => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [createNewEventOn, isCreating, mode, tempEvent, events, onCreateEventInfo, setEvents, totalDays, dates, preventPastEvents, minDate]);
+  }, [createNewEventOn, isCreating, mode, tempEvent, events, onCreateEventInfo, setEvents, totalDays, dates, preventPastEvents, minDate, disableDates]);
 
   // ------------------- Drag Logic -------------------
   const handleDragStartSafe = (e, eventId) => {
@@ -4316,9 +4459,22 @@ const TimelineContent = _ref => {
       const dayOfWeek = cellDate.getDay(); // 0 = Pazar, 6 = Cumartesi
       isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
     }
+
+    // Geçmiş tarih kontrolü
+    let isPastDate = false;
+    if (preventPastEvents && minDate) {
+      const cellDate = parseDate(dateObj.fullDate);
+      const minDateObj = parseDate(minDate);
+      const cellDateOnly = new Date(cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate());
+      const minDateOnly = new Date(minDateObj.getFullYear(), minDateObj.getMonth(), minDateObj.getDate());
+      isPastDate = cellDateOnly < minDateOnly;
+    }
+
+    // Disabled tarih kontrolü
+    const isDisabled = disableDates ? isDateDisabled(dateObj.fullDate, disableDates) : false;
     return /*#__PURE__*/external_react_default().createElement("div", {
       key: "group-header-".concat(groupIndex, "-").concat(colIndex),
-      className: "timeline-group-header-cell ".concat(isWeekend ? "timeline-cell-weekend" : "")
+      className: "timeline-group-header-cell ".concat(isWeekend ? "timeline-cell-weekend" : "", " ").concat(isPastDate ? "timeline-cell-past" : "", " ").concat(isDisabled ? "timeline-cell-disabled" : "")
     });
   })), !collapsedGroups[group.groupName] && group.resources.map((resource, rowIndex) => {
     // Saatlik rezervasyonları ayrı işle
@@ -4522,6 +4678,12 @@ const TimelineContent = _ref => {
           }
         },
         onContextMenu: e => {
+          // Disabled veya geçmiş tarih hücrelerde context menu'yu engelle
+          if (isDisabled || isPastDate) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          }
           e.preventDefault(); // Varsayılan context menu'yu engelle
           e.stopPropagation(); // Event bubbling'i durdur
           if (cellContextMenuOn) {
@@ -4560,12 +4722,26 @@ const TimelineContent = _ref => {
           }
         },
         onDragOver: e => {
+          // Disabled veya geçmiş tarih hücrelerde drag&drop'u engelle
+          if (isDisabled || isPastDate) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.dataTransfer.dropEffect = 'none';
+            return false;
+          }
           e.preventDefault();
           e.stopPropagation();
           console.log("[TimelineContent] onDragOver called for resource:", resource.id);
           handleDragOver(e);
         },
         onDrop: e => {
+          // Disabled veya geçmiş tarih hücrelerde drop'u engelle
+          if (isDisabled || isPastDate) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.dataTransfer.dropEffect = 'none';
+            return false;
+          }
           e.preventDefault();
           e.stopPropagation();
           console.log("[TimelineContent] onDrop called for resource:", resource.id, "date:", dateObj.fullDate);
@@ -5544,6 +5720,12 @@ const Timeline_Timeline_Timeline = _ref => {
     masterHeaderView = true,
     resourceHeaderContent = "Akfa Timeline",
     // String veya React component olabilir
+
+    // MasterHeader özelleştirme
+    showDefaultHeaderButtons = true,
+    // Varsayılan butonları göster/gizle
+    customHeaderButtons = [],
+    // Özel butonlar: [{ id, label, onClick, icon?, disabled?, className? }]
     eventsDragOn = true,
     eventsExtendOn = true,
     createNewEventOn = true,
@@ -5684,6 +5866,15 @@ const Timeline_Timeline_Timeline = _ref => {
     return date;
   });
 
+  // programDate prop'u değiştiğinde selectedDate'i güncelle
+  (0,external_react_.useEffect)(() => {
+    if (programDate) {
+      const date = new Date(programDate);
+      date.setDate(date.getDate() - 3); // Program tarihinden 3 gün öncesini al
+      setSelectedDate(date);
+    }
+  }, [programDate]);
+
   // ---------------------------------------------------------
   // 2) local state
   // ---------------------------------------------------------
@@ -5819,18 +6010,6 @@ const Timeline_Timeline_Timeline = _ref => {
     return dateStr === indicatorStr;
   }) : -1;
 
-  // Debug: Indicator index hesaplama
-  if (indicatorOn && indicatorDate) {
-    var _filteredDates$, _filteredDates;
-    console.log("[Timeline] Indicator debug:", {
-      indicatorDate,
-      filteredDatesLength: filteredDates.length,
-      todayIndex,
-      firstDate: (_filteredDates$ = filteredDates[0]) === null || _filteredDates$ === void 0 ? void 0 : _filteredDates$.fullDate,
-      lastDate: (_filteredDates = filteredDates[filteredDates.length - 1]) === null || _filteredDates === void 0 ? void 0 : _filteredDates.fullDate
-    });
-  }
-
   // ---------------------------------------------------------
   // 6) Grupları aç/kapa
   // ---------------------------------------------------------
@@ -5851,12 +6030,18 @@ const Timeline_Timeline_Timeline = _ref => {
     const today = programDate ? new Date(programDate) : new Date();
     today.setDate(today.getDate() - 3); // Program tarihinden 3 gün öncesini ayarla
     setSelectedDate(today);
+    // App.js'teki callback'i de çağır
+    if (onToday) onToday();
   };
   const handleAdvance = () => {
     setSelectedDate(prev => new Date(prev.getTime() + 5 * 24 * 60 * 60 * 1000));
+    // App.js'teki callback'i de çağır
+    if (onAdvance) onAdvance();
   };
   const handleRetreat = () => {
     setSelectedDate(prev => new Date(prev.getTime() - 5 * 24 * 60 * 60 * 1000));
+    // App.js'teki callback'i de çağır
+    if (onRetreat) onRetreat();
   };
   const handleMonthAdvance = () => {
     setSelectedDate(prev => {
@@ -5864,6 +6049,8 @@ const Timeline_Timeline_Timeline = _ref => {
       newDate.setMonth(newDate.getMonth() + 1);
       return newDate;
     });
+    // App.js'teki callback'i de çağır
+    if (onMonthAdvance) onMonthAdvance();
   };
   const handleMonthRetreat = () => {
     setSelectedDate(prev => {
@@ -5871,6 +6058,8 @@ const Timeline_Timeline_Timeline = _ref => {
       newDate.setMonth(newDate.getMonth() - 1);
       return newDate;
     });
+    // App.js'teki callback'i de çağır
+    if (onMonthRetreat) onMonthRetreat();
   };
 
   // ---------------------------------------------------------
@@ -5946,7 +6135,9 @@ const Timeline_Timeline_Timeline = _ref => {
     zoomOn: zoomOn,
     minZoomLevel: minZoomLevel,
     maxZoomLevel: maxZoomLevel,
-    zoomStep: zoomStep
+    zoomStep: zoomStep,
+    showDefaultButtons: showDefaultHeaderButtons,
+    customButtons: customHeaderButtons
   })), /*#__PURE__*/external_react_default().createElement("div", {
     className: "timeline-body"
   }, /*#__PURE__*/external_react_default().createElement("div", {
@@ -5997,7 +6188,6 @@ const Timeline_Timeline_Timeline = _ref => {
     onDragInfo: onDragInfo,
     onExtendInfo: onExtendInfo,
     onCreateEventInfo: onCreateEventInfo,
-    onEventRightClick: onEventRightClick,
     eventTooltipOn: eventTooltipOn // Tooltip kontrolü
     ,
     tooltipComponent: TooltipComponent // Özelleştirilebilir Tooltip bileşeni

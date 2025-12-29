@@ -1689,15 +1689,20 @@
   }
 }
 
-/* Past Date Protection Styles */
+/* Past Date Protection Styles - Disabled gibi görünüm */
 .timeline-cell-past {
-  opacity: 0.4;
-  cursor: not-allowed;
-  pointer-events: none;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
   position: relative;
+  background: var(--group-header-bg, rgba(176, 175, 175, 0.8)) !important;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border-color: var(--border-strong) !important;
+  opacity: 0.7;
+  z-index: 0;
 }
 
-.timeline-cell-past::after {
+.timeline-cell-past::before {
   content: '';
   position: absolute;
   top: 0;
@@ -1707,60 +1712,97 @@
   background: repeating-linear-gradient(
     45deg,
     transparent,
-    transparent 5px,
-    rgba(0, 0, 0, 0.1) 5px,
-    rgba(0, 0, 0, 0.1) 10px
-  );
-  pointer-events: none;
-}
-
-/* Disabled Dates Styles */
-.timeline-cell-disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  pointer-events: none;
-  position: relative;
-  background: rgba(200, 200, 200, 0.2) !important;
-}
-
-.timeline-cell-disabled::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: repeating-linear-gradient(
-    45deg,
-    transparent,
-    transparent 4px,
-    rgba(150, 150, 150, 0.3) 4px,
-    rgba(150, 150, 150, 0.3) 8px
+    transparent 6px,
+    rgba(0, 0, 0, 0.1) 6px,
+    rgba(0, 0, 0, 0.1) 12px
   );
   pointer-events: none;
   z-index: 1;
+  opacity: 0.5;
 }
 
-.dark-mode .timeline-cell-disabled {
-  background: rgba(50, 50, 50, 0.3) !important;
+.dark-mode .timeline-cell-past {
+  background: var(--group-header-bg, rgba(16, 16, 26, 0.8)) !important;
+  opacity: 0.6;
 }
 
-.dark-mode .timeline-cell-disabled::after {
+.dark-mode .timeline-cell-past::before {
   background: repeating-linear-gradient(
     45deg,
     transparent,
-    transparent 4px,
-    rgba(100, 100, 100, 0.4) 4px,
-    rgba(100, 100, 100, 0.4) 8px
+    transparent 6px,
+    rgba(255, 255, 255, 0.1) 6px,
+    rgba(255, 255, 255, 0.1) 12px
   );
 }
 
+/* Grup header cell'lerde de geçmiş tarih stili */
+.timeline-group-header-cell.timeline-cell-past {
+  background: var(--group-header-bg, rgba(176, 175, 175, 0.8)) !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+.dark-mode .timeline-group-header-cell.timeline-cell-past {
+  background: var(--group-header-bg, rgba(16, 16, 26, 0.8)) !important;
+}
+
+/* Disabled Dates Styles - Blok şeklinde, grup header gibi */
+.timeline-cell-disabled {
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  position: relative;
+  background: var(--group-header-bg, rgba(176, 175, 175, 0.8)) !important;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border-color: var(--border-strong) !important;
+  opacity: 0.7;
+  z-index: 0;
+}
+
+.timeline-cell-disabled::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 6px,
+    rgba(0, 0, 0, 0.1) 6px,
+    rgba(0, 0, 0, 0.1) 12px
+  );
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.5;
+}
+
+.dark-mode .timeline-cell-disabled {
+  background: var(--group-header-bg, rgba(16, 16, 26, 0.8)) !important;
+  opacity: 0.6;
+}
+
+.dark-mode .timeline-cell-disabled::before {
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 6px,
+    rgba(255, 255, 255, 0.1) 6px,
+    rgba(255, 255, 255, 0.1) 12px
+  );
+}
+
+/* Grup header cell'lerde de disabled stili */
 .timeline-group-header-cell.timeline-cell-disabled {
-  background: rgba(200, 200, 200, 0.2) !important;
+  background: var(--group-header-bg, rgba(176, 175, 175, 0.8)) !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
 }
 
 .dark-mode .timeline-group-header-cell.timeline-cell-disabled {
-  background: rgba(50, 50, 50, 0.3) !important;
+  background: var(--group-header-bg, rgba(16, 16, 26, 0.8)) !important;
 }
 
 /* Weekend Highlighting Styles - Subtle, matching group header intensity */

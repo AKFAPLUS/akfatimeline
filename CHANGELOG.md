@@ -1,98 +1,83 @@
 # Changelog
-Tüm önemli değişiklikler bu dosyada belgelenir.
 
-## [1.2.0] - 2025-01-XX
+All notable changes to this project will be documented in this file.
 
-### Changed
-- **Package.json Export Yapısı İyileştirildi:**
-  - `main` ve `module` field'ları `src/library.js` olarak güncellendi
-  - Daha detaylı `exports` field'ı eklendi
-  - Her component için ayrı export path'leri eklendi:
-    - `akfatimeline/Timeline` - Ana Timeline component
-    - `akfatimeline/DailyView` - Daily View component
-    - `akfatimeline/ContextMenu` - Context Menu component
-    - `akfatimeline/EventDetailModal` - Event Detail Modal component
-    - `akfatimeline/EventIcon` - Event Icon component
-    - `akfatimeline/EventBadge` - Event Badge component
-    - `akfatimeline/LoadingSpinner` - Loading Spinner component
-    - `akfatimeline/AutocompleteSelect` - Autocomplete Select component
-  - CSS import için kısayol: `akfatimeline/css`
-- **Import Kolaylığı:**
-  - Artık sadece `import Timeline from 'akfatimeline'` yeterli
-  - CSS için: `import 'akfatimeline/css'` veya `import 'akfatimeline/components/Timeline/Timeline.css'`
-  - Named exports: `import { DailyView, ContextMenu } from 'akfatimeline'`
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-### Fixed
-- Vite ve diğer modern bundler'larla uyumluluk sorunları düzeltildi
-- ES module import sorunları çözüldü
-- Default export sorunları giderildi
-
-## [1.1.1] - 2024-12-XX
-
-### Fixed
-- Build sırasındaki orphan modules uyarıları giderildi
-- Webpack config optimizasyonları
-
-## [1.1.0] - 2024-12-XX
+## [2.2.0] - 2025-12-29
 
 ### Added
-- **Daily View Feature**: Saatlik rezervasyon görünümü eklendi
-  - Sağ tık menüsünden "Günlük Timeline Görüntüsü Oluştur" seçeneği
-  - 24 saatlik (0-23) detaylı timeline görünümü
-  - Saat bazlı randevu oluşturma ve yönetimi
-  - Animasyonlu açılış efekti (hücre büyüme animasyonu)
-  - Resource adı ve tarih bilgisi gösterimi
-- **Hourly Reservations**: Saatlik rezervasyon sistemi
-  - Daily view'da oluşturulan saatlik rezervasyonlar
-  - Ana timeline'da gruplanmış görünüm (aynı gündeki saatlik rezervasyonlar tek event olarak)
-  - Özel görünüm (pembe tonları, saat ikonu)
-  - Uzatılamaz ve taşınamaz özellikler
-  - Sütun genişliklerini bozmayan kompakt tasarım
-- **Context Menu Improvements**: 
-  - Context menu pozisyon düzeltmeleri (mouse'a daha yakın)
-  - Daily view entegrasyonu
-- **Library Exports**: 
-  - Yeni component'ler named export olarak eklendi (DailyView, ContextMenu, EventDetailModal, EventIcon, EventBadge, LoadingSpinner, AutocompleteSelect)
+- **Disable Dates Feature**: Tarih aralıklarını devre dışı bırakma özelliği eklendi
+  - `exclude` modu: Belirtilen tarihler disabled, diğerleri enabled
+  - `include` modu: Belirtilen tarihler enabled, diğerleri disabled
+  - Tekil tarih ve tarih aralığı desteği
+  - YYYY-MM-DD ve dd/mm/yyyy format desteği
+- **Custom Header Buttons**: Timeline header'ına özel butonlar ekleme özelliği
+  - `showDefaultHeaderButtons` prop'u ile varsayılan butonları kontrol etme
+  - `customHeaderButtons` prop'u ile özel butonlar ekleme
+  - Her buton için icon, tooltip, disabled durumu desteği
+- **Past Date Protection**: Geçmiş tarih koruması özelliği geliştirildi
+  - Geçmiş tarihler disabled görünümde gösteriliyor
+  - Geçmiş tarihlerde tıklama, drag&drop, event oluşturma engellendi
+  - Event oluştururken geçmiş tarihlere uzaması engellendi
+- **Event Alignment Mode**: Event hizalama modu iyileştirildi
+  - `full` modunda son günün tamamı seçilebiliyor
+  - Disabled tarihlerle uyumlu çalışıyor
 
 ### Changed
-- Saatlik rezervasyonlar için özel CSS stilleri
-- Event rendering optimizasyonları
-- Sütun genişlik kontrolü iyileştirmeleri
+- `parseDate` fonksiyonu YYYY-MM-DD formatını destekliyor
+- Geçmiş tarih koruması CSS'i disabled görünümüne güncellendi
+- Event oluşturma mantığı disabled ve geçmiş tarihlerle uyumlu hale getirildi
 
 ### Fixed
-- Saatlik rezervasyonların sütun genişliklerini bozma sorunu düzeltildi
-- Context menu pozisyon sorunları düzeltildi
-- Event overflow ve text ellipsis sorunları düzeltildi
+- Event oluştururken disabled tarihlere uzaması engellendi
+- Event oluştururken geçmiş tarihlere uzaması engellendi
+- `full` modunda son enabled günün tamamı seçilebiliyor
+- Disabled tarihlerde drag&drop engellendi
+- Disabled tarihlerde context menu engellendi
 
-## [1.0.4] - 2025-01-XX
+## [2.1.0] - 2025-12-28
+
 ### Added
-- **Event and Temporary Event Styling:**
-  - `Event` ve `Geçici Event` stilleri artık `prop` olarak geçirilebiliyor. Bu sayede stil özelleştirmeleri kolaylaştırıldı.
-- **Tooltip Styling:**
-  - Tooltip stilleri de `prop` olarak özelleştirmeye açıldı.
-- **Callback Enhancements:**
-  - **`TimelineContent` Component:**
-    - Drag-and-Drop işlemleri için `handleDropInfo` callback'i eklendi.
-    - `onDragInfo`, `onExtendInfo`, ve `onCreateEventInfo` callback'leri destekleniyor.
-    - `useEventDragDrop` hook'u yeniden yapılandırıldı; dışa dönük veri aktarımı kolaylaştırıldı.
-    - Loglama ve hata ayıklama geliştirmeleri yapıldı.
-  - **`useEventDragDrop` Hook:**
-    - `handleDrop` fonksiyonuna yeni parametreler ve loglamalar eklendi.
-    - `setDropInfo` üzerinden dışarıya bilgi aktarımı sağlandı.
-  - **`MasterHeader` Component:**
-    - Tarih formatlama `toISOString()` ile güncellendi.
-    - `selectedDate` artık doğru zaman dilimine göre formatlanıyor.
-    - Tarih seçicide manuel giriş engellendi.
+- Disable Dates özelliği eklendi
+
+## [2.0.0] - 2025-12-27
+
+### Added
+- Daily View özelliği
+- Saatlik rezervasyon desteği
+- Event Icons & Badges
+- Event Management
+- Keyboard Shortcuts
+- Loading State
+- Cell Tooltip
+- Cell Context Menu
+- Weekend Highlighting
+- Past Date Protection (temel)
+
+## [1.1.1] - 2025-12-26
 
 ### Fixed
-- **Tooltip Issue:**
-  - Uzatma modundayken açılan gereksiz tooltip sorunu giderildi.
-- **Code Improvements:**
-  - Gereksiz uyarılar temizlendi ve kod yeniden düzenlendi.
-- **Performance:**
-  - Drag-and-Drop ve Event Extend işlemlerinde daha verimli güncellemeler yapıldı.
-  - Gereksiz render çağrıları minimize edildi.
+- Bug fixes ve iyileştirmeler
 
-### Removed
-- **Manual Date Entry:**
-  - Manuel giriş destekli `DatePicker` fonksiyonları devre dışı bırakıldı.
+## [1.1.0] - 2025-12-25
+
+### Added
+- Daily View ve Saatlik Rezervasyon özellikleri eklendi
+
+## [1.0.4] - 2025-12-24
+
+### Added
+- Indicator date özelliği eklendi
+
+## [1.0.2] - 2025-12-23
+
+### Initial Release
+- Temel timeline özellikleri
+- Drag & Drop
+- Event extend
+- Event create
+- Light/Dark theme
+- Zoom özelliği
+

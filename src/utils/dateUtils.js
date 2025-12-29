@@ -11,8 +11,17 @@ export const parseDate = (dateInput) => {
     return dateInput;
   }
   if (typeof dateInput === 'string') {
-    const [day, month, year] = dateInput.split("/").map(Number);
-    return new Date(year, month - 1, day);
+    // YYYY-MM-DD formatını kontrol et (ISO format)
+    if (dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      return new Date(dateInput + 'T00:00:00');
+    }
+    // dd/mm/yyyy formatını kontrol et
+    if (dateInput.includes('/')) {
+      const [day, month, year] = dateInput.split("/").map(Number);
+      return new Date(year, month - 1, day);
+    }
+    // Diğer string formatlarını Date constructor'a bırak
+    return new Date(dateInput);
   } else if (typeof dateInput === 'object' && dateInput.fullDate instanceof Date) {
     return new Date(dateInput.fullDate.getTime() + dateInput.fullDate.getTimezoneOffset() * 60000);
   } else {

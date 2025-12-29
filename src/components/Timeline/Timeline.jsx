@@ -28,6 +28,10 @@ const Timeline = ({
 
   masterHeaderView = true,          
   resourceHeaderContent = "Akfa Timeline", // String veya React component olabilir
+  
+  // MasterHeader özelleştirme
+  showDefaultHeaderButtons = true, // Varsayılan butonları göster/gizle
+  customHeaderButtons = [], // Özel butonlar: [{ id, label, onClick, icon?, disabled?, className? }]
     eventsDragOn = true,
   eventsExtendOn = true,
   createNewEventOn = true,
@@ -134,6 +138,15 @@ const Timeline = ({
     date.setDate(date.getDate() - 3); // Program tarihinden 3 gün öncesini al
     return date;
   });
+  
+  // programDate prop'u değiştiğinde selectedDate'i güncelle
+  useEffect(() => {
+    if (programDate) {
+      const date = new Date(programDate);
+      date.setDate(date.getDate() - 3); // Program tarihinden 3 gün öncesini al
+      setSelectedDate(date);
+    }
+  }, [programDate]);
   
   // ---------------------------------------------------------
   // 2) local state
@@ -284,16 +297,6 @@ const Timeline = ({
         })
       : -1;
     
-    // Debug: Indicator index hesaplama
-    if (indicatorOn && indicatorDate) {
-      console.log("[Timeline] Indicator debug:", {
-        indicatorDate,
-        filteredDatesLength: filteredDates.length,
-        todayIndex,
-        firstDate: filteredDates[0]?.fullDate,
-        lastDate: filteredDates[filteredDates.length - 1]?.fullDate,
-      });
-    }
 
   // ---------------------------------------------------------
   // 6) Grupları aç/kapa
@@ -319,15 +322,21 @@ const Timeline = ({
     const today = programDate ? new Date(programDate) : new Date();
     today.setDate(today.getDate() - 3); // Program tarihinden 3 gün öncesini ayarla
     setSelectedDate(today);
+    // App.js'teki callback'i de çağır
+    if (onToday) onToday();
   };
   
 
   const handleAdvance = () => {
     setSelectedDate((prev) => new Date(prev.getTime() + 5 * 24 * 60 * 60 * 1000));
+    // App.js'teki callback'i de çağır
+    if (onAdvance) onAdvance();
   };
 
   const handleRetreat = () => {
     setSelectedDate((prev) => new Date(prev.getTime() - 5 * 24 * 60 * 60 * 1000));
+    // App.js'teki callback'i de çağır
+    if (onRetreat) onRetreat();
   };
 
   const handleMonthAdvance = () => {
@@ -336,6 +345,8 @@ const Timeline = ({
       newDate.setMonth(newDate.getMonth() + 1);
       return newDate;
     });
+    // App.js'teki callback'i de çağır
+    if (onMonthAdvance) onMonthAdvance();
   };
 
   const handleMonthRetreat = () => {
@@ -344,6 +355,8 @@ const Timeline = ({
       newDate.setMonth(newDate.getMonth() - 1);
       return newDate;
     });
+    // App.js'teki callback'i de çağır
+    if (onMonthRetreat) onMonthRetreat();
   };
 
   // ---------------------------------------------------------
@@ -428,6 +441,8 @@ const Timeline = ({
           minZoomLevel={minZoomLevel}
           maxZoomLevel={maxZoomLevel}
           zoomStep={zoomStep}
+          showDefaultButtons={showDefaultHeaderButtons}
+          customButtons={customHeaderButtons}
         />
       </div>
 )}
@@ -486,7 +501,6 @@ const Timeline = ({
               onDragInfo={onDragInfo}
               onExtendInfo={onExtendInfo}
               onCreateEventInfo={onCreateEventInfo}
-              onEventRightClick={onEventRightClick}
               eventTooltipOn={eventTooltipOn} // Tooltip kontrolü
               tooltipComponent={TooltipComponent} // Özelleştirilebilir Tooltip bileşeni
               tempEventStyle = {tempEventStyle}
