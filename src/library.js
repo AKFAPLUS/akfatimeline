@@ -7,10 +7,17 @@ import EventBadge from "./components/Timeline/EventBadge.jsx";
 import LoadingSpinner from "./components/Timeline/LoadingSpinner.jsx";
 import AutocompleteSelect from "./components/Timeline/AutocompleteSelect.jsx";
 
-// Ana Timeline component'i default export
+// CSS dosyası package.json'da exports altında tanımlı
+// Kullanım: import 'akfatimeline/components/Timeline/Timeline.css'
+import "./components/Timeline/Timeline.css";
+
+// Ana Timeline component'i default export (import akfatimeline from 'akfatimeline' için)
 export default Timeline;
 
-// Named exports - İsteğe bağlı kullanım için
+// Named export (import { akfatimeline } from 'akfatimeline' için)
+export { Timeline as akfatimeline };
+
+// Diğer named exports - İsteğe bağlı kullanım için
 export {
   DailyView,
   ContextMenu,
@@ -20,8 +27,4 @@ export {
   LoadingSpinner,
   AutocompleteSelect,
 };
-
-// CSS dosyası package.json'da exports altında tanımlı
-// Kullanım: import 'akfatimeline/components/Timeline/Timeline.css'
-import "./components/Timeline/Timeline.css";
 
