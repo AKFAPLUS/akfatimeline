@@ -1,10 +1,10 @@
 {
   "name": "akfatimeline",
-  "version": "2.2.9",
+  "version": "2.2.10",
   "description": "A customizable timeline component for React applications with disableDates, custom header buttons, and past date protection features",
-  "main": "./src/library.js",
-  "module": "./src/library.js",
-  "types": "./src/library.js",
+  "main": "./dist/library.js",
+  "module": "./dist/library.js",
+  "types": "./dist/library.js",
   "files": [
     "dist",
     "src",
@@ -13,60 +13,60 @@
   ],
   "exports": {
     ".": {
-      "types": "./src/library.js",
-      "import": "./src/library.js",
+      "types": "./dist/library.js",
+      "import": "./dist/library.js",
       "require": "./dist/Timeline.js",
-      "default": "./src/library.js"
+      "default": "./dist/library.js"
     },
-    "./css": "./src/components/Timeline/Timeline.css",
-    "./components/Timeline/Timeline.css": "./src/components/Timeline/Timeline.css",
+    "./css": "./dist/components/Timeline/Timeline.css",
+    "./components/Timeline/Timeline.css": "./dist/components/Timeline/Timeline.css",
     "./Timeline": {
-      "types": "./src/components/Timeline/Timeline.jsx",
-      "import": "./src/components/Timeline/Timeline.jsx",
+      "types": "./dist/components/Timeline/Timeline.jsx",
+      "import": "./dist/components/Timeline/Timeline.jsx",
       "require": "./dist/components/Timeline/Timeline.js",
-      "default": "./src/components/Timeline/Timeline.jsx"
+      "default": "./dist/components/Timeline/Timeline.jsx"
     },
     "./DailyView": {
-      "types": "./src/components/Timeline/DailyView.jsx",
-      "import": "./src/components/Timeline/DailyView.jsx",
+      "types": "./dist/components/Timeline/DailyView.jsx",
+      "import": "./dist/components/Timeline/DailyView.jsx",
       "require": "./dist/components/Timeline/DailyView.js",
-      "default": "./src/components/Timeline/DailyView.jsx"
+      "default": "./dist/components/Timeline/DailyView.jsx"
     },
     "./ContextMenu": {
-      "types": "./src/components/Timeline/ContextMenu.jsx",
-      "import": "./src/components/Timeline/ContextMenu.jsx",
+      "types": "./dist/components/Timeline/ContextMenu.jsx",
+      "import": "./dist/components/Timeline/ContextMenu.jsx",
       "require": "./dist/components/Timeline/ContextMenu.js",
-      "default": "./src/components/Timeline/ContextMenu.jsx"
+      "default": "./dist/components/Timeline/ContextMenu.jsx"
     },
     "./EventDetailModal": {
-      "types": "./src/components/Timeline/EventDetailModal.jsx",
-      "import": "./src/components/Timeline/EventDetailModal.jsx",
+      "types": "./dist/components/Timeline/EventDetailModal.jsx",
+      "import": "./dist/components/Timeline/EventDetailModal.jsx",
       "require": "./dist/components/Timeline/EventDetailModal.js",
-      "default": "./src/components/Timeline/EventDetailModal.jsx"
+      "default": "./dist/components/Timeline/EventDetailModal.jsx"
     },
     "./EventIcon": {
-      "types": "./src/components/Timeline/EventIcon.jsx",
-      "import": "./src/components/Timeline/EventIcon.jsx",
+      "types": "./dist/components/Timeline/EventIcon.jsx",
+      "import": "./dist/components/Timeline/EventIcon.jsx",
       "require": "./dist/components/Timeline/EventIcon.js",
-      "default": "./src/components/Timeline/EventIcon.jsx"
+      "default": "./dist/components/Timeline/EventIcon.jsx"
     },
     "./EventBadge": {
-      "types": "./src/components/Timeline/EventBadge.jsx",
-      "import": "./src/components/Timeline/EventBadge.jsx",
+      "types": "./dist/components/Timeline/EventBadge.jsx",
+      "import": "./dist/components/Timeline/EventBadge.jsx",
       "require": "./dist/components/Timeline/EventBadge.js",
-      "default": "./src/components/Timeline/EventBadge.jsx"
+      "default": "./dist/components/Timeline/EventBadge.jsx"
     },
     "./LoadingSpinner": {
-      "types": "./src/components/Timeline/LoadingSpinner.jsx",
-      "import": "./src/components/Timeline/LoadingSpinner.jsx",
+      "types": "./dist/components/Timeline/LoadingSpinner.jsx",
+      "import": "./dist/components/Timeline/LoadingSpinner.jsx",
       "require": "./dist/components/Timeline/LoadingSpinner.js",
-      "default": "./src/components/Timeline/LoadingSpinner.jsx"
+      "default": "./dist/components/Timeline/LoadingSpinner.jsx"
     },
     "./AutocompleteSelect": {
-      "types": "./src/components/Timeline/AutocompleteSelect.jsx",
-      "import": "./src/components/Timeline/AutocompleteSelect.jsx",
+      "types": "./dist/components/Timeline/AutocompleteSelect.jsx",
+      "import": "./dist/components/Timeline/AutocompleteSelect.jsx",
       "require": "./dist/components/Timeline/AutocompleteSelect.js",
-      "default": "./src/components/Timeline/AutocompleteSelect.jsx"
+      "default": "./dist/components/Timeline/AutocompleteSelect.jsx"
     }
   },
   "dependencies": {

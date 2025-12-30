@@ -54,6 +54,7 @@ module.exports = {
         { from: "src/components/Timeline", to: "components/Timeline" },
         { from: "src/hooks", to: "hooks" },
         { from: "src/utils", to: "utils" },
+        { from: "dist/library.js", to: "library.js", noErrorOnMissing: true }, // library.js'yi kopyala (eğer varsa)
       ],
     }),
   ],
