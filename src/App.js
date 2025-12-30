@@ -9,18 +9,27 @@ const App = () => {
   const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   
   // Timeline'ın gösterileceği tarih state'i
+  // Test için 31 Aralık 2025 civarına ayarladık (disable dates testi için)
   const [programDate, setProgramDate] = useState(() => {
-    const date = new Date();
-    date.setDate(date.getDate() - 3); // 3 gün öncesinden başla
-    return date.toISOString().split('T')[0]; // YYYY-MM-DD formatı
+    // Test için 31 Aralık 2025'ten 3 gün öncesinden başla (28 Aralık)
+    return '2025-12-28'; // YYYY-MM-DD formatı
   });
+  
+  // Geçmiş tarih koruması için minimum tarih (programDate ve indicatorDate'ten bağımsız)
+  // Örnek: Bugünden 5 gün sonrasına kadar geçmiş tarih koruması yok
+  // const preventPastEventsDateForProtection = new Date();
+  // preventPastEventsDateForProtection.setDate(preventPastEventsDateForProtection.getDate() + 5);
+  // const preventPastEventsDateString = preventPastEventsDateForProtection.toISOString().split('T')[0];
+  
+  // Veya sadece bugünün tarihi (varsayılan):
+  const preventPastEventsDateString = new Date().toISOString().split('T')[0];
 
   const [dayRange, setDayRange] = useState(30);
   const [themeType, setThemeType] = useState("dark");
   const [eventAlignmentMode, setEventAlignmentMode] = useState("center"); // "center" | "full"
   const [zoomLevel, setZoomLevel] = useState(1.0); // Zoom seviyesi (1.0 = %100)
   const [selectedResource, setSelectedResource] = useState(null); // Autocomplete için seçili değer
-  const [cellContextMenuOn, setCellContextMenuOn] = useState(true); // Cell context menu açık/kapalı
+  const [cellContextMenuOn] = useState(true); // Cell context menu açık/kapalı
   
   // Event Management ve Keyboard Shortcuts
   const [eventManagementOn, setEventManagementOn] = useState(true);
@@ -33,8 +42,35 @@ const App = () => {
   // Loading State
   const [isLoading, setIsLoading] = useState(false);
   
-  // Disable Dates kaldırıldı - Tüm tarihler açık
-  const disableDates = null;
+  // Disable Dates - Test için: 31 Aralık - 5 Ocak arası açık, geri kalan her yer disabled
+  // mode: 'include' = belirtilen tarihler ve aralıklar enabled (diğerleri disabled)
+  const disableDates = {
+    mode: 'include', // Belirtilen tarihler ve aralıklar enabled, diğerleri disabled
+    dates: [], // Tekil tarihler (şimdilik boş)
+    ranges: [
+      {
+        start: '2025-12-31', // 31 Aralık 2025
+        end: '2026-01-05',    // 5 Ocak 2026
+      },
+    ],
+  };
+  
+  // Auto Select Enabled Range - Belirtilen range'lere tıklandığında otomatik olarak tüm range'i seç
+  const [autoSelectEnabledRange, setAutoSelectEnabledRange] = useState(true); // true = aktif, false = pasif
+  
+  // Auto Select Ranges - Auto-select için range'ler (disableDates'ten bağımsız)
+  // Bu range'lere tıklandığında otomatik olarak tüm range seçilir
+  const autoSelectRanges = [
+    {
+      start: '2025-12-31', // 31 Aralık 2025
+      end: '2026-01-05',    // 5 Ocak 2026
+    },
+    // İstediğiniz kadar range ekleyebilirsiniz
+    // {
+    //   start: '2026-02-01',
+    //   end: '2026-02-10',
+    // },
+  ];
   
   // Cell Tooltip için örnek fiyat verisi
   // Her gün için farklı fiyatlar tanımlanabilir
@@ -361,12 +397,7 @@ const resources = [
     setProgramDate(currentDate.toISOString().split('T')[0]);
   };
   
-  const handleDateSelect = (selectedDate) => {
-    // İstenilen tarihe git (Timeline'dan gelen tarih seçimi)
-    const date = new Date(selectedDate);
-    date.setDate(date.getDate() - 3); // 3 gün öncesinden başla
-    setProgramDate(date.toISOString().split('T')[0]);
-  };
+  // handleDateSelect kaldırıldı - Timeline'ın kendi handleDateChange'i kullanılıyor
 
   const handleDropInfo = (dropInfo) => {
     console.log("Event dropped with info:", dropInfo);
@@ -436,6 +467,9 @@ const resources = [
         <button onClick={() => setIsLoading(!isLoading)}>
           Loading: {isLoading ? "Açık" : "Kapalı"}
         </button>
+        <button onClick={() => setAutoSelectEnabledRange(!autoSelectEnabledRange)}>
+          Auto Select Enabled Range: {autoSelectEnabledRange ? "Açık" : "Kapalı"}
+        </button>
         <button onClick={handleToday}>Bugüne Git</button>
         <button onClick={handleRetreat}>5 Gün Geri</button>
         <button onClick={handleAdvance}>5 Gün İleri</button>
@@ -477,10 +511,10 @@ const resources = [
         setDropInfo={handleDropInfo} // Callback'i buradan bağlıyoruz
         onExtendInfo={handleExtendInfo} // Uzatma bilgisi
         onCreateEventInfo={handleCreateEventInfo} // Yeni etkinlik bilgisi
-        indicatorDate={programDate} // Bugünün tarihi
+        indicatorDate={programDate} // Timeline'ın gösterileceği tarih (programDate state'i)
         eventAlignmentMode={eventAlignmentMode}
         preventPastEvents={true} // Geçmiş tarihlere rezervasyon oluşturmayı engelle
-        minDate={new Date().toISOString().split('T')[0]} // Bugünün tarihi - geçmiş tarihler disabled olacak
+        preventPastEventsDate={programDate} // Geçmiş tarih koruması için minimum tarih (programDate ve indicatorDate'ten bağımsız)
         highlightWeekends={true} // Hafta sonlarını farklı renkte göster
         cellTooltipOn={true} // Cell tooltip'lerini aktif et
         cellTooltipResolver={getCellTooltipContent} // Fiyat bilgisi göster
@@ -547,6 +581,8 @@ const resources = [
           />
         }
         disableDates={disableDates}
+        autoSelectEnabledRange={autoSelectEnabledRange}
+        autoSelectRanges={autoSelectRanges}
 
       />
     </div>

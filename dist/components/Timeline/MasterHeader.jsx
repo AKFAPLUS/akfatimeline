@@ -19,6 +19,7 @@ const MasterHeader = ({
   zoomStep = 0.25,
   showDefaultButtons = true, // Varsayılan butonları göster/gizle
   customButtons = [], // Özel butonlar: [{ id, label, onClick, icon?, disabled?, className? }]
+  onCustomButtonClick, // Custom button'a tıklandığında tarih string'i geçildiğinde çağrılacak fonksiyon
 }) => {
   const formattedDate = new Date(
     selectedDate.getTime() + 24 * 60 * 60 * 1000 - selectedDate.getTimezoneOffset() * 60000
@@ -66,8 +67,17 @@ const MasterHeader = ({
         {customButtons && customButtons.length > 0 && customButtons.map((button) => (
           <button
             key={button.id}
-            className={button.className || "master-header-btn"}
-            onClick={button.onClick}
+            className={button.className ? `master-header-btn ${button.className}` : "master-header-btn"}
+            onClick={() => {
+              if (button.onClick) {
+                const result = button.onClick();
+                // Eğer onClick bir tarih string'i döndürüyorsa, onCustomButtonClick'i çağır
+                if (typeof result === 'string' && onCustomButtonClick) {
+                  onCustomButtonClick(result);
+                }
+                // Normal onClick davranışı da çalışır (eğer result undefined ise)
+              }
+            }}
             disabled={button.disabled}
             title={button.tooltip || button.label}
           >

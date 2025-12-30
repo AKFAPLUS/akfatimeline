@@ -73,7 +73,7 @@ const Timeline = ({
   
   // Past Date Protection
   preventPastEvents = false, // Geçmiş tarihlere rezervasyon oluşturmayı engelle
-  minDate = null, // Minimum tarih (eğer belirtilmezse indicatorDate kullanılır)
+  preventPastEventsDate = null, // Geçmiş tarih koruması için minimum tarih (programDate ve indicatorDate'ten bağımsız)
   
   // Weekend Highlighting
   highlightWeekends = false, // Hafta sonlarını farklı renkte göster
@@ -127,6 +127,12 @@ const Timeline = ({
   // mode: 'exclude' = belirtilen tarihler disabled, 'include' = belirtilen tarihler enabled (diğerleri disabled)
   // dates: ['2025-01-15', '2025-01-20', ...] veya [Date, Date, ...] - Tekil tarihler
   // ranges: [{ start: '2025-01-15', end: '2025-01-20' }, ...] veya [{ start: Date, end: Date }, ...] - Tarih aralıkları
+  
+  // Auto Select Enabled Range
+  autoSelectEnabledRange = false, // true = belirtilen range'lere tıklandığında otomatik olarak tüm range'i seç
+  autoSelectRanges = null, // [{ start: '2025-12-31', end: '2026-01-05' }, ...] - Auto-select için range'ler (disableDates'ten bağımsız)
+  // autoSelectRanges tanımlı olduğunda, tıklanan tarih bu range'lerden birinin içindeyse otomatik olarak tüm range seçilir
+  // autoSelectRanges: null ise ve disableDates mode: 'include' ise, disableDates.ranges kullanılır (geriye dönük uyumluluk)
 }) => {
   // ---------------------------------------------------------
   // 1) timelineData oluştur (dates, monthHeaders vs.)
@@ -148,10 +154,30 @@ const Timeline = ({
     }
   }, [programDate]);
   
+  // onToday prop'u değiştiğinde (tarih string'i ise) selectedDate'i güncelle
+  // Bu, customHeaderButtons'un onClick'inde tarih geçildiğinde kullanılır
+  useEffect(() => {
+    // onToday bir string (tarih) ise, o tarihe git
+    if (onToday && typeof onToday === 'string') {
+      const date = new Date(onToday);
+      if (!isNaN(date.getTime())) {
+        date.setDate(date.getDate() - 3); // Tarihten 3 gün öncesini al
+        setSelectedDate(date);
+      }
+    }
+  }, [onToday]);
+  
   // ---------------------------------------------------------
   // 2) local state
   // ---------------------------------------------------------
   const [collapsedGroups, setCollapsedGroups] = useState({});
+  
+  // Internal zoom state - eğer setZoomLevel prop'u yoksa kullanılır
+  const [internalZoomLevel, setInternalZoomLevel] = useState(zoomLevel);
+  
+  // Effective zoom level - prop varsa prop'u kullan, yoksa internal state'i kullan
+  const effectiveZoomLevel = setZoomLevel ? zoomLevel : internalZoomLevel;
+  const effectiveSetZoomLevel = setZoomLevel || setInternalZoomLevel;
 
   // Event Management
   const eventManagement = useEventManagement(
@@ -166,10 +192,12 @@ const Timeline = ({
 
   const [localEvents, setLocalEvents] = useState(events);
   
-  // dropInfo state - eğer external yoksa internal state kullan
-  const [internalDropInfo, setInternalDropInfo] = useState(null);
-  const dropInfo = externalDropInfo !== undefined ? externalDropInfo : internalDropInfo;
-  const setDropInfo = externalSetDropInfo || setInternalDropInfo;
+  // setDropInfo - eğer external yoksa no-op fonksiyon kullan
+  // Not: internalDropInfo state'i kaldırıldı çünkü dropInfo hiçbir yerde okunmuyor
+  const setDropInfo = externalSetDropInfo || (() => {
+    // No-op: Eğer parent'tan setDropInfo gelmezse, hiçbir şey yapma
+    console.warn('[Timeline] setDropInfo called but no external handler provided');
+  });
   
   // Update local events when events prop changes
   useEffect(() => {
@@ -204,8 +232,16 @@ const Timeline = ({
   //    Container genişliği = dayRange * cellWidth
   // ---------------------------------------------------------
   const baseCellWidth = 56.95; // Temel hücre genişliği (zoom = 1.0 için)
-  const cellWidth = baseCellWidth * zoomLevel; // Zoom seviyesine göre hücre genişliği
+  const cellWidth = baseCellWidth * effectiveZoomLevel; // Zoom seviyesine göre hücre genişliği
   const containerWidth = dayRange * cellWidth;
+  
+  // Internal zoom state'i prop'tan gelen zoomLevel ile senkronize et
+  useEffect(() => {
+    if (setZoomLevel) {
+      // Prop'tan gelen zoomLevel kullanılıyor, internal state'i güncelle
+      setInternalZoomLevel(zoomLevel);
+    }
+  }, [zoomLevel, setZoomLevel]);
   
   // ---------------------------------------------------------
   // 4) Touch Gestures (Mobil desteği)
@@ -317,13 +353,30 @@ const Timeline = ({
   const handleDateChange = (newDate) => {
     setSelectedDate(new Date(newDate));
   };
+  
+  // CustomHeaderButtons için tarih değiştirme fonksiyonu
+  // Bu fonksiyon customHeaderButtons'un onClick'inde kullanılabilir
+  const handleCustomDateChange = useCallback((dateString) => {
+    if (dateString) {
+      const date = new Date(dateString);
+      if (!isNaN(date.getTime())) {
+        date.setDate(date.getDate() - 3); // Tarihten 3 gün öncesini al
+        setSelectedDate(date);
+      }
+    }
+  }, []);
 
   const handleToday = () => {
-    const today = programDate ? new Date(programDate) : new Date();
-    today.setDate(today.getDate() - 3); // Program tarihinden 3 gün öncesini ayarla
+    // Bugünün tarihini al
+    const today = new Date();
+    today.setDate(today.getDate() - 3); // Bugünden 3 gün öncesini ayarla
     setSelectedDate(today);
-    // App.js'teki callback'i de çağır
-    if (onToday) onToday();
+    
+    // onToday callback'i bir fonksiyon ise çağır
+    // Eğer onToday bir string (tarih) ise veya başka bir değer ise, sadece setSelectedDate yeterli
+    if (typeof onToday === 'function') {
+      onToday();
+    }
   };
   
 
@@ -368,16 +421,16 @@ const Timeline = ({
   // 8.5) Zoom handlers
   // ---------------------------------------------------------
   const handleZoomIn = useCallback(() => {
-    if (setZoomLevel && zoomOn) {
-      setZoomLevel((prev) => Math.min(maxZoomLevel, prev + zoomStep));
+    if (zoomOn) {
+      effectiveSetZoomLevel((prev) => Math.min(maxZoomLevel, prev + zoomStep));
     }
-  }, [setZoomLevel, zoomOn, maxZoomLevel, zoomStep]);
+  }, [zoomOn, maxZoomLevel, zoomStep, effectiveSetZoomLevel]);
 
   const handleZoomOut = useCallback(() => {
-    if (setZoomLevel && zoomOn) {
-      setZoomLevel((prev) => Math.max(minZoomLevel, prev - zoomStep));
+    if (zoomOn) {
+      effectiveSetZoomLevel((prev) => Math.max(minZoomLevel, prev - zoomStep));
     }
-  }, [setZoomLevel, zoomOn, minZoomLevel, zoomStep]);
+  }, [zoomOn, minZoomLevel, zoomStep, effectiveSetZoomLevel]);
 
   // ---------------------------------------------------------
   // 8.6) Keyboard Shortcuts
@@ -435,14 +488,15 @@ const Timeline = ({
           onMonthRetreat={handleMonthRetreat}
           dayRange={dayRange}
           setDayRange={setDayRange}
-          zoomLevel={zoomLevel}
-          setZoomLevel={setZoomLevel}
+          zoomLevel={effectiveZoomLevel}
+          setZoomLevel={effectiveSetZoomLevel}
           zoomOn={zoomOn}
           minZoomLevel={minZoomLevel}
           maxZoomLevel={maxZoomLevel}
           zoomStep={zoomStep}
-          showDefaultButtons={showDefaultHeaderButtons}
+          showDefaultHeaderButtons={showDefaultHeaderButtons}
           customButtons={customHeaderButtons}
+          onCustomButtonClick={handleCustomDateChange}
         />
       </div>
 )}
@@ -507,7 +561,7 @@ const Timeline = ({
               eventStyleResolver={eventStyleResolver}
               eventAlignmentMode={eventAlignmentMode}
               preventPastEvents={preventPastEvents}
-              minDate={minDate || indicatorDate}
+              preventPastEventsDate={preventPastEventsDate || (preventPastEvents ? new Date().toISOString().split('T')[0] : null)}
               highlightWeekends={highlightWeekends}
               cellTooltipOn={cellTooltipOn}
               cellTooltipResolver={cellTooltipResolver}
@@ -539,6 +593,8 @@ const Timeline = ({
               isLoading={isLoading}
               loadingType={loadingType}
               disableDates={disableDates}
+              autoSelectEnabledRange={autoSelectEnabledRange}
+              autoSelectRanges={autoSelectRanges}
 
             />
 

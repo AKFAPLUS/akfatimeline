@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 
 /**
  * Keyboard shortcuts hook
@@ -32,8 +32,8 @@ const useKeyboardShortcuts = ({
   keyMap = {},
   enabled = true,
 }) => {
-  // Default key mappings
-  const defaultKeyMap = {
+  // Default key mappings - useMemo ile sarmaladık
+  const defaultKeyMap = useMemo(() => ({
     navigateLeft: keyMap.navigateLeft || 'ArrowLeft',
     navigateRight: keyMap.navigateRight || 'ArrowRight',
     navigateUp: keyMap.navigateUp || 'ArrowUp',
@@ -45,7 +45,7 @@ const useKeyboardShortcuts = ({
     paste: keyMap.paste || { key: 'v', ctrl: true },
     zoomIn: keyMap.zoomIn || { key: '=', ctrl: true },
     zoomOut: keyMap.zoomOut || { key: '-', ctrl: true },
-  };
+  }), [keyMap]);
 
   const handleKeyDown = useCallback(
     (e) => {

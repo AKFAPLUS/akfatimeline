@@ -23,4 +23,5 @@ export {
 
 // CSS dosyası package.json'da exports altında tanımlı
 // Kullanım: import 'akfatimeline/components/Timeline/Timeline.css'
+import "./components/Timeline/Timeline.css";
 

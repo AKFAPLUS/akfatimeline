@@ -733,6 +733,23 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* AkfaTimeline - Glassmorphism Theme 
   box-shadow: var(--shadow-md), 0 0 0 3px var(--accent-light);
 }
 
+/* Seçili custom button stili - sadece border parlar, arka plan olmaz */
+.master-header-btn-active {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 2px solid var(--accent-color, #0ea5e9) !important;
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.5), 0 0 20px rgba(14, 165, 233, 0.3) !important;
+  color: var(--text-primary) !important;
+}
+
+.master-header-btn-active:hover {
+  background: transparent !important;
+  border-color: var(--accent-color, #0ea5e9) !important;
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.7), 0 0 25px rgba(14, 165, 233, 0.4) !important;
+  transform: translateY(-2px);
+}
+
 .master-header-date-picker {
   background: var(--bg-secondary);
   backdrop-filter: var(--blur-sm);
@@ -3128,7 +3145,9 @@ const MasterHeader = _ref => {
     zoomStep = 0.25,
     showDefaultButtons = true,
     // Varsayılan butonları göster/gizle
-    customButtons = [] // Özel butonlar: [{ id, label, onClick, icon?, disabled?, className? }]
+    customButtons = [],
+    // Özel butonlar: [{ id, label, onClick, icon?, disabled?, className? }]
+    onCustomButtonClick // Custom button'a tıklandığında tarih string'i geçildiğinde çağrılacak fonksiyon
   } = _ref;
   const formattedDate = new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000 - selectedDate.getTimezoneOffset() * 60000).toISOString().split("T")[0]; // YYYY-MM-DD formatı
 
@@ -3161,8 +3180,17 @@ const MasterHeader = _ref => {
     onClick: onToday
   }, "Bug\xFCn")), customButtons && customButtons.length > 0 && customButtons.map(button => /*#__PURE__*/external_react_default().createElement("button", {
     key: button.id,
-    className: button.className || "master-header-btn",
-    onClick: button.onClick,
+    className: button.className ? "master-header-btn ".concat(button.className) : "master-header-btn",
+    onClick: () => {
+      if (button.onClick) {
+        const result = button.onClick();
+        // Eğer onClick bir tarih string'i döndürüyorsa, onCustomButtonClick'i çağır
+        if (typeof result === 'string' && onCustomButtonClick) {
+          onCustomButtonClick(result);
+        }
+        // Normal onClick davranışı da çalışır (eğer result undefined ise)
+      }
+    },
     disabled: button.disabled,
     title: button.tooltip || button.label
   }, button.icon && /*#__PURE__*/external_react_default().createElement("span", {
@@ -3357,6 +3385,41 @@ const isDateDisabled = (date, disableDates) => {
     return !isInList;
   }
   return false;
+};
+
+/**
+ * Bir tarihin hangi açık range'e ait olduğunu bulur (mode: 'include' için)
+ * @param {string | Object | Date} date - Kontrol edilecek tarih
+ * @param {Object} disableDates - { mode: 'include', dates: [], ranges: [] }
+ * @returns {Object | null} - { start: Date, end: Date } veya null
+ */
+const findEnabledRangeForDate = (date, disableDates) => {
+  if (!disableDates || !disableDates.mode || disableDates.mode !== 'include') {
+    return null; // Sadece 'include' modu için çalışır
+  }
+  const dateObj = parseDate(date);
+  const dateOnly = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+  const {
+    ranges = []
+  } = disableDates;
+
+  // Tarihin hangi range'e ait olduğunu bul
+  for (const range of ranges) {
+    const start = parseDate(range.start);
+    const end = parseDate(range.end);
+    const startOnly = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const endOnly = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+    if (dateOnly >= startOnly && dateOnly <= endOnly) {
+      // Bu range'e ait, range'in tamamını döndür
+      return {
+        start: startOnly,
+        end: endOnly
+      };
+    }
+  }
+
+  // Range bulunamadı, null döndür
+  return null;
 };
 ;// ./src/components/Timeline/TimelineHeader.jsx
 
@@ -3920,7 +3983,7 @@ const TimelineContent = _ref => {
 
     // Past Date Protection
     preventPastEvents = false,
-    minDate = null,
+    preventPastEventsDate = null,
     // Weekend Highlighting
     highlightWeekends = false,
     // Cell Tooltip
@@ -3950,7 +4013,13 @@ const TimelineContent = _ref => {
     // Context menu açıldığında çağrılacak callback
 
     // Disable Dates
-    disableDates = null // { mode: 'exclude' | 'include', dates: [], ranges: [] }
+    disableDates = null,
+    // { mode: 'exclude' | 'include', dates: [], ranges: [] }
+
+    // Auto Select Enabled Range
+    autoSelectEnabledRange = false,
+    // true = belirtilen range'lere tıklandığında otomatik olarak tüm range'i seç
+    autoSelectRanges = null // [{ start: '2025-12-31', end: '2026-01-05' }, ...] - Auto-select için range'ler (disableDates'ten bağımsız)
   } = _ref;
   // ------------------- HOOKS & STATE -------------------
   const containerRef = (0,external_react_.useRef)(null);
@@ -4082,44 +4151,107 @@ const TimelineContent = _ref => {
     if (e.button === 2 || e.which === 3) {
       return;
     }
-    const startDate = parseDate(date.fullDate);
+    const clickedDate = parseDate(date.fullDate);
 
     // Disabled tarih kontrolü - disabled hücrelerde event oluşturmayı engelle
-    if (disableDates && isDateDisabled(startDate, disableDates)) {
+    if (disableDates && isDateDisabled(clickedDate, disableDates)) {
       return;
     }
 
     // Geçmiş tarih kontrolü
-    if (preventPastEvents && minDate) {
-      const minDateObj = parseDate(minDate);
-      // Sadece tarih karşılaştırması (saat bilgisi olmadan)
-      const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-      const minDateOnly = new Date(minDateObj.getFullYear(), minDateObj.getMonth(), minDateObj.getDate());
-      if (startDateOnly < minDateOnly) {
+    if (preventPastEvents && preventPastEventsDate) {
+      const preventPastEventsDateObj = parseDate(preventPastEventsDate);
+      const clickedDateOnly = new Date(clickedDate.getFullYear(), clickedDate.getMonth(), clickedDate.getDate());
+      const preventPastEventsDateOnly = new Date(preventPastEventsDateObj.getFullYear(), preventPastEventsDateObj.getMonth(), preventPastEventsDateObj.getDate());
+      if (clickedDateOnly < preventPastEventsDateOnly) {
         // Geçmiş tarihe tıklama engellendi
         return;
       }
     }
+
+    // Eğer disableDates mode: 'include' ise, tıklanan tarihin range'ini veya date'ini bul
+    let startDate = clickedDate;
+    let endDate = new Date(clickedDate.getTime() + 24 * 60 * 60 * 1000); // Varsayılan: 1 gün
+    let enabledRange = null;
+    if (disableDates && disableDates.mode === 'include') {
+      // Önce ranges'te ara
+      if (disableDates.ranges && disableDates.ranges.length > 0) {
+        enabledRange = findEnabledRangeForDate(clickedDate, disableDates);
+        if (enabledRange) {
+          // Range bulundu, range'in tamamını seç
+          startDate = enabledRange.start;
+          // endDate'i direkt range'in end'i olarak kullan
+          // Range'in end'i zaten son günü temsil ediyor (inclusive)
+          endDate = enabledRange.end;
+        }
+      }
+
+      // Eğer range bulunamadıysa, dates array'inde tek tek tarih var mı kontrol et
+      if (!enabledRange && disableDates.dates && disableDates.dates.length > 0) {
+        const clickedDateOnly = new Date(clickedDate.getFullYear(), clickedDate.getMonth(), clickedDate.getDate());
+        const foundDate = disableDates.dates.find(d => {
+          const dObj = parseDate(d);
+          const dOnly = new Date(dObj.getFullYear(), dObj.getMonth(), dObj.getDate());
+          return dOnly.getTime() === clickedDateOnly.getTime();
+        });
+        if (foundDate) {
+          // Tek bir tarih bulundu, o tarihi seç (1 günlük event)
+          const foundDateObj = parseDate(foundDate);
+          startDate = new Date(foundDateObj.getFullYear(), foundDateObj.getMonth(), foundDateObj.getDate());
+          endDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000); // 1 gün sonrası
+          enabledRange = {
+            start: startDate,
+            end: startDate
+          }; // Tek gün için range oluştur
+        }
+      }
+    }
+
+    // Event title'ını gün sayısına göre ayarla
+    const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    const endDateOnly = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+    // Gün farkını hesapla (gece sayısı = gün farkı)
+    // Örnek: 31 Aralık - 5 Ocak = 5 gece (31-1, 1-2, 2-3, 3-4, 4-5)
+    const daysDiff = Math.round((endDateOnly.getTime() - startDateOnly.getTime()) / (24 * 60 * 60 * 1000));
+    const eventTitle = daysDiff > 0 ? "".concat(daysDiff, " Gece") : "1 Gece";
+
+    // Event'i oluştur - range'in tamamı seçilmiş olacak
     const newEvent = {
       id: Date.now(),
-      title: "1 Gece",
+      title: eventTitle,
       startDate,
-      endDate: new Date(startDate.getTime() + 24 * 60 * 60 * 1000),
+      endDate,
       resourceId,
-      // Mouse başlangıç pozisyonunu kaydet
+      // Mouse başlangıç pozisyonunu kaydet (sürükle-bırak devre dışı olacak)
       startX: (e === null || e === void 0 ? void 0 : e.clientX) || 0,
-      startCellIndex: dates.findIndex(d => parseDate(d.fullDate).toDateString() === startDate.toDateString()),
-      // color => var(--timeline-new-event-background-color) => => Sonra inline style yerine className
-      color: "" // Bunu .css'te "var(--timeline-new-event-background-color)" atayabilirsin
+      startCellIndex: dates.findIndex(d => {
+        const dDate = parseDate(d.fullDate);
+        const dDateOnly = new Date(dDate.getFullYear(), dDate.getMonth(), dDate.getDate());
+        const startDateOnlyCheck = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+        return dDateOnly.getTime() === startDateOnlyCheck.getTime();
+      }),
+      color: ""
     };
-    setTempEvent(newEvent);
-    setIsCreating(true);
+
+    // Event'i direkt oluştur (sürükle-bırak olmadan)
+    if (enabledRange) {
+      // Range seçildi, direkt event oluştur (sürükle-bırak devre dışı)
+      setEvents(prev => [...prev, newEvent]);
+
+      // Callback'i çağır
+      if (onCreateEventInfo) {
+        onCreateEventInfo(newEvent);
+      }
+    } else {
+      // Range bulunamadı, eski davranış (sürükle-bırak ile seçim)
+      setTempEvent(newEvent);
+      setIsCreating(true);
+    }
   };
   (0,external_react_.useEffect)(() => {
     if (!createNewEventOn) return;
     if (!isCreating) return;
     if (mode === "extend") {
-      console.log(">>> 'extend' mode, skip new event creation");
       return;
     }
     const handleMouseMove = e => {
@@ -4149,22 +4281,22 @@ const TimelineContent = _ref => {
       const startCellIndex = (_tempEvent$startCellI = tempEvent.startCellIndex) !== null && _tempEvent$startCellI !== void 0 ? _tempEvent$startCellI : 0;
 
       // Geçmiş tarih kontrolü - eğer aktifse, minimum tarihten önceki cell'lere gitmeyi engelle
-      if (preventPastEvents && minDate && dates[currentCellIndex]) {
+      if (preventPastEvents && preventPastEventsDate && dates[currentCellIndex]) {
         const currentDate = parseDate(dates[currentCellIndex].fullDate);
-        const minDateObj = parseDate(minDate);
+        const preventPastEventsDateObj = parseDate(preventPastEventsDate);
         const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
-        const minDateOnly = new Date(minDateObj.getFullYear(), minDateObj.getMonth(), minDateObj.getDate());
+        const preventPastEventsDateOnly = new Date(preventPastEventsDateObj.getFullYear(), preventPastEventsDateObj.getMonth(), preventPastEventsDateObj.getDate());
 
         // Eğer geçmiş tarihe gidiyorsak, minimum tarihe sabitle
-        if (currentDateOnly < minDateOnly) {
+        if (currentDateOnly < preventPastEventsDateOnly) {
           // Minimum tarihin cell index'ini bul
-          const minDateIndex = dates.findIndex(d => {
+          const preventPastEventsDateIndex = dates.findIndex(d => {
             const dDate = parseDate(d.fullDate);
             const dDateOnly = new Date(dDate.getFullYear(), dDate.getMonth(), dDate.getDate());
-            return dDateOnly.getTime() === minDateOnly.getTime();
+            return dDateOnly.getTime() === preventPastEventsDateOnly.getTime();
           });
-          if (minDateIndex !== -1) {
-            currentCellIndex = Math.max(startCellIndex, minDateIndex);
+          if (preventPastEventsDateIndex !== -1) {
+            currentCellIndex = Math.max(startCellIndex, preventPastEventsDateIndex);
           } else {
             currentCellIndex = startCellIndex; // Minimum tarih bulunamazsa başlangıç pozisyonuna dön
           }
@@ -4208,27 +4340,27 @@ const TimelineContent = _ref => {
       }
 
       // Geçmiş tarih kontrolü - geçmiş tarihlere event uzamasını engelle (disabled kontrolünden sonra)
-      if (preventPastEvents && minDate && dates[currentCellIndex]) {
+      if (preventPastEvents && preventPastEventsDate && dates[currentCellIndex]) {
         const currentDate = parseDate(dates[currentCellIndex].fullDate);
-        const minDateObj = parseDate(minDate);
+        const preventPastEventsDateObj = parseDate(preventPastEventsDate);
         const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
-        const minDateOnly = new Date(minDateObj.getFullYear(), minDateObj.getMonth(), minDateObj.getDate());
+        const preventPastEventsDateOnly = new Date(preventPastEventsDateObj.getFullYear(), preventPastEventsDateObj.getMonth(), preventPastEventsDateObj.getDate());
 
         // Eğer geçmiş tarihe gidiyorsak, son geçerli tarihe sabitle
-        if (currentDateOnly < minDateOnly) {
+        if (currentDateOnly < preventPastEventsDateOnly) {
           // Minimum tarihin cell index'ini bul
-          const minDateIndex = dates.findIndex(d => {
+          const preventPastEventsDateIndex = dates.findIndex(d => {
             const dDate = parseDate(d.fullDate);
             const dDateOnly = new Date(dDate.getFullYear(), dDate.getMonth(), dDate.getDate());
-            return dDateOnly.getTime() === minDateOnly.getTime();
+            return dDateOnly.getTime() === preventPastEventsDateOnly.getTime();
           });
-          if (minDateIndex !== -1) {
+          if (preventPastEventsDateIndex !== -1) {
             // Başlangıç tarihinden önceki bir tarihe gidiyorsak, minimum tarihe sabitle
             // Ama başlangıç tarihinden sonraki bir tarihe gidiyorsak, başlangıç tarihine sabitle
             if (currentCellIndex < startCellIndex) {
-              currentCellIndex = Math.max(startCellIndex, minDateIndex);
+              currentCellIndex = Math.max(startCellIndex, preventPastEventsDateIndex);
             } else {
-              currentCellIndex = Math.max(startCellIndex, minDateIndex);
+              currentCellIndex = Math.max(startCellIndex, preventPastEventsDateIndex);
             }
           } else {
             currentCellIndex = startCellIndex; // Minimum tarih bulunamazsa başlangıç pozisyonuna dön
@@ -4273,20 +4405,14 @@ const TimelineContent = _ref => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [createNewEventOn, isCreating, mode, tempEvent, events, onCreateEventInfo, setEvents, totalDays, dates, preventPastEvents, minDate, disableDates]);
+  }, [createNewEventOn, isCreating, mode, tempEvent, events, onCreateEventInfo, setEvents, totalDays, dates, preventPastEvents, preventPastEventsDate, disableDates, eventAlignmentMode]);
 
   // ------------------- Drag Logic -------------------
   const handleDragStartSafe = (e, eventId) => {
-    console.log("[TimelineContent] handleDragStartSafe called:", {
-      eventId,
-      eventsDragOn
-    });
     if (!eventsDragOn) {
-      console.log("[TimelineContent] Events drag is disabled, preventing drag start");
       e.preventDefault();
       return;
     }
-    console.log("[TimelineContent] Calling handleDragStart...");
     handleDragStart(e, eventId);
   };
   const handleDragEndSafe = e => {
@@ -4301,7 +4427,6 @@ const TimelineContent = _ref => {
   const handleMouseDownExtend = (mouseEvent, event) => {
     if (!eventsExtendOn) return;
     mouseEvent.stopPropagation();
-    console.log(">>> Extend start ID:", event.id);
     setMode("extend");
     setExtendingEvent(event);
     setOriginalEndDate(event.endDate);
@@ -4321,7 +4446,6 @@ const TimelineContent = _ref => {
     }) : evt));
   }, [mode, extendingEvent, eventsExtendOn, originalEndDate, startMouseX, setEvents]);
   const handleMouseUpExtend = (0,external_react_.useCallback)(() => {
-    console.log(">>> Extend finished ID:", extendingEvent === null || extendingEvent === void 0 ? void 0 : extendingEvent.id);
     if (onExtendInfo && extendingEvent) {
       // callback
       const updatedEvent = events.find(ev => ev.id === extendingEvent.id);
@@ -4462,12 +4586,12 @@ const TimelineContent = _ref => {
 
     // Geçmiş tarih kontrolü
     let isPastDate = false;
-    if (preventPastEvents && minDate) {
+    if (preventPastEvents && preventPastEventsDate) {
       const cellDate = parseDate(dateObj.fullDate);
-      const minDateObj = parseDate(minDate);
+      const preventPastEventsDateObj = parseDate(preventPastEventsDate);
       const cellDateOnly = new Date(cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate());
-      const minDateOnly = new Date(minDateObj.getFullYear(), minDateObj.getMonth(), minDateObj.getDate());
-      isPastDate = cellDateOnly < minDateOnly;
+      const preventPastEventsDateOnly = new Date(preventPastEventsDateObj.getFullYear(), preventPastEventsDateObj.getMonth(), preventPastEventsDateObj.getDate());
+      isPastDate = cellDateOnly < preventPastEventsDateOnly;
     }
 
     // Disabled tarih kontrolü
@@ -4581,7 +4705,6 @@ const TimelineContent = _ref => {
             e.preventDefault();
             return;
           }
-          console.log("[TimelineContent] Event drag start:", event.id);
           handleDragStart(e, event.id);
           e.stopPropagation();
 
@@ -4644,12 +4767,12 @@ const TimelineContent = _ref => {
     }, tempEvent.title), dates.map((dateObj, colIndex) => {
       // Geçmiş tarih kontrolü
       let isPastDate = false;
-      if (preventPastEvents && minDate) {
+      if (preventPastEvents && preventPastEventsDate) {
         const cellDate = parseDate(dateObj.fullDate);
-        const minDateObj = parseDate(minDate);
+        const preventPastEventsDateObj = parseDate(preventPastEventsDate);
         const cellDateOnly = new Date(cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate());
-        const minDateOnly = new Date(minDateObj.getFullYear(), minDateObj.getMonth(), minDateObj.getDate());
-        isPastDate = cellDateOnly < minDateOnly;
+        const preventPastEventsDateOnly = new Date(preventPastEventsDateObj.getFullYear(), preventPastEventsDateObj.getMonth(), preventPastEventsDateObj.getDate());
+        isPastDate = cellDateOnly < preventPastEventsDateOnly;
       }
 
       // Hafta sonu kontrolü
@@ -4731,7 +4854,6 @@ const TimelineContent = _ref => {
           }
           e.preventDefault();
           e.stopPropagation();
-          console.log("[TimelineContent] onDragOver called for resource:", resource.id);
           handleDragOver(e);
         },
         onDrop: e => {
@@ -4744,7 +4866,6 @@ const TimelineContent = _ref => {
           }
           e.preventDefault();
           e.stopPropagation();
-          console.log("[TimelineContent] onDrop called for resource:", resource.id, "date:", dateObj.fullDate);
           handleDrop(e, resource.id, parseDate(dateObj.fullDate));
         }
       });
@@ -5420,8 +5541,8 @@ const useKeyboardShortcuts = _ref => {
     keyMap = {},
     enabled = true
   } = _ref;
-  // Default key mappings
-  const defaultKeyMap = {
+  // Default key mappings - useMemo ile sarmaladık
+  const defaultKeyMap = (0,external_react_.useMemo)(() => ({
     navigateLeft: keyMap.navigateLeft || 'ArrowLeft',
     navigateRight: keyMap.navigateRight || 'ArrowRight',
     navigateUp: keyMap.navigateUp || 'ArrowUp',
@@ -5451,7 +5572,7 @@ const useKeyboardShortcuts = _ref => {
       key: '-',
       ctrl: true
     }
-  };
+  }), [keyMap]);
   const handleKeyDown = (0,external_react_.useCallback)(e => {
     if (!enabled) return;
     const key = e.key;
@@ -5618,7 +5739,6 @@ const useEventManagement = function () {
     let targetResourceId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     if (copiedEvents.length === 0) return;
     const newEvents = [...events];
-    const baseDate = targetDate || new Date();
     copiedEvents.forEach(event => {
       const newEvent = useEventManagement_objectSpread(useEventManagement_objectSpread({}, event), {}, {
         id: "".concat(event.id, "-copy-").concat(Date.now(), "-").concat(Math.random()),
@@ -5776,8 +5896,8 @@ const Timeline_Timeline_Timeline = _ref => {
     // Past Date Protection
     preventPastEvents = false,
     // Geçmiş tarihlere rezervasyon oluşturmayı engelle
-    minDate = null,
-    // Minimum tarih (eğer belirtilmezse indicatorDate kullanılır)
+    preventPastEventsDate = null,
+    // Geçmiş tarih koruması için minimum tarih (programDate ve indicatorDate'ten bağımsız)
 
     // Weekend Highlighting
     highlightWeekends = false,
@@ -5847,10 +5967,18 @@ const Timeline_Timeline_Timeline = _ref => {
     // Özelleştirilebilir tuş haritası
 
     // Disable Dates
-    disableDates = null // { mode: 'exclude' | 'include', dates: [], ranges: [] }
+    disableDates = null,
+    // { mode: 'exclude' | 'include', dates: [], ranges: [] }
     // mode: 'exclude' = belirtilen tarihler disabled, 'include' = belirtilen tarihler enabled (diğerleri disabled)
     // dates: ['2025-01-15', '2025-01-20', ...] veya [Date, Date, ...] - Tekil tarihler
     // ranges: [{ start: '2025-01-15', end: '2025-01-20' }, ...] veya [{ start: Date, end: Date }, ...] - Tarih aralıkları
+
+    // Auto Select Enabled Range
+    autoSelectEnabledRange = false,
+    // true = belirtilen range'lere tıklandığında otomatik olarak tüm range'i seç
+    autoSelectRanges = null // [{ start: '2025-12-31', end: '2026-01-05' }, ...] - Auto-select için range'ler (disableDates'ten bağımsız)
+    // autoSelectRanges tanımlı olduğunda, tıklanan tarih bu range'lerden birinin içindeyse otomatik olarak tüm range seçilir
+    // autoSelectRanges: null ise ve disableDates mode: 'include' ise, disableDates.ranges kullanılır (geriye dönük uyumluluk)
   } = _ref;
   // ---------------------------------------------------------
   // 1) timelineData oluştur (dates, monthHeaders vs.)
@@ -5875,10 +6003,30 @@ const Timeline_Timeline_Timeline = _ref => {
     }
   }, [programDate]);
 
+  // onToday prop'u değiştiğinde (tarih string'i ise) selectedDate'i güncelle
+  // Bu, customHeaderButtons'un onClick'inde tarih geçildiğinde kullanılır
+  (0,external_react_.useEffect)(() => {
+    // onToday bir string (tarih) ise, o tarihe git
+    if (onToday && typeof onToday === 'string') {
+      const date = new Date(onToday);
+      if (!isNaN(date.getTime())) {
+        date.setDate(date.getDate() - 3); // Tarihten 3 gün öncesini al
+        setSelectedDate(date);
+      }
+    }
+  }, [onToday]);
+
   // ---------------------------------------------------------
   // 2) local state
   // ---------------------------------------------------------
   const [collapsedGroups, setCollapsedGroups] = (0,external_react_.useState)({});
+
+  // Internal zoom state - eğer setZoomLevel prop'u yoksa kullanılır
+  const [internalZoomLevel, setInternalZoomLevel] = (0,external_react_.useState)(zoomLevel);
+
+  // Effective zoom level - prop varsa prop'u kullan, yoksa internal state'i kullan
+  const effectiveZoomLevel = setZoomLevel ? zoomLevel : internalZoomLevel;
+  const effectiveSetZoomLevel = setZoomLevel || setInternalZoomLevel;
 
   // Event Management
   const eventManagement = hooks_useEventManagement(events, newEvents => {
@@ -5889,10 +6037,12 @@ const Timeline_Timeline_Timeline = _ref => {
   });
   const [localEvents, setLocalEvents] = (0,external_react_.useState)(events);
 
-  // dropInfo state - eğer external yoksa internal state kullan
-  const [internalDropInfo, setInternalDropInfo] = (0,external_react_.useState)(null);
-  const dropInfo = externalDropInfo !== undefined ? externalDropInfo : internalDropInfo;
-  const setDropInfo = externalSetDropInfo || setInternalDropInfo;
+  // setDropInfo - eğer external yoksa no-op fonksiyon kullan
+  // Not: internalDropInfo state'i kaldırıldı çünkü dropInfo hiçbir yerde okunmuyor
+  const setDropInfo = externalSetDropInfo || (() => {
+    // No-op: Eğer parent'tan setDropInfo gelmezse, hiçbir şey yapma
+    console.warn('[Timeline] setDropInfo called but no external handler provided');
+  });
 
   // Update local events when events prop changes
   (0,external_react_.useEffect)(() => {
@@ -5928,8 +6078,16 @@ const Timeline_Timeline_Timeline = _ref => {
   //    Container genişliği = dayRange * cellWidth
   // ---------------------------------------------------------
   const baseCellWidth = 56.95; // Temel hücre genişliği (zoom = 1.0 için)
-  const cellWidth = baseCellWidth * zoomLevel; // Zoom seviyesine göre hücre genişliği
+  const cellWidth = baseCellWidth * effectiveZoomLevel; // Zoom seviyesine göre hücre genişliği
   const containerWidth = dayRange * cellWidth;
+
+  // Internal zoom state'i prop'tan gelen zoomLevel ile senkronize et
+  (0,external_react_.useEffect)(() => {
+    if (setZoomLevel) {
+      // Prop'tan gelen zoomLevel kullanılıyor, internal state'i güncelle
+      setInternalZoomLevel(zoomLevel);
+    }
+  }, [zoomLevel, setZoomLevel]);
 
   // ---------------------------------------------------------
   // 4) Touch Gestures (Mobil desteği)
@@ -6026,12 +6184,29 @@ const Timeline_Timeline_Timeline = _ref => {
   const handleDateChange = newDate => {
     setSelectedDate(new Date(newDate));
   };
+
+  // CustomHeaderButtons için tarih değiştirme fonksiyonu
+  // Bu fonksiyon customHeaderButtons'un onClick'inde kullanılabilir
+  const handleCustomDateChange = (0,external_react_.useCallback)(dateString => {
+    if (dateString) {
+      const date = new Date(dateString);
+      if (!isNaN(date.getTime())) {
+        date.setDate(date.getDate() - 3); // Tarihten 3 gün öncesini al
+        setSelectedDate(date);
+      }
+    }
+  }, []);
   const handleToday = () => {
-    const today = programDate ? new Date(programDate) : new Date();
-    today.setDate(today.getDate() - 3); // Program tarihinden 3 gün öncesini ayarla
+    // Bugünün tarihini al
+    const today = new Date();
+    today.setDate(today.getDate() - 3); // Bugünden 3 gün öncesini ayarla
     setSelectedDate(today);
-    // App.js'teki callback'i de çağır
-    if (onToday) onToday();
+
+    // onToday callback'i bir fonksiyon ise çağır
+    // Eğer onToday bir string (tarih) ise veya başka bir değer ise, sadece setSelectedDate yeterli
+    if (typeof onToday === 'function') {
+      onToday();
+    }
   };
   const handleAdvance = () => {
     setSelectedDate(prev => new Date(prev.getTime() + 5 * 24 * 60 * 60 * 1000));
@@ -6070,15 +6245,15 @@ const Timeline_Timeline_Timeline = _ref => {
   // 8.5) Zoom handlers
   // ---------------------------------------------------------
   const handleZoomIn = (0,external_react_.useCallback)(() => {
-    if (setZoomLevel && zoomOn) {
-      setZoomLevel(prev => Math.min(maxZoomLevel, prev + zoomStep));
+    if (zoomOn) {
+      effectiveSetZoomLevel(prev => Math.min(maxZoomLevel, prev + zoomStep));
     }
-  }, [setZoomLevel, zoomOn, maxZoomLevel, zoomStep]);
+  }, [zoomOn, maxZoomLevel, zoomStep, effectiveSetZoomLevel]);
   const handleZoomOut = (0,external_react_.useCallback)(() => {
-    if (setZoomLevel && zoomOn) {
-      setZoomLevel(prev => Math.max(minZoomLevel, prev - zoomStep));
+    if (zoomOn) {
+      effectiveSetZoomLevel(prev => Math.max(minZoomLevel, prev - zoomStep));
     }
-  }, [setZoomLevel, zoomOn, minZoomLevel, zoomStep]);
+  }, [zoomOn, minZoomLevel, zoomStep, effectiveSetZoomLevel]);
 
   // ---------------------------------------------------------
   // 8.6) Keyboard Shortcuts
@@ -6130,14 +6305,15 @@ const Timeline_Timeline_Timeline = _ref => {
     onMonthRetreat: handleMonthRetreat,
     dayRange: dayRange,
     setDayRange: setDayRange,
-    zoomLevel: zoomLevel,
-    setZoomLevel: setZoomLevel,
+    zoomLevel: effectiveZoomLevel,
+    setZoomLevel: effectiveSetZoomLevel,
     zoomOn: zoomOn,
     minZoomLevel: minZoomLevel,
     maxZoomLevel: maxZoomLevel,
     zoomStep: zoomStep,
-    showDefaultButtons: showDefaultHeaderButtons,
-    customButtons: customHeaderButtons
+    showDefaultHeaderButtons: showDefaultHeaderButtons,
+    customButtons: customHeaderButtons,
+    onCustomButtonClick: handleCustomDateChange
   })), /*#__PURE__*/external_react_default().createElement("div", {
     className: "timeline-body"
   }, /*#__PURE__*/external_react_default().createElement("div", {
@@ -6196,7 +6372,7 @@ const Timeline_Timeline_Timeline = _ref => {
     eventStyleResolver: eventStyleResolver,
     eventAlignmentMode: eventAlignmentMode,
     preventPastEvents: preventPastEvents,
-    minDate: minDate || indicatorDate,
+    preventPastEventsDate: preventPastEventsDate || (preventPastEvents ? new Date().toISOString().split('T')[0] : null),
     highlightWeekends: highlightWeekends,
     cellTooltipOn: cellTooltipOn,
     cellTooltipResolver: cellTooltipResolver,
@@ -6226,7 +6402,9 @@ const Timeline_Timeline_Timeline = _ref => {
     eventBadgeResolver: eventBadgeResolver,
     isLoading: isLoading,
     loadingType: loadingType,
-    disableDates: disableDates
+    disableDates: disableDates,
+    autoSelectEnabledRange: autoSelectEnabledRange,
+    autoSelectRanges: autoSelectRanges
   }), selectedEvent && /*#__PURE__*/external_react_default().createElement(Timeline_EventTooltip, {
     event: selectedEvent,
     position: tooltipPosition,

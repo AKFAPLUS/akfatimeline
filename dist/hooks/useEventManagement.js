@@ -92,7 +92,6 @@ const useEventManagement = (initialEvents = [], onEventsChange = null, maxHistor
     if (copiedEvents.length === 0) return;
     
     const newEvents = [...events];
-    const baseDate = targetDate || new Date();
     
     copiedEvents.forEach((event) => {
       const newEvent = {

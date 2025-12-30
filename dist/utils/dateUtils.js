@@ -95,3 +95,39 @@ export const isDateDisabled = (date, disableDates) => {
   
   return false;
 };
+
+/**
+ * Bir tarihin hangi açık range'e ait olduğunu bulur (mode: 'include' için)
+ * @param {string | Object | Date} date - Kontrol edilecek tarih
+ * @param {Object} disableDates - { mode: 'include', dates: [], ranges: [] }
+ * @returns {Object | null} - { start: Date, end: Date } veya null
+ */
+export const findEnabledRangeForDate = (date, disableDates) => {
+  if (!disableDates || !disableDates.mode || disableDates.mode !== 'include') {
+    return null; // Sadece 'include' modu için çalışır
+  }
+
+  const dateObj = parseDate(date);
+  const dateOnly = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+  
+  const { ranges = [] } = disableDates;
+  
+  // Tarihin hangi range'e ait olduğunu bul
+  for (const range of ranges) {
+    const start = parseDate(range.start);
+    const end = parseDate(range.end);
+    const startOnly = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const endOnly = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+    
+    if (dateOnly >= startOnly && dateOnly <= endOnly) {
+      // Bu range'e ait, range'in tamamını döndür
+      return {
+        start: startOnly,
+        end: endOnly,
+      };
+    }
+  }
+  
+  // Range bulunamadı, null döndür
+  return null;
+};

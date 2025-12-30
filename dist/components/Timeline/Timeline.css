@@ -704,6 +704,23 @@
   box-shadow: var(--shadow-md), 0 0 0 3px var(--accent-light);
 }
 
+/* Seçili custom button stili - sadece border parlar, arka plan olmaz */
+.master-header-btn-active {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 2px solid var(--accent-color, #0ea5e9) !important;
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.5), 0 0 20px rgba(14, 165, 233, 0.3) !important;
+  color: var(--text-primary) !important;
+}
+
+.master-header-btn-active:hover {
+  background: transparent !important;
+  border-color: var(--accent-color, #0ea5e9) !important;
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.7), 0 0 25px rgba(14, 165, 233, 0.4) !important;
+  transform: translateY(-2px);
+}
+
 .master-header-date-picker {
   background: var(--bg-secondary);
   backdrop-filter: var(--blur-sm);
