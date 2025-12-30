@@ -1,6 +1,6 @@
 {
   "name": "akfatimeline",
-  "version": "2.2.10",
+  "version": "2.3.0",
   "description": "A customizable timeline component for React applications with disableDates, custom header buttons, and past date protection features",
   "main": "./dist/library.js",
   "module": "./dist/library.js",
@@ -11,64 +11,6 @@
     "README.md",
     "CHANGELOG.md"
   ],
-  "exports": {
-    ".": {
-      "types": "./dist/library.js",
-      "import": "./dist/library.js",
-      "require": "./dist/Timeline.js",
-      "default": "./dist/library.js"
-    },
-    "./css": "./dist/components/Timeline/Timeline.css",
-    "./components/Timeline/Timeline.css": "./dist/components/Timeline/Timeline.css",
-    "./Timeline": {
-      "types": "./dist/components/Timeline/Timeline.jsx",
-      "import": "./dist/components/Timeline/Timeline.jsx",
-      "require": "./dist/components/Timeline/Timeline.js",
-      "default": "./dist/components/Timeline/Timeline.jsx"
-    },
-    "./DailyView": {
-      "types": "./dist/components/Timeline/DailyView.jsx",
-      "import": "./dist/components/Timeline/DailyView.jsx",
-      "require": "./dist/components/Timeline/DailyView.js",
-      "default": "./dist/components/Timeline/DailyView.jsx"
-    },
-    "./ContextMenu": {
-      "types": "./dist/components/Timeline/ContextMenu.jsx",
-      "import": "./dist/components/Timeline/ContextMenu.jsx",
-      "require": "./dist/components/Timeline/ContextMenu.js",
-      "default": "./dist/components/Timeline/ContextMenu.jsx"
-    },
-    "./EventDetailModal": {
-      "types": "./dist/components/Timeline/EventDetailModal.jsx",
-      "import": "./dist/components/Timeline/EventDetailModal.jsx",
-      "require": "./dist/components/Timeline/EventDetailModal.js",
-      "default": "./dist/components/Timeline/EventDetailModal.jsx"
-    },
-    "./EventIcon": {
-      "types": "./dist/components/Timeline/EventIcon.jsx",
-      "import": "./dist/components/Timeline/EventIcon.jsx",
-      "require": "./dist/components/Timeline/EventIcon.js",
-      "default": "./dist/components/Timeline/EventIcon.jsx"
-    },
-    "./EventBadge": {
-      "types": "./dist/components/Timeline/EventBadge.jsx",
-      "import": "./dist/components/Timeline/EventBadge.jsx",
-      "require": "./dist/components/Timeline/EventBadge.js",
-      "default": "./dist/components/Timeline/EventBadge.jsx"
-    },
-    "./LoadingSpinner": {
-      "types": "./dist/components/Timeline/LoadingSpinner.jsx",
-      "import": "./dist/components/Timeline/LoadingSpinner.jsx",
-      "require": "./dist/components/Timeline/LoadingSpinner.js",
-      "default": "./dist/components/Timeline/LoadingSpinner.jsx"
-    },
-    "./AutocompleteSelect": {
-      "types": "./dist/components/Timeline/AutocompleteSelect.jsx",
-      "import": "./dist/components/Timeline/AutocompleteSelect.jsx",
-      "require": "./dist/components/Timeline/AutocompleteSelect.js",
-      "default": "./dist/components/Timeline/AutocompleteSelect.jsx"
-    }
-  },
   "dependencies": {
     "akfatimeline": "^2.2.1",
     "react": "^19.2.3",
