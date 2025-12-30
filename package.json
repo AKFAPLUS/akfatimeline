@@ -1,10 +1,14 @@
 {
   "name": "akfatimeline",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "A customizable timeline component for React applications with disableDates, custom header buttons, and past date protection features",
   "main": "./dist/library.js",
   "module": "./dist/library.js",
   "types": "./dist/library.js",
+  "exports": {
+    ".": "./dist/library.js",
+    "./AutocompleteSelect": "./dist/components/Timeline/AutocompleteSelect.jsx"
+  },
   "files": [
     "dist",
     "src",
